@@ -90,55 +90,91 @@ def call_3_recommendations(vision_data, scoring_data):
     prix = vision_data.get('prix_visible', 'non détecté')
     type_bien = vision_data.get('type_bien', 'bien')
 
-    prompt = f"""Expert Airbnb — génère un rapport EXHAUSTIF pour cette annonce.
-Données : {json.dumps(vision_data, ensure_ascii=False)}
+    prompt = f"""Tu es Léon, expert Airbnb mondial. Génère un rapport EXHAUSTIF et EXPERT pour cette annonce.
+Données visuelles : {json.dumps(vision_data, ensure_ascii=False)}
 Scoring : {json.dumps(scoring_data, ensure_ascii=False)}
 Ville : {ville} | Prix : {prix}€/nuit | Type : {type_bien}
 
-RÈGLES : chaque recommandation = CE QUI NE VA PAS > POURQUOI (chiffre/verbatim) > SOLUTION COPYABLE
-Minimum 3 options pour titres, 2 pour descriptions. Ton chaleureux, jamais condescendant.
+RÈGLES ABSOLUES :
+- CE QUI NE VA PAS > POURQUOI > SOLUTION À COPIER-COLLER
+- Ton chaleureux et bienveillant, jamais condescendant
+- Cite des éléments SPÉCIFIQUES vus dans les screenshots
+- Utilise quelques chiffres clés mais pas à chaque phrase
+- Pour les titres : MINIMUM 5 options avec contexte clair
+- Pour les descriptions : 3 styles (storytelling, business, famille/groupe)
+- Pour les règles : formule des règles POSITIVES complètes à copier dans Airbnb
+- Pour les équipements : MINIMUM 7 achats recommandés
+- Paramètres = paramètres de réservation Airbnb uniquement
+- Supprime toute section avis/tarification
 
 Retourne UNIQUEMENT ce JSON :
 {{
   "sections": {{
     "titre": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% CTR",
-      "titre_actuel": "titre ou null",
-      "problemes": [{{"probleme": "texte", "pourquoi": "avec chiffre", "impact": "+XX%"}}],
-      "options": [{{"option": 1, "titre": "titre complet", "angle": "type", "pourquoi": "logique", "ctr_estime": "+XX%"}}, {{"option": 2, "titre": "...", "angle": "...", "pourquoi": "...", "ctr_estime": "..."}}, {{"option": 3, "titre": "...", "angle": "...", "pourquoi": "...", "ctr_estime": "..."}}]
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% CTR",
+      "titre_actuel": "titre détecté ou null",
+      "problemes": [{{"probleme": "ce qui ne va pas précisément", "pourquoi": "pourquoi cela pénalise", "impact": "impact estimé"}}],
+      "options": [
+        {{"option": 1, "titre": "titre complet optimisé", "angle": "Émotionnel", "contexte": "pourquoi ce titre fonctionne pour CE bien", "ctr_estime": "+XX%"}},
+        {{"option": 2, "titre": "titre complet", "angle": "Localisation précise", "contexte": "logique", "ctr_estime": "+XX%"}},
+        {{"option": 3, "titre": "titre complet", "angle": "Différenciant unique", "contexte": "logique", "ctr_estime": "+XX%"}},
+        {{"option": 4, "titre": "titre complet", "angle": "NLP 2026", "contexte": "logique", "ctr_estime": "+XX%"}},
+        {{"option": 5, "titre": "titre complet", "angle": "Bénéfice voyageur", "contexte": "logique", "ctr_estime": "+XX%"}}
+      ]
     }},
     "description": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% conversion",
-      "problemes": [{{"probleme": "texte", "pourquoi": "avec chiffre", "impact": "impact"}}],
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% conversion",
+      "problemes": [{{"probleme": "problème précis", "pourquoi": "impact", "impact": "gain si corrigé"}}],
       "options": [
-        {{"option": 1, "style": "Émotionnel et storytelling", "texte": "Description COMPLÈTE avec emojis et alinéas.\\n\\n🏠 [Accroche 2 lignes]\\n\\n✨ [Le logement 3-4 lignes avec atouts spécifiques]\\n\\n📍 [Le quartier avec 2-3 vrais lieux emblématiques]\\n\\n🚇 [Accès et transports]\\n\\n🛏️ Draps et serviettes : [préciser fournis ou non]\\n🚿 Gel douche et shampoing : [préciser]\\n☕ Machine à café : [type précis]\\n\\n📋 [Pratique : équipements clés, check-in, règles positives]"}},
-        {{"option": 2, "style": "Business et pratique", "texte": "Description alternative avec mêmes sections"}}
+        {{"option": 1, "style": "Storytelling & émotionnel", "texte": "Description COMPLÈTE avec emojis et alinéas.\n\n🏠 [Accroche forte 2 lignes]\n\n✨ [Le logement 3-4 lignes — atouts spécifiques]\n\n📍 [Le quartier — 2-3 lieux réels emblématiques]\n\n🚇 [Accès et transports]\n\n🛏️ Draps et serviettes inclus — [préciser]\n☕ Machine à café : [type précis]\n🚿 [gel douche, shampoing]\n\n📋 [Pratique positif — équipements clés, check-in, règles en positif]"}},
+        {{"option": 2, "style": "Business & pratique", "texte": "Description orientée voyageur business avec mêmes sections"}},
+        {{"option": 3, "style": "Famille & groupe", "texte": "Description orientée famille/groupe d'amis avec mêmes sections"}}
       ]
     }},
     "photos": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% CTR",
-      "best_practices": ["Les annonces avec photos professionnelles reçoivent 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle augmentent le CTR de 23%"],
-      "analyse_photos": [{{"numero": 1, "probleme": "problème précis", "pourquoi": "impact", "recommandation": "instruction précise"}}],
-      "photos_manquantes": [{{"photo": "description", "pourquoi": "impact réservations", "conseil_technique": "angle, lumière, composition"}}],
-      "ordre_recommande": ["photo 1", "photo 2", "photo 3"]
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% CTR",
+      "best_practices": ["Les annonces avec photos professionnelles génèrent en moyenne 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle (table dressée, café fumant, livre ouvert) augmentent le CTR"],
+      "analyse_photos": [{{"numero": 1, "probleme": "problème précis et spécifique", "pourquoi": "impact sur les réservations", "recommandation": "instruction très précise : angle exact, lumière, composition, accessoires suggérés"}}],
+      "photos_manquantes": [{{"photo": "description précise", "pourquoi": "impact sur les réservations", "conseil_technique": "angle, lumière, heure idéale, accessoires"}}],
+      "ordre_recommande": ["description photo 1 — couverture", "description photo 2", "description photo 3", "description photo 4", "description photo 5"]
     }},
     "equipements": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% réservations",
-      "equipements_a_cocher": [{{"equipement": "nom Airbnb exact", "pourquoi": "X% des voyageurs filtrent sur cet équipement", "impact": "+XX% visibilité"}}],
-      "achats_recommandes": [{{"achat": "équipement", "prix_estime": "XX€", "impact": "verbatim ou chiffre", "priorite": "Haute|Moyenne|Basse"}}]
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% réservations",
+      "equipements_a_cocher": [
+        {{"equipement": "nom exact dans Airbnb", "pourquoi": "pourquoi c'est important pour les voyageurs", "impact": "impact sur la visibilité dans les recherches"}}
+      ],
+      "achats_recommandes": [
+        {{"achat": "équipement 1", "prix_estime": "XX€", "impact": "pourquoi cet achat améliore l'annonce", "priorite": "Haute|Moyenne|Basse"}},
+        {{"achat": "équipement 2", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
+        {{"achat": "équipement 3", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
+        {{"achat": "équipement 4", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
+        {{"achat": "équipement 5", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
+        {{"achat": "équipement 6", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
+        {{"achat": "équipement 7", "prix_estime": "XX€", "impact": "...", "priorite": "..."}}
+      ]
     }},
     "confort_accueil": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% avis 5 étoiles",
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% avis 5 étoiles",
       "informations_a_preciser": [
-        {{"element": "Draps et linge de lit", "statut": "précisé|non précisé dans l'annonce", "recommandation": "texte exact à ajouter dans la description", "pourquoi": "X% des voyageurs posent cette question avant de réserver"}},
-        {{"element": "Serviettes de bain", "statut": "précisé|non précisé", "recommandation": "texte exact à ajouter", "pourquoi": "impact sur les questions reçues"}},
-        {{"element": "Gel douche / shampoing", "statut": "précisé|non précisé", "recommandation": "texte exact à ajouter", "pourquoi": "impact"}},
-        {{"element": "Machine à café", "statut": "type précisé ou non", "recommandation": "formulation exacte recommandée (ex: Machine Nespresso Vertuo + 20 capsules offertes)", "pourquoi": "65% des voyageurs considèrent la machine à café comme équipement décisif"}}
+        {{"element": "Draps et linge de lit", "statut": "précisé|non précisé", "recommandation": "formulation exacte à copier dans la description", "pourquoi": "impact sur les questions reçues"}},
+        {{"element": "Serviettes de bain", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
+        {{"element": "Gel douche / shampoing", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
+        {{"element": "Machine à café", "statut": "type détecté ou non", "recommandation": "formulation exacte recommandée ex: Machine Nespresso Vertuo + 20 capsules offertes à votre arrivée", "pourquoi": "impact sur l'expérience"}}
       ],
       "gifting": {{
-        "intro": "phrase d'intro sur l'importance du gifting adaptée au profil du bien",
+        "intro": "Phrase d'accroche avec un chiffre réel sur l'importance du gifting — ex: X% des voyageurs mentionnent une attention dans leurs avis 5 étoiles",
         "idees": [
-          {{"cadeau": "idée de cadeau/attention", "cout_estime": "XX€", "impact": "verbatim ou chiffre", "adapte_a": "profil voyageur cible"}},
+          {{"cadeau": "idée précise et concrète", "cout_estime": "XX€", "impact": "pourquoi cette attention fonctionne pour CE bien et CETTE clientèle", "adapte_a": "profil voyageur cible"}},
           {{"cadeau": "idée 2", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
           {{"cadeau": "idée 3", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
           {{"cadeau": "idée 4", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
@@ -146,41 +182,52 @@ Retourne UNIQUEMENT ce JSON :
         ]
       }}
     }},
-    "tarification": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX€/mois",
-      "problemes": [{{"probleme": "texte", "pourquoi": "chiffre", "impact": "impact"}}],
-      "recommandations": [{{"action": "action", "pourquoi": "logique chiffrée", "implementation": "comment faire"}}]
-    }},
-    "parametres": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% visibilité",
-      "problemes": [{{"parametre": "nom", "statut_actuel": "détecté", "probleme": "pourquoi sous-optimal", "pourquoi": "impact chiffré", "recommandation": "action exacte"}}]
+    "parametres_reservation": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% visibilité",
+      "problemes": [
+        {{"parametre": "nom du paramètre Airbnb", "statut_actuel": "ce qui est détecté ou estimé", "probleme": "pourquoi sous-optimal", "pourquoi": "impact algorithmique", "recommandation": "action exacte à faire dans Airbnb"}}
+      ]
     }},
     "profil_hote": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% confiance",
-      "problemes": [{{"probleme": "texte", "pourquoi": "explication", "recommandation": "action concrète"}}]
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% confiance voyageur",
+      "problemes": [
+        {{"probleme": "problème précis du profil hôte", "pourquoi": "impact sur la confiance et les réservations", "recommandation": "action concrète — si texte à copier, le fournir complet"}}
+      ]
     }},
-    "regles_politique": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% conversion",
-      "problemes": [{{"regle": "nom", "statut_actuel": "détecté", "probleme": "sous-optimal", "pourquoi": "chiffre", "recommandation": "action"}}]
-    }},
-    "avis_reputation": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX pts",
-      "analyse": "analyse actuelle",
-      "recommandations": [{{"action": "action", "pourquoi": "impact chiffré", "exemple_message": "message à copier si applicable"}}]
+    "regles": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% conversion",
+      "problemes": [
+        {{"regle": "nom de la règle", "statut_actuel": "formulation actuelle ou estimée", "probleme": "pourquoi cette formulation freine les réservations", "pourquoi": "impact sur la conversion", "recommandation": "RÈGLE POSITIVE COMPLÈTE À COPIER-COLLER dans Airbnb — ex: Nous accueillons avec plaisir les voyageurs souhaitant profiter..."}}
+      ]
     }},
     "experience_voyageur": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% avis 5 étoiles",
-      "recommandations": [{{"action": "action", "pourquoi": "verbatim ou chiffre", "cout_estime": "XX€ ou gratuit"}}]
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% avis 5 étoiles",
+      "recommandations": [
+        {{"action": "attention ou amélioration concrète", "pourquoi": "verbatim ou impact estimé", "cout_estime": "XX€ ou gratuit"}}
+      ]
     }},
-    "positionnement_concurrents": {{
-      "score_section": number, "priorite": "Prioritaire|Important|À planifier", "gain_potentiel": "+XX% parts",
+    "positionnement": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% parts de marché",
       "position_estimee": "Top 10%|Top 25%|Milieu|Bottom 25%",
-      "angle_differenciant": "avantage unique",
-      "concurrents": [{{"rang": 1, "profil": "type annonce concurrente", "avantages": ["avantage"], "score_estime": number, "comment_contrer": "action précise"}}]
+      "angle_differenciant": "votre avantage unique défendable en 1 phrase percutante",
+      "concurrents": [
+        {{"rang": 1, "profil": "description précise du concurrent type", "avantages": ["avantage concret 1", "avantage 2"], "score_estime": number, "comment_contrer": "action précise pour reprendre l'avantage"}},
+        {{"rang": 2, "profil": "...", "avantages": ["..."], "score_estime": number, "comment_contrer": "..."}},
+        {{"rang": 3, "profil": "...", "avantages": ["..."], "score_estime": number, "comment_contrer": "..."}}
+      ]
     }}
   }}
 }}"""
-
     response = client.messages.create(model="claude-sonnet-4-20250514", max_tokens=8000, system=SYSTEM_PROMPT, messages=[{"role": "user", "content": prompt}])
     text = response.content[0].text.strip()
     if "```" in text:
