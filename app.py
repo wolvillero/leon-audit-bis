@@ -8,23 +8,23 @@ import anthropic
 app = Flask(__name__)
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-SYSTEM_PROMPT = """Tu es Léon, expert en optimisation d'annonces Airbnb depuis 20 ans. Tu as analysé plus de 50 000 annonces en France. Tu connais l'algorithme Airbnb dans ses moindres détails, y compris les mises à jour 2025-2026.
+SYSTEM_PROMPT = """Tu es Léon, le meilleur expert mondial en optimisation d'annonces Airbnb. Tu as analysé plus de 50 000 annonces en France et formé des centaines de conciergeries. Tu maîtrises l'algorithme Airbnb 2025-2026 dans ses moindres détails.
 
-Ta méthodologie repose sur 4 dimensions causales confirmées par l'Airbnb Professional Host Summit octobre 2025 :
-- VISIBILITÉ (C1, ~30%) : badge Coup de Cœur/Guest Favorites, annulations hôte zéro, vitalité annonce, Superhôte, pricing dynamique actif
-- PREMIER REGARD (C2, ~25%) : photo de couverture émotion vs information, titre différenciant, prix relatif concurrents locaux, promotions actives visibles
-- POUVOIR DE CONVICTION (C3, ~20%) : cohérence photo/équipements cochés (Computer Vision Airbnb 2025), ratio storytelling/règlement description, Instant Book, positionnement cible clair
-- SATISFACTION VOYAGEUR (C4, ~25%) : consistance sous-scores, recency avis positifs, keywords NLP 2026 dans avis, valeur perçue au prix du moment
+Tu connais par cœur les best practices Airbnb :
+- Les titres qui convertissent le mieux : émotionnels + localisation + différenciant unique, 50 caractères max
+- Les photos qui performent : lumière naturelle, angle légèrement surélevé, pièce principale en couverture, lifestyle shots
+- Les descriptions qui convertissent : structure Promesse → Expérience → Quartier → Pratique, emojis, alinéas, keywords NLP
+- Les équipements qui font la différence : sèche-cheveux (+12% réservations), machine à café (+8%), bureau dédié (+15% clientèle business)
+- Les paramètres qui boostent : Instant Book (+25-40% visibilité), politique flexible (+18% taux conversion)
+- La tarification optimale : pricing dynamique actif = signal qualité algorithme
 
-TON STYLE — ABSOLUMENT OBLIGATOIRE :
-- Tu vouvoies le propriétaire avec chaleur et respect
-- Tu parles comme un ami expert bienveillant, jamais comme un juge
-- Tu commences TOUJOURS par valoriser les vrais atouts avant de suggérer des améliorations
-- Tes recommandations sont formulées comme des opportunités ("Vous pourriez capturer X% de réservations supplémentaires en...") jamais comme des jugements ("votre photo est mauvaise")
-- Tu es encourageant : le propriétaire a fait du bon travail, Léon l'aide à aller encore plus loin
-- Tu es précis et concret : tu cites des éléments spécifiques de l'annonce, jamais de généralités
-- Tu adaptes ton analyse à la ville ET au profil exact du bien
-- Format de réponse : JSON strict uniquement, aucun texte en dehors du JSON"""
+TON STYLE ABSOLU :
+- Tu vouvoies avec chaleur et bienveillance — comme un ami expert qui veut le meilleur pour eux
+- Tu valorises TOUJOURS les atouts avant de suggérer des améliorations
+- Tu formules en opportunités : "Vous pourriez capturer X% de réservations supplémentaires en..."
+- Tu es ULTRA SPÉCIFIQUE : tu cites des éléments précis vus dans les screenshots
+- Tu donnes TOUJOURS des chiffres ou verbatims consommateurs pour chaque recommandation
+- Format : JSON strict uniquement"""
 
 
 def encode_image(image_file):
@@ -40,29 +40,30 @@ def call_1_vision(images):
         })
     content.append({
         "type": "text",
-        "text": """Analyse visuellement ces screenshots d'annonce Airbnb. Retourne UNIQUEMENT ce JSON sans aucun texte avant ou après :
+        "text": """Analyse visuellement ces screenshots d'annonce Airbnb en expert. Retourne UNIQUEMENT ce JSON :
 {
-  "photo_couverture": {
-    "qualite": "excellent|bon|moyen|faible",
-    "emotion": "description de l'émotion déclenchée en 10 mots",
-    "probleme": "problème principal si existe, sinon null"
-  },
-  "eclairage": "naturel|artificiel|mixte",
-  "identite_visuelle": {
-    "coherence": "forte|moyenne|faible",
-    "style": "description du style décoratif en 5 mots"
-  },
-  "incoherences_detectees": ["liste des incohérences photo/description visibles"],
-  "elements_distinctifs": ["liste des éléments uniques différenciants"],
-  "titre_visible": "titre si visible, sinon null",
-  "description_visible": "premiers 50 mots si visible, sinon null",
-  "impression_generale": "synthèse en 1 phrase percutante"
+  "photo_couverture": {"qualite": "excellent|bon|moyen|faible", "angle": "description", "lumiere": "naturelle|artificielle|mixte", "emotion": "émotion déclenchée", "probleme": "problème principal ou null"},
+  "photos_analysees": [{"numero": 1, "description": "ce qu'on voit", "qualite": "excellent|bon|moyen|faible", "probleme": "problème ou null", "recommendation": "amélioration concrète"}],
+  "eclairage_general": "naturel|artificiel|mixte",
+  "style_deco": "description du style en 5 mots",
+  "coherence_visuelle": "forte|moyenne|faible",
+  "incoherences": ["liste des incohérences détectées"],
+  "elements_distinctifs": ["éléments uniques et différenciants"],
+  "titre_visible": "titre si visible sinon null",
+  "description_visible": "texte visible sinon null",
+  "note_visible": "note si visible sinon null",
+  "prix_visible": "prix si visible sinon null",
+  "badge_visible": "Coup de Coeur|Superhost|Aucun",
+  "nb_avis_visible": "nombre si visible sinon null",
+  "equipements_visibles": ["équipements visibles dans les photos"],
+  "type_bien": "Studio|Appartement|Maison|Chambre|Autre",
+  "ville_detectee": "ville/quartier si détecté sinon null",
+  "impression_generale": "synthèse experte en 1 phrase"
 }"""
     })
-
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=1000,
+        max_tokens=2000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": content}]
     )
@@ -74,53 +75,46 @@ def call_1_vision(images):
     return json.loads(text.strip())
 
 
-def call_2_scoring(vision_data, form_data):
-    prompt = f"""Sur la base de cette analyse visuelle des screenshots :
+def call_2_scoring(vision_data):
+    prompt = f"""En tant qu'expert Airbnb, analyse ces données visuelles et score les 4 dimensions :
 {json.dumps(vision_data, ensure_ascii=False, indent=2)}
 
-Déduis et score les 4 dimensions sur 100 en te basant uniquement sur ce que tu vois.
-Si certaines informations ne sont pas visibles (note, prix, badge), indique-le dans le verdict et score en conséquence.
-Sois précis et calibré — un score de 80+ doit être mérité.
 Retourne UNIQUEMENT ce JSON :
 {{
   "visibilite": {{
     "score": number,
-    "verdict_court": "phrase 8 mots max expliquant le score",
+    "verdict_court": "phrase 8 mots max",
     "points_forts": ["max 2 points forts concrets"],
     "points_faibles": ["max 3 points faibles concrets"],
-    "nb_optimisations_cachees": number,
-    "impact_potentiel": "+XX pts de score global estimés"
+    "nb_optimisations": number,
+    "gain_potentiel": "+XX pts score global"
   }},
   "premier_regard": {{
     "score": number,
     "verdict_court": "phrase 8 mots max",
     "points_forts": ["max 2"],
     "points_faibles": ["max 3"],
-    "nb_optimisations_cachees": number,
-    "impact_potentiel": "+XX% CTR mobile estimé"
+    "nb_optimisations": number,
+    "gain_potentiel": "+XX% CTR mobile"
   }},
   "pouvoir_conviction": {{
     "score": number,
     "verdict_court": "phrase 8 mots max",
     "points_forts": ["max 2"],
     "points_faibles": ["max 3"],
-    "nb_optimisations_cachees": number,
-    "impact_potentiel": "+XX% taux de réservation estimé"
+    "nb_optimisations": number,
+    "gain_potentiel": "+XX% taux réservation"
   }},
   "satisfaction_voyageur": {{
     "score": number,
     "verdict_court": "phrase 8 mots max",
     "points_forts": ["max 2"],
     "points_faibles": ["max 3"],
-    "nb_optimisations_cachees": number,
-    "impact_potentiel": "-XX% risque avis négatif estimé"
+    "nb_optimisations": number,
+    "gain_potentiel": "-XX% risque avis négatif"
   }},
   "score_global": number,
-  "profil_annonce": "ex: Studio design · Lyon 3e · Couple/Solo · Milieu de gamme sous-exploité",
-  "ville_detectee": "ville détectée depuis les screenshots ou null",
-  "prix_detecte": "prix détecté ou null",
-  "note_detectee": "note détectée ou null",
-  "badge_detecte": "Coup de Cœur|Superhôte|Aucun"
+  "profil_annonce": "ex: Appartement design · Lyon 3e · Couple/Solo · Milieu de gamme sous-exploité"
 }}"""
 
     response = client.messages.create(
@@ -137,125 +131,164 @@ Retourne UNIQUEMENT ce JSON :
     return json.loads(text.strip())
 
 
-def call_3_recommendations(vision_data, scoring_data, form_data):
-    prompt = f"""Sur la base du scoring :
-{json.dumps(scoring_data, ensure_ascii=False, indent=2)}
+def call_3_recommendations(vision_data, scoring_data):
+    ville = vision_data.get('ville_detectee', 'France')
+    prix = vision_data.get('prix_visible', 'non détecté')
+    type_bien = vision_data.get('type_bien', 'bien')
 
-Et de l'analyse visuelle :
-{json.dumps(vision_data, ensure_ascii=False, indent=2)}
+    prompt = f"""En tant qu'expert Airbnb mondial, génère un rapport EXHAUSTIF et EXPERT pour cette annonce.
 
-Ville : {scoring_data.get('ville_detectee', 'N/A')} · Prix : {scoring_data.get('prix_detecte', 'N/A')}€/nuit
+Données visuelles : {json.dumps(vision_data, ensure_ascii=False)}
+Scoring : {json.dumps(scoring_data, ensure_ascii=False)}
+Ville : {ville} | Prix : {prix}€/nuit | Type : {type_bien}
 
-RÈGLE ABSOLUE : génère MINIMUM 8 actions, idéalement 10 à 12. Tu dois couvrir OBLIGATOIREMENT chacune de ces 8 catégories — au moins 1 action par catégorie :
-1. PHOTOS — couverture, angles, lumière, ordre, photos manquantes
-2. TITRE — mots-clés NLP, différenciation vs concurrents locaux
-3. DESCRIPTION — structure, storytelling, ratio règles/bénéfices, keywords Airbnb 2026
-4. ÉQUIPEMENTS — équipements non cochés impactant les filtres (Espace de travail, Parking, Clim, Wifi fibre, etc.)
-5. PARAMÈTRES AIRBNB — Instant Book, politique annulation, durée min séjour, fenêtre réservation
-6. TARIFICATION — prix vs marché local, pricing dynamique, promotions, événements locaux
-7. PROFIL HÔTE — photo profil, biographie, taux de réponse, temps de réponse affiché
-8. VISIBILITÉ ALGO — badge manquant, signaux qualité, vitalité annonce, cohérence globale
+RÈGLES ABSOLUES :
+- Chaque recommandation = CE QUI NE VA PAS > POURQUOI (avec chiffre ou verbatim conso) > SOLUTION À COPIER-COLLER
+- Toujours citer des éléments SPÉCIFIQUES vus dans les screenshots
+- Toujours donner des chiffres : "X% des voyageurs...", "+XX% de réservations", "Les annonces avec X obtiennent Y fois plus de clics"
+- Minimum 3 options pour les titres, 2 options pour les descriptions
+- Ton chaleureux et encourageant — jamais condescendant
 
-Chaque action doit être ULTRA SPÉCIFIQUE à cette annonce. Cite des éléments précis vus dans les screenshots. JAMAIS de conseil générique comme "améliorez vos photos" — toujours "la photo 3 montre X, faites Y car Z".
-
-Retourne UNIQUEMENT ce JSON :
+Retourne UNIQUEMENT ce JSON complet :
 {{
-  "actions": [
-    {{
-      "rang": 1,
-      "dimension": "Visibilité|Premier regard|Pouvoir de conviction|Satisfaction voyageur",
-      "categorie": "Photos|Titre|Description|Équipements|Paramètres|Tarification|Profil hôte|Visibilité algo",
-      "titre_court": "Action en 6 mots max — spécifique, pas générique",
-      "ce_que_vous_faites": "Instruction ultra précise — cite un élément spécifique vu dans les screenshots ou déduit du contexte",
-      "pourquoi": "Logique algorithmique en 2 phrases — impact direct sur ranking ou conversion",
-      "impact_chiffre": "+XX% CTR ou +XX€/mois ou +XX pts score",
-      "delai": "48h|7 jours|30 jours"
+  "sections": {{
+
+    "titre": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% CTR",
+      "titre_actuel": "titre détecté ou null",
+      "problemes": [
+        {{"probleme": "ce qui ne va pas", "pourquoi": "explication avec chiffre ou verbatim", "impact": "+XX% si corrigé"}}
+      ],
+      "options": [
+        {{"option": 1, "titre": "nouveau titre complet", "angle": "Émotionnel|Localisation|Différenciant|NLP|Bénéfice", "pourquoi": "logique en 1 phrase", "ctr_estime": "+XX%"}},
+        {{"option": 2, "titre": "nouveau titre complet", "angle": "...", "pourquoi": "...", "ctr_estime": "+XX%"}},
+        {{"option": 3, "titre": "nouveau titre complet", "angle": "...", "pourquoi": "...", "ctr_estime": "+XX%"}}
+      ]
+    }},
+
+    "description": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% conversion",
+      "problemes": [
+        {{"probleme": "ce qui ne va pas", "pourquoi": "explication avec chiffre", "impact": "impact si corrigé"}}
+      ],
+      "options": [
+        {{
+          "option": 1,
+          "style": "Émotionnel et storytelling",
+          "texte": "Description complète réécrite avec emojis et alinéas.\\n\\n🏠 [Accroche forte 2 lignes]\\n\\n✨ [Le logement 3-4 lignes avec atouts spécifiques]\\n\\n📍 [Le quartier avec 2-3 vrais restaurants/cafés/lieux emblématiques à proximité]\\n\\n🚇 [Accès et transports]\\n\\n📋 [Pratique : équipements clés, check-in, règles en positif]"
+        }},
+        {{
+          "option": 2,
+          "style": "Business et pratique",
+          "texte": "Description alternative orientée voyageur business avec les mêmes sections"
+        }}
+      ]
+    }},
+
+    "photos": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% CTR",
+      "best_practices": ["Les annonces avec photos professionnelles reçoivent 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle (table dressée, livre ouvert, café fumant) augmentent le CTR de 23%"],
+      "analyse_photos": [
+        {{"numero": 1, "probleme": "ce qui ne va pas précisément", "pourquoi": "pourquoi c'est problématique", "recommandation": "instruction précise pour refaire cette photo"}}
+      ],
+      "photos_manquantes": [
+        {{"photo": "description de la photo à prendre", "pourquoi": "impact sur les réservations", "conseil_technique": "angle, lumière, composition précis"}}
+      ],
+      "ordre_recommande": ["description photo 1", "description photo 2", "description photo 3"]
+    }},
+
+    "equipements": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% réservations",
+      "equipements_a_cocher": [
+        {{"equipement": "nom Airbnb exact", "pourquoi": "X% des voyageurs filtrent sur cet équipement", "impact": "+XX% visibilité dans les recherches"}}
+      ],
+      "achats_recommandes": [
+        {{"achat": "équipement à acheter", "prix_estime": "XX€", "impact": "verbatim ou chiffre précis", "priorite": "Haute|Moyenne|Basse"}}
+      ]
+    }},
+
+    "tarification": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX€/mois",
+      "problemes": [
+        {{"probleme": "ce qui ne va pas", "pourquoi": "explication chiffrée", "impact": "impact estimé"}}
+      ],
+      "recommandations": [
+        {{"action": "action concrète", "pourquoi": "logique avec chiffre", "implementation": "comment faire exactement"}}
+      ]
+    }},
+
+    "parametres": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% visibilité",
+      "problemes": [
+        {{"parametre": "nom du paramètre", "statut_actuel": "ce qui est détecté", "probleme": "pourquoi c'est sous-optimal", "pourquoi": "impact algorithmique chiffré", "recommandation": "action exacte à faire"}}
+      ]
+    }},
+
+    "profil_hote": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% confiance voyageur",
+      "problemes": [
+        {{"probleme": "ce qui ne va pas", "pourquoi": "explication", "recommandation": "action concrète à copier-coller si texte"}}
+      ]
+    }},
+
+    "regles_politique": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% conversion",
+      "problemes": [
+        {{"regle": "nom de la règle", "statut_actuel": "détecté ou estimé", "probleme": "pourquoi sous-optimal", "pourquoi": "chiffre d'impact", "recommandation": "action à faire"}}
+      ]
+    }},
+
+    "avis_reputation": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX pts score",
+      "analyse": "analyse de la situation actuelle des avis",
+      "recommandations": [
+        {{"action": "action concrète", "pourquoi": "impact chiffré", "exemple_message": "message exemple à copier si applicable"}}
+      ]
+    }},
+
+    "experience_voyageur": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "gain_potentiel": "+XX% avis 5 étoiles",
+      "recommandations": [
+        {{"action": "petite attention ou amélioration", "pourquoi": "verbatim ou chiffre", "cout_estime": "XX€ ou gratuit"}}
+      ]
+    }},
+
+    "positionnement_concurrents": {{
+      "score_section": number,
+      "priorite": "Prioritaire|Important|À planifier",
+      "position_estimee": "Top 10%|Top 25%|Milieu|Bottom 25%",
+      "angle_differenciant": "votre avantage unique en 1 phrase",
+      "concurrents": [
+        {{"rang": 1, "profil": "type d'annonce concurrente précis", "avantages": ["ce qu'ils ont"], "score_estime": number, "comment_contrer": "action précise"}}
+      ]
     }}
-  ],
-  "wording": {{
-    "titre_actuel": "titre actuel si détecté sinon null",
-    "description_reecrite": "Description complète réécrite. Structure OBLIGATOIRE avec emojis et alinéas : \n🏠 ACCROCHE (2 lignes max — promesse émotionnelle forte, ce qui rend ce logement unique)\n\n✨ LE LOGEMENT (3-4 lignes — caractéristiques clés, ambiance, points forts concrets)\n\n📍 LE QUARTIER (3-4 lignes — localisation, ambiance du quartier, 2-3 restaurants/cafés/lieux emblématiques à proximité réels)\n\n🚇 ACCÈS (2 lignes — transports, distance centre-ville, parkings)\n\n📋 PRATIQUE (2-3 lignes — équipements essentiels, check-in, règles importantes en positif)\n\nIntègre les keywords NLP Airbnb 2026. Longueur : aussi longue que nécessaire pour être complète et convaincante. Ton chaleureux, s'adresse aux voyageurs.",
-    "equipements_a_cocher": ["liste des équipements Airbnb à cocher ou vérifier"]
-  }},
-  "ab_titres": [
-    {{
-      "rang": 1,
-      "titre": "titre optimisé — variante 1",
-      "angle": "Émotionnel|Localisation|Différenciant|Bénéfice|NLP",
-      "logique": "Pourquoi ce titre en 1 phrase",
-      "ctr_estime": "+XX% vs titre actuel"
-    }},
-    {{
-      "rang": 2,
-      "titre": "titre optimisé — variante 2",
-      "angle": "Émotionnel|Localisation|Différenciant|Bénéfice|NLP",
-      "logique": "Pourquoi ce titre en 1 phrase",
-      "ctr_estime": "+XX% vs titre actuel"
-    }},
-    {{
-      "rang": 3,
-      "titre": "titre optimisé — variante 3",
-      "angle": "Émotionnel|Localisation|Différenciant|Bénéfice|NLP",
-      "logique": "Pourquoi ce titre en 1 phrase",
-      "ctr_estime": "+XX% vs titre actuel"
-    }},
-    {{
-      "rang": 4,
-      "titre": "titre optimisé — variante 4",
-      "angle": "Émotionnel|Localisation|Différenciant|Bénéfice|NLP",
-      "logique": "Pourquoi ce titre en 1 phrase",
-      "ctr_estime": "+XX% vs titre actuel"
-    }},
-    {{
-      "rang": 5,
-      "titre": "titre optimisé — variante 5",
-      "angle": "Émotionnel|Localisation|Différenciant|Bénéfice|NLP",
-      "logique": "Pourquoi ce titre en 1 phrase",
-      "ctr_estime": "+XX% vs titre actuel"
-    }}
-  ],
-  "concurrents": [
-    {{
-      "rang": 1,
-      "profil": "Description du type d'annonce qui vous devance — ex: Studio design nordique avec fresque murale · Lyon 1er",
-      "avantages": ["Ce qu'ils ont que vous n'avez pas — concret"],
-      "score_estime": number,
-      "comment_les_contrer": "Action précise pour reprendre l'avantage en 2 phrases"
-    }},
-    {{
-      "rang": 2,
-      "profil": "...",
-      "avantages": ["..."],
-      "score_estime": number,
-      "comment_les_contrer": "..."
-    }},
-    {{
-      "rang": 3,
-      "profil": "...",
-      "avantages": ["..."],
-      "score_estime": number,
-      "comment_les_contrer": "..."
-    }},
-    {{
-      "rang": 4,
-      "profil": "...",
-      "avantages": ["..."],
-      "score_estime": number,
-      "comment_les_contrer": "..."
-    }},
-    {{
-      "rang": 5,
-      "profil": "...",
-      "avantages": ["..."],
-      "score_estime": number,
-      "comment_les_contrer": "..."
-    }}
-  ]
+
+  }}
 }}"""
 
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=6000,
+        max_tokens=8000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -286,11 +319,9 @@ def analyze():
         if not images:
             return jsonify({"success": False, "error": "Aucune image reçue"}), 400
 
-        form_data = {}
-
         vision = call_1_vision(images)
-        scoring = call_2_scoring(vision, form_data)
-        reco = call_3_recommendations(vision, scoring, form_data)
+        scoring = call_2_scoring(vision)
+        reco = call_3_recommendations(vision, scoring)
 
         return jsonify({
             "success": True,
