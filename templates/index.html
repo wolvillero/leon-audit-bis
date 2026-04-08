@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#0057FF;--blue-dark:#003DB3;--blue-light:#E8F0FF;--blue-mid:#BBCFFF;--ink:#111827;--ink-2:#374151;--ink-3:#6B7280;--ink-4:#9CA3AF;--bg:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;--border:#E5E7EB;--green:#059669;--green-light:#ECFDF5}
+:root{--blue:#0057FF;--blue-dark:#003DB3;--blue-light:#E8F0FF;--blue-mid:#BBCFFF;--ink:#111827;--ink-2:#374151;--ink-3:#6B7280;--ink-4:#9CA3AF;--bg:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;--border:#E5E7EB;--green:#059669;--green-light:#ECFDF5;--red:#DC2626;--red-light:#FEF2F2;--amber:#D97706;--amber-light:#FFFBEB}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 .j{font-family:'Plus Jakarta Sans',sans-serif}
@@ -22,7 +22,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .hero-sub{font-size:17px;color:var(--ink-3);line-height:1.7;margin-bottom:36px;max-width:440px}
 .hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background .2s}.hero-cta:hover{background:var(--blue-dark)}
 .hero-note{font-size:13px;color:var(--ink-4);margin-top:14px}
-
 .hero-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 4px 24px rgba(0,87,255,.08)}
 .hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .hc-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4)}
@@ -98,7 +97,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .form-step{display:none}.form-step.active{display:block}
 .step-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;color:var(--ink);letter-spacing:-.5px}
 .step-sub{font-size:14px;color:var(--ink-3);margin-bottom:24px;line-height:1.6}
-
 .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-2)}
 .upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:var(--blue-light)}
 .u-icon{width:48px;height:48px;background:var(--blue-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
@@ -110,7 +108,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .u-tag button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:14px;line-height:1;opacity:.6}
 .hint-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--ink-3);line-height:1.6;margin-top:16px}
 .hint-box strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px}
-
 .loading-steps{list-style:none;margin:24px 0}
 .loading-steps li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--ink-3)}
 .loading-steps li.active{color:var(--ink);font-weight:500}.loading-steps li.done{color:var(--green)}
@@ -118,26 +115,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .loading-steps li.active .l-dot{background:var(--blue);animation:pulse 1s infinite}
 .loading-steps li.done .l-dot{background:var(--green)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
-
 .form-actions{margin-top:24px}
 .btn-analyze{background:var(--blue);color:#fff;border:none;padding:13px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s;width:100%}.btn-analyze:hover{background:var(--blue-dark)}
 
+/* REPORT */
 #report-page{display:none;background:var(--bg-2);min-height:100vh}
 .report-nav{background:var(--bg);border-bottom:1px solid var(--border);padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .rn-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700}.rn-logo span{color:var(--blue)}
 .new-audit-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg);padding:8px 16px;font-size:13px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink-3);transition:all .2s;font-weight:500}.new-audit-btn:hover{border-color:var(--blue);color:var(--blue)}
+.report-wrap{max-width:860px;margin:0 auto;padding:48px 40px}
 
-.report-wrap{max-width:760px;margin:0 auto;padding:48px 40px}
-.demo-banner{background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:#92400E;display:none}
-.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
-.cat-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--bg);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
-.cat-tab:hover{border-color:var(--blue);color:var(--blue)}
-.cat-tab.active{border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
-.cat-tab .cat-count{background:var(--blue);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.cat-tab:not(.active) .cat-count{background:var(--bg-3);color:var(--ink-3)}
-.cat-tab.active .cat-count{background:var(--blue);color:#fff}
-
-.r-score-card{background:var(--blue-dark);border-radius:16px;padding:36px;margin-bottom:28px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
+.r-score-card{background:var(--blue-dark);border-radius:16px;padding:36px;margin-bottom:32px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
 .r-score-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:88px;font-weight:700;color:#fff;line-height:1;letter-spacing:-4px}
 .r-verdict{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
 .r-profil{font-size:13px;color:rgba(255,255,255,.5)}
@@ -145,7 +133,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .r-bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px}
 .r-bar-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s ease}
 
-.s-label-r{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif}
 .dims-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
 .dim-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px}
 .dim-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -154,44 +141,92 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .dim-bar{height:3px;background:var(--bg-3);border-radius:2px;margin-bottom:10px}
 .dim-bar-fill{height:100%;background:var(--blue);border-radius:2px}
 .dim-verdict{font-size:13px;color:var(--ink-3);margin-bottom:12px;line-height:1.5}
-.dim-locked{background:var(--blue-light);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
-.dim-locked-c{font-size:12px;font-weight:600;color:var(--blue)}
-.dim-locked-i{font-size:11px;color:var(--blue);opacity:.7}
+.dim-footer{background:var(--blue-light);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+.dim-footer-count{font-size:12px;font-weight:600;color:var(--blue)}
+.dim-footer-gain{font-size:11px;color:var(--blue);opacity:.7}
 
-.action-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:14px}
-.a-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.a-rang{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-light);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.a-dim{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:4px 8px;border-radius:5px}
-.a-delai{font-size:11px;font-weight:500;border:1px solid var(--border);padding:4px 8px;border-radius:5px;color:var(--ink-4);margin-left:auto}
-.a-titre{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:10px;letter-spacing:-.3px;line-height:1.3}
-.a-faire{font-size:14px;color:var(--ink-2);line-height:1.7;margin-bottom:10px}
-.a-pourquoi{font-size:13px;color:var(--ink-3);line-height:1.6;padding:10px 14px;background:var(--bg-2);border-radius:8px;margin-bottom:12px;border-left:3px solid var(--blue-mid)}
-.a-footer{display:flex;align-items:center;gap:10px}
-.a-impact{display:inline-flex;align-items:center;background:var(--blue-dark);color:#fff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px}
-.copy-btn{background:var(--bg-2);border:1px solid var(--border);padding:6px 12px;font-size:12px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--ink-3);font-family:'Inter',sans-serif;transition:all .2s}.copy-btn:hover{border-color:var(--blue);color:var(--blue)}.copy-btn.copied{border-color:var(--green);color:var(--green)}
+/* Section tabs */
+.section-tabs-wrap{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px;position:sticky;top:64px;z-index:40}
+.section-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.sec-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--bg);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap}
+.sec-tab:hover{border-color:var(--blue);color:var(--blue)}
+.sec-tab.active{border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+.sec-tab.prio-high{border-color:var(--red);color:var(--red)}.sec-tab.prio-high.active{background:var(--red-light)}
+.sec-tab.prio-med{border-color:var(--amber);color:var(--amber)}.sec-tab.prio-med.active{background:var(--amber-light)}
+.sec-tab .tab-gain{font-size:10px;font-weight:700;background:var(--blue-light);color:var(--blue);padding:2px 6px;border-radius:4px}
+.sec-tab.prio-high .tab-gain{background:var(--red-light);color:var(--red)}
+.sec-tab.prio-med .tab-gain{background:var(--amber-light);color:var(--amber)}
 
-.action-card.premium{position:relative;overflow:hidden}
-.prem-overlay{position:absolute;inset:0;background:rgba(249,250,251,.93);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;backdrop-filter:blur(2px)}
-.prem-overlay h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--ink)}
-.prem-overlay p{font-size:13px;color:var(--ink-3);max-width:280px;line-height:1.6}
-.btn-unlock{background:var(--blue);color:#fff;border:none;padding:11px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s}.btn-unlock:hover{background:var(--blue-dark)}
-.unlock-note{font-size:12px;color:var(--ink-4)}
+/* Section cards */
+.section-block{display:none;margin-bottom:24px}.section-block.visible{display:block}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-icon.high{background:var(--red-light)}.section-icon.med{background:var(--amber-light)}.section-icon.low{background:var(--blue-light)}
+.section-title-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}
+.prio-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.5px}
+.prio-badge.high{background:var(--red-light);color:var(--red)}
+.prio-badge.med{background:var(--amber-light);color:var(--amber)}
+.prio-badge.low{background:var(--blue-light);color:var(--blue)}
+.gain-badge{font-size:12px;font-weight:600;background:var(--bg-dark,#1e3a5f);color:#fff;background:var(--blue-dark);color:#fff;padding:3px 10px;border-radius:100px;margin-left:auto}
 
-.wording-locked{background:var(--blue-dark);border-radius:16px;padding:36px;text-align:center;margin-top:32px}
-.wording-locked h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
-.wording-locked p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto}
+/* Problem card */
+.prob-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.prob-header{padding:16px 20px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none}
+.prob-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
+.prob-dot.med{background:var(--amber)}.prob-dot.low{background:var(--blue)}
+.prob-content{flex:1}
+.prob-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.prob-why{font-size:13px;color:var(--ink-3);line-height:1.6}
+.prob-impact{display:inline-block;font-size:11px;font-weight:600;background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:4px;margin-top:6px}
+.prob-impact.pos{background:var(--green-light);color:var(--green)}
+
+/* Recommendation box */
+.rec-box{border-top:1px solid var(--border);padding:16px 20px;background:var(--bg-2)}
+.rec-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif}
+.rec-option{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.rec-option:last-child{margin-bottom:0}
+.rec-option-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rec-option-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-light);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rec-option-angle{font-size:11px;font-weight:600;color:var(--ink-3);background:var(--bg-3);padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.rec-option-ctr{font-size:11px;font-weight:600;color:var(--green);margin-left:auto}
+.rec-text{font-size:14px;color:var(--ink);line-height:1.7;white-space:pre-line}
+.rec-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:10px}
+.copy-btn{background:var(--blue-light);border:none;padding:7px 14px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green-light);color:var(--green)}
+
+/* Best practices */
+.bp-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.bp-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink-2);line-height:1.6;background:var(--blue-light);border-radius:8px;padding:10px 14px}
+.bp-icon{font-size:14px;flex-shrink:0}
+
+/* Equipement item */
+.equip-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.equip-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.equip-why{font-size:13px;color:var(--ink-3);line-height:1.5;margin-bottom:6px}
+.equip-impact{display:inline-block;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:4px}
+.equip-prix{display:inline-block;font-size:11px;font-weight:600;background:var(--bg-3);color:var(--ink-3);padding:2px 8px;border-radius:4px;margin-left:6px}
+
+/* Concurrent card */
+.concurrent-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px}
+.concurrent-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.concurrent-rang{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-light);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.concurrent-profil{font-size:14px;font-weight:600;color:var(--ink);flex:1}
+.concurrent-score{font-size:12px;color:var(--ink-3);border:1px solid var(--border);padding:3px 8px;border-radius:5px}
+.concurrent-avantages{margin-bottom:10px}
+.concurrent-avantage{font-size:13px;color:var(--ink-3);padding:3px 0;padding-left:14px;position:relative}.concurrent-avantage:before{content:"•";position:absolute;left:0;color:var(--red)}
+.concurrent-contrer{font-size:13px;color:var(--ink-2);background:var(--green-light);border-radius:8px;padding:10px 14px;line-height:1.6}
 
 @media(max-width:768px){
   nav,.report-nav{padding:0 20px}
   .hero{grid-template-columns:1fr;padding:60px 20px;gap:40px}.hero h1{font-size:34px}.hero-card{display:none}
   .stats-band{grid-template-columns:1fr;padding:40px 20px;gap:32px}
-  .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 32px}.stat-item:last-child{border-bottom:none;padding-bottom:0}
+  .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 32px}.stat-item:last-child{border-bottom:none}
   .section-how,.section-trust{padding:60px 20px}.steps{grid-template-columns:1fr}
   .section-pricing{padding:60px 20px}.pricing-table{grid-template-columns:1fr}.pricing-col.free{border-right:none;border-bottom:1px solid var(--border)}
   .testimonials{grid-template-columns:1fr}
   .section-cta{padding:60px 20px}.section-cta h2{font-size:30px}
   .dims-grid{grid-template-columns:1fr}.report-wrap{padding:32px 20px}
   .r-score-card{grid-template-columns:1fr;gap:16px}.r-score-num{font-size:60px}
+  .section-tabs-wrap{top:56px;border-radius:0;border-left:none;border-right:none}
 }
 </style>
 </head>
@@ -203,26 +238,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 </nav>
 
 <div id="landing-page">
-
 <section class="hero">
   <div>
-    <div class="hero-badge">
-      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
-      Audit Airbnb gratuit
-    </div>
+    <div class="hero-badge">Audit Airbnb gratuit</div>
     <h1 class="j">Découvrez ce qui <span>freine</span> votre annonce Airbnb.</h1>
     <p class="hero-sub">En 3 minutes, Léon analyse vos screenshots et vous dit exactement quoi corriger — et dans quel ordre — pour obtenir plus de réservations.</p>
-    <button class="hero-cta" onclick="openForm()">
-      Analyser mon annonce
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-    </button>
+    <button class="hero-cta" onclick="openForm()">Analyser mon annonce →</button>
     <p class="hero-note">Sans inscription · Sans carte bancaire · Résultat immédiat</p>
   </div>
   <div class="hero-card">
-    <div class="hc-top">
-      <div class="hc-label">Exemple de rapport</div>
-      <div class="hc-score">54</div>
-    </div>
+    <div class="hc-top"><div class="hc-label">Exemple de rapport</div><div class="hc-score">54</div></div>
     <div class="hc-verdict">Votre annonce a du potentiel inexploité</div>
     <div class="hc-dims">
       <div class="hc-dim"><span class="hc-dim-name">Visibilité</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:42%"></div></div><span class="hc-dim-val">42</span></div>
@@ -244,15 +269,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
   <h2 class="s-title j">Simple comme un screenshot.</h2>
   <div class="steps">
     <div class="step"><div class="step-badge">1</div><h3>Capturez votre annonce</h3><p>Prenez 3 à 5 screenshots de votre annonce Airbnb — titre, photos, description, note. Pas d'accès à votre compte requis.</p></div>
-    <div class="step"><div class="step-badge">2</div><h3>Léon lit tout</h3><p>Léon analyse automatiquement chaque élément visible — note, prix, badge, photos, description. Rien à saisir.</p></div>
-    <div class="step"><div class="step-badge">3</div><h3>Appliquez en 1 clic</h3><p>Recevez votre score, vos 4 dimensions et vos recommandations à copier-coller directement dans Airbnb.</p></div>
+    <div class="step"><div class="step-badge">2</div><h3>Léon analyse tout</h3><p>Léon lit automatiquement chaque élément visible et applique les best practices Airbnb 2025-2026 pour identifier vos opportunités.</p></div>
+    <div class="step"><div class="step-badge">3</div><h3>Copiez-collez</h3><p>Recevez votre diagnostic complet avec des recommandations prêtes à copier-coller directement dans Airbnb.</p></div>
   </div>
 </section>
 
 <section class="section-pricing">
   <div class="section-pricing-inner">
     <div class="s-label">Ce que vous recevez</div>
-    <h2 class="s-title j">Gratuit pour démarrer,<br>complet pour performer.</h2>
+    <h2 class="s-title j">Un rapport complet sur 11 dimensions.</h2>
     <div class="pricing-table">
       <div class="pricing-col free">
         <div class="p-tag ft">Gratuit</div>
@@ -260,28 +285,27 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
         <div class="p-price-sub">Sans inscription</div>
         <hr class="p-divider">
         <ul class="p-items">
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global sur 100</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>4 dimensions scorées avec diagnostic</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>2 recommandations prioritaires complètes</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Nombre d'optimisations identifiées par dimension</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Bouton copier pour chaque recommandation</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global + 4 dimensions analysées</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>11 sections d'optimisation complètes</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations à copier-coller</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Classement par priorité et impact</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Chiffres et verbatims consommateurs</li>
         </ul>
         <button class="p-cta fc" onclick="openForm()">Commencer gratuitement →</button>
       </div>
       <div class="pricing-col premium">
-        <div class="p-tag pt">Premium</div>
+        <div class="p-tag pt">Bientôt</div>
         <div class="p-price j">9€</div>
         <div class="p-price-sub">Accès immédiat · Paiement sécurisé</div>
         <hr class="p-divider">
         <ul class="p-items">
           <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu gratuit inclus</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Toutes les recommandations sans limite</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>3 variantes de titre réécrites à copier-coller</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Description complète réécrite (150 mots)</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Équipements manquants à cocher dans Airbnb</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Benchmark vs concurrents locaux</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Suivi d'impact après modifications</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Comparaison avant/après</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Alertes algorithmiques mensuelles</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Support prioritaire</li>
         </ul>
-        <button class="p-cta pc" onclick="alert('Paiement à venir')">Débloquer pour 9€ →</button>
+        <button class="p-cta pc" onclick="alert('Bientôt disponible')">Me notifier au lancement →</button>
       </div>
     </div>
   </div>
@@ -299,20 +323,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 
 <section class="section-cta">
   <h2 class="j">Votre annonce mérite mieux.</h2>
-  <p>Découvrez votre score et les 2 actions qui auront le plus d'impact — gratuitement.</p>
+  <p>Découvrez votre score et toutes vos opportunités d'amélioration — gratuitement.</p>
   <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement →</button>
   <p class="cta-note">Sans inscription · Sans carte bancaire · 3 minutes</p>
 </section>
-
 </div>
 
 <!-- FORM -->
 <div class="form-overlay" id="formOverlay">
   <div class="form-modal">
-    <div class="form-header">
-      <div class="fh-logo j">Léon<span>.</span></div>
-      <button class="form-close" onclick="closeForm()">×</button>
-    </div>
+    <div class="form-header"><div class="fh-logo j">Léon<span>.</span></div><button class="form-close" onclick="closeForm()">×</button></div>
     <div class="form-progress">
       <div class="form-step-tab active" id="tab1">01 · Screenshots</div>
       <div class="form-step-tab" id="tab2">02 · Analyse</div>
@@ -320,7 +340,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <div class="form-body">
       <div class="form-step active" id="step1">
         <div class="step-title j">Déposez vos screenshots</div>
-        <p class="step-sub">3 à 5 captures de votre annonce Airbnb. Léon lit tout automatiquement — note, prix, badge, description.</p>
+        <p class="step-sub">3 à 5 captures de votre annonce Airbnb. Léon lit tout automatiquement.</p>
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
           <div class="u-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
           <div class="u-text"><span>Cliquez pour sélectionner</span> ou glissez ici</div>
@@ -333,11 +353,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
       </div>
       <div class="form-step" id="step2">
         <div class="step-title j">Léon analyse votre annonce…</div>
-        <p class="step-sub">Environ 30 secondes.</p>
+        <p class="step-sub">Environ 45 secondes — analyse complète sur 11 dimensions.</p>
         <ul class="loading-steps">
           <li id="load1"><span class="l-dot"></span>Lecture et analyse visuelle</li>
           <li id="load2"><span class="l-dot"></span>Calcul des 4 scores</li>
-          <li id="load3"><span class="l-dot"></span>Génération des recommandations</li>
+          <li id="load3"><span class="l-dot"></span>Génération du rapport complet</li>
         </ul>
       </div>
     </div>
@@ -351,7 +371,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <button class="new-audit-btn" onclick="resetToLanding()">← Nouvel audit</button>
   </div>
   <div class="report-wrap">
-    <div class="demo-banner" id="demo-banner"><strong>Mode démo</strong> — Données fictives pour tester l'interface. <a href="/" style="color:#92400E;text-decoration:underline">Retour au site</a></div>
     <div class="r-score-card">
       <div class="r-score-num" id="r-score">—</div>
       <div>
@@ -361,192 +380,271 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
         <div class="r-bar"><div class="r-bar-fill" id="r-bar" style="width:0%"></div></div>
       </div>
     </div>
-    <div class="s-label-r">4 dimensions analysées</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif">4 dimensions analysées</div>
     <div class="dims-grid" id="dims-grid"></div>
-    <div class="s-label-r" style="margin-top:32px">Recommandations prioritaires</div>
-    <div class="cat-tabs" id="cat-tabs"></div>
-    <div id="actions-list"></div>
-    <div id="wording-section"></div>
-    <div id="ab-section"></div>
-    <div id="concurrents-section"></div>
+    <div class="section-tabs-wrap">
+      <div class="section-tabs" id="section-tabs"></div>
+    </div>
+    <div id="sections-content"></div>
   </div>
 </div>
 
 <script>
-let selectedFiles=[];
-let allActions=[];
-let activeTab='Tout';
-const DEMO=new URLSearchParams(location.search).get('demo')==='1';
-const DEMO_DATA={success:true,vision:{},scoring:{score_global:54,profil_annonce:"Appartement 60m² · Lyon 6e · Couple/Famille · Milieu de gamme sous-exploité",visibilite:{score:42,verdict_court:"Badge absent, pricing statique pénalisant",nb_optimisations_cachees:4,impact_potentiel:"+18 pts score global"},premier_regard:{score:61,verdict_court:"Photo couverture inadaptée au mobile",nb_optimisations_cachees:3,impact_potentiel:"+28% CTR mobile"},pouvoir_conviction:{score:52,verdict_court:"Description trop orientée règles",nb_optimisations_cachees:5,impact_potentiel:"+22% taux de réservation"},satisfaction_voyageur:{score:68,verdict_court:"Bon historique, gap attentes/réalité",nb_optimisations_cachees:2,impact_potentiel:"-18% risque avis négatif"}},recommendations:{actions:[{rang:1,dimension:"Premier regard",titre_court:"Remplacer la photo de couverture",ce_que_vous_faites:"Prenez une nouvelle photo en contre-plongée depuis l'entrée, lumière naturelle, mettant en valeur les hauts plafonds et le parquet. C'est votre actif différenciant face aux 800+ annonces Lyon 6e.",pourquoi:"La photo actuelle génère de la méfiance en 0,3 seconde sur mobile. La couverture capte 70% de la décision de clic.",impact_chiffre:"+28% CTR mobile",delai:"48h"},{rang:2,dimension:"Pouvoir de conviction",titre_court:"Réécrire la description",ce_que_vous_faites:"Inversez la structure : commencez par les bénéfices (hauts plafonds, parquet XIXe, quartier central) et compressez les règles à 2 lignes en bas.",pourquoi:"Ratio actuel : 70% contraintes/30% storytelling. L'algorithme NLP 2026 détecte les keywords négatifs.",impact_chiffre:"+22% réservations",delai:"7 jours"},{rang:3,dimension:"Visibilité",titre_court:"Activer le pricing dynamique",ce_que_vous_faites:"Activez PriceLabs ou le pricing natif Airbnb. Ajoutez une promotion -10% pour déclencher le badge prix barré.",pourquoi:"75% des top annonces Lyon affichent un prix barré. Signal CTR + signal algorithmique C1 simultanés.",impact_chiffre:"+18% ranking",delai:"48h"}],wording:{titre_actuel:"Bel appartement lyonnais typique - Coeur de ville",description_reecrite:"Traversant est-ouest, lumineux à toute heure, avec ses 3m20 de hauteur sous plafond et son parquet du XIXe — cet appartement est rare dans le quartier Saxe/Gambetta. À 1 minute du métro, 15 minutes à pied de Bellecour.\n\nDécouvrez deux grandes chambres, un salon ouvert sur une cuisine équipée, machine à café Nespresso, WiFi haut débit. La lumière naturelle traverse l'appartement d'est en ouest toute la journée.\n\nArrivée autonome 24h/24. Départ 11h. Check-in dès 15h.",equipements_a_cocher:["Espace de travail dédié","Machine à café","Lave-linge","Chauffage","Climatisation ou ventilateur"]},ab_titres:[{rang:1,titre:"Appartement haussmannien · Hauts plafonds · Saxe-Gambetta",angle:"Différenciant",logique:"Met en avant l'actif architectural unique — hauts plafonds + quartier précis captent les recherches NLP 2026",ctr_estime:"+31% vs titre actuel"},{rang:2,titre:"60m² lumineux traversant · 1 min Métro · Lyon centre",angle:"Bénéfice",logique:"Traverse + lumineux = mots-clés recherchés. Distance métro en chiffre = ancrage concret",ctr_estime:"+24% vs titre actuel"},{rang:3,titre:"Parquet XIXe · Calme · Quartier Saxe-Gambetta Lyon",angle:"NLP",logique:"Parquet XIXe + calme = combo keywords que l'algo NLP valorise sur la recherche 'appartement authentique Lyon'",ctr_estime:"+19% vs titre actuel"},{rang:4,titre:"Grand appartement lyonnais typique · Lumineux · Central",angle:"Localisation",logique:"Garde l'identité lyonnaise mais ajoute des qualificatifs actionnables (lumineux, central)",ctr_estime:"+12% vs titre actuel"},{rang:5,titre:"Séjour au coeur de Lyon · 2 chambres · Parquet · Calme",angle:"Émotionnel",logique:"Séjour + coeur de Lyon = appel émotionnel. 2 chambres visible dès le titre = filtre positif pour familles",ctr_estime:"+15% vs titre actuel"}],concurrents:[{rang:1,profil:"Studio design nordique avec déco curative · Lyon 6e · Coup de Cœur",avantages:["Badge Coup de Cœur = +30% visibilité algorithmique","Photos professionnelles lumineuses","Instant Book activé"],score_estime:78,comment_les_contrer:"Activez l'Instant Book et investissez dans une séance photo professionnelle (150-200€). ROI en 1 réservation supplémentaire."},{rang:2,profil:"Appartement moderne rénové 2023 · Lyon Part-Dieu · Superhote",avantages:["Rénovation récente = photos parfaites","Pricing dynamique actif","Description orientée professionnel"],score_estime:74,comment_les_contrer:"Votre parquet XIXe est un actif que ce concurrent ne peut pas copier. Photographiez-le en gros plan et mettez-le en couverture."},{rang:3,profil:"T2 atypique avec terrasse · Vieux-Lyon · 260 avis",avantages:["Terrasse = différenciant fort","Volume d'avis = algorithme confiant","Prix 15% plus bas que vous"],score_estime:71,comment_les_contrer:"Votre avantage : 2 chambres vs leur studio. Ciblez explicitement les familles et les groupes de 3-4 dans votre description."},{rang:4,profil:"Loft industriel · Confluence · Couple 25-35 ans",avantages:["Identité visuelle forte et mémorable","Storytelling description excellent","Photos ambiance soir valorisées"],score_estime:68,comment_les_contrer:"Ajoutez 2-3 photos ambiance soirée pour combler ce gap. Une lampe et un verre de vin suffisent à créer l'atmosphère."},{rang:5,profil:"Studio cosy Croix-Rousse · Netflix & Chill · 340 avis",avantages:["Titre émotionnel mémorable","Concept clair et cohérent","Prix compétitif avec promo active"],score_estime:66,comment_les_contrer:"Leur concept est simple mais efficace. Votre réponse : ancrez votre identité sur l'authenticité haussmannienne — une niche qu'ils ne peuvent pas occuper."}]}};
+var selectedFiles=[];
 
-function openForm(){if(DEMO){renderReport(DEMO_DATA);return;}document.getElementById('formOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function openForm(){document.getElementById('formOverlay').classList.add('active');document.body.style.overflow='hidden';}
 function closeForm(){document.getElementById('formOverlay').classList.remove('active');document.body.style.overflow='';}
 function resetToLanding(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';selectedFiles=[];document.getElementById('filesList').innerHTML='';goToStep(1);window.scrollTo(0,0);}
-function goToStep(n){document.querySelectorAll('.form-step').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.form-step-tab').forEach(t=>{t.classList.remove('active','done');});document.getElementById('step'+n).classList.add('active');document.getElementById('tab'+n).classList.add('active');for(let i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');}
+function goToStep(n){document.querySelectorAll('.form-step').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.form-step-tab').forEach(function(t){t.classList.remove('active','done');});document.getElementById('step'+n).classList.add('active');document.getElementById('tab'+n).classList.add('active');for(var i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');}
 function handleFiles(f){selectedFiles=selectedFiles.concat(Array.from(f)).slice(0,5);renderFilesList();}
 function handleDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
 function handleDragLeave(e){e.currentTarget.classList.remove('dragover');}
 function handleDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');handleFiles(e.dataTransfer.files);}
 function removeFile(i){selectedFiles.splice(i,1);renderFilesList();}
-function renderFilesList(){document.getElementById('filesList').innerHTML=selectedFiles.map((f,i)=>`<div class="u-tag">${f.name}<button onclick="removeFile(${i})">×</button></div>`).join('');}
+function renderFilesList(){document.getElementById('filesList').innerHTML=selectedFiles.map(function(f,i){return '<div class="u-tag">'+f.name+'<button onclick="removeFile('+i+')">×</button></div>';}).join('');}
 
 async function startAnalysis(){
   if(selectedFiles.length===0){alert('Déposez au moins un screenshot.');return;}
   goToStep(2);
-  ['load1','load2','load3'].forEach(s=>{const el=document.getElementById(s);el.className='';el.querySelector('.l-dot').className='l-dot';});
+  ['load1','load2','load3'].forEach(function(s){document.getElementById(s).className='';});
   document.getElementById('load1').classList.add('active');
-  setTimeout(()=>{document.getElementById('load1').classList.remove('active');document.getElementById('load1').classList.add('done');document.getElementById('load2').classList.add('active');},9000);
-  setTimeout(()=>{document.getElementById('load2').classList.remove('active');document.getElementById('load2').classList.add('done');document.getElementById('load3').classList.add('active');},20000);
-  const fd=new FormData();
-  selectedFiles.forEach((f,i)=>fd.append('image_'+i,f));
+  setTimeout(function(){document.getElementById('load1').classList.remove('active');document.getElementById('load1').classList.add('done');document.getElementById('load2').classList.add('active');},10000);
+  setTimeout(function(){document.getElementById('load2').classList.remove('active');document.getElementById('load2').classList.add('done');document.getElementById('load3').classList.add('active');},25000);
+  var fd=new FormData();
+  selectedFiles.forEach(function(f,i){fd.append('image_'+i,f);});
   try{
-    const res=await fetch('/analyze',{method:'POST',body:fd});
-    const data=await res.json();
-    if(data.success){document.getElementById('load3').classList.remove('active');document.getElementById('load3').classList.add('done');setTimeout(()=>renderReport(data),600);}
+    var res=await fetch('/analyze',{method:'POST',body:fd});
+    var data=await res.json();
+    if(data.success){document.getElementById('load3').classList.remove('active');document.getElementById('load3').classList.add('done');setTimeout(function(){renderReport(data);},600);}
     else{alert('Erreur : '+data.error);goToStep(1);}
   }catch(e){alert('Erreur de connexion.');goToStep(1);}
 }
 
 function getVerdict(s){if(s<=40)return'Votre annonce passe inaperçue';if(s<=60)return'Votre annonce sous-performe';if(s<=80)return'Votre annonce a du potentiel inexploité';return'Votre annonce est bien positionnée';}
+function getPrioClass(p){if(p==='Prioritaire')return'high';if(p==='Important')return'med';return'low';}
+function getPrioLabel(p){if(p==='Prioritaire')return'🔴 Prioritaire';if(p==='Important')return'🟡 Important';return'⚪ À planifier';}
+
+var SECTION_CONFIG = [
+  {key:'titre',label:'Titre',icon:'📝'},
+  {key:'description',label:'Description',icon:'📄'},
+  {key:'photos',label:'Photos',icon:'📸'},
+  {key:'equipements',label:'Équipements',icon:'🛋️'},
+  {key:'tarification',label:'Tarification',icon:'💰'},
+  {key:'parametres',label:'Paramètres',icon:'⚙️'},
+  {key:'profil_hote',label:'Profil hôte',icon:'👤'},
+  {key:'regles_politique',label:'Règles',icon:'📋'},
+  {key:'avis_reputation',label:'Avis',icon:'⭐'},
+  {key:'experience_voyageur',label:'Expérience',icon:'✨'},
+  {key:'positionnement_concurrents',label:'Concurrents',icon:'🏆'}
+];
 
 function renderReport(data){
   closeForm();
   document.getElementById('landing-page').style.display='none';
   document.getElementById('report-page').style.display='block';
-  if(DEMO)document.getElementById('demo-banner').style.display='block';
   window.scrollTo(0,0);
-  const s=data.scoring,r=data.recommendations;
+  var s=data.scoring, r=data.recommendations;
   document.getElementById('r-score').textContent=s.score_global;
   document.getElementById('r-verdict').textContent=getVerdict(s.score_global);
   document.getElementById('r-profil').textContent=s.profil_annonce||'';
-  setTimeout(()=>{document.getElementById('r-bar').style.width=s.score_global+'%';},100);
-  const dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
-  document.getElementById('dims-grid').innerHTML=dims.map(function(d){const dim=s[d.key];if(!dim)return'';const actionsForDim=r&&r.actions?r.actions.filter(function(a){return a.dimension===d.label;}).length:0;const countLabel=actionsForDim>0?(actionsForDim+' optimisation'+(actionsForDim>1?'s':'')+' identifiée'+(actionsForDim>1?'s':'')):(dim.nb_optimisations_cachees?dim.nb_optimisations_cachees+' optimisations identifiées':'Analysé');return'<div class="dim-card"><div class="dim-top"><div class="dim-name">'+d.label+'</div><div class="dim-score">'+dim.score+'</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:'+dim.score+'%"></div></div><div class="dim-verdict">'+(dim.verdict_court||'')+'</div><div class="dim-locked"><span class="dim-locked-c">'+countLabel+'</span><span class="dim-locked-i">'+(dim.impact_potentiel||'')+'</span></div></div>';}).join('');
-if(r&&r.actions){
-  allActions=r.actions;
-  activeTab='Tout';
-  buildCatTabs(allActions);
-  renderActions(allActions,'Tout');
-}
-  renderWording(r?.wording);
-  renderAB(r?.ab_titres, r?.wording?.titre_actuel);
-  renderConcurrents(r?.concurrents);
-}
+  setTimeout(function(){document.getElementById('r-bar').style.width=s.score_global+'%';},100);
 
-function buildCatTabs(actions){
-  const cats=['Tout'].concat([...new Set(actions.map(function(a){return a.categorie||'Autre';}))]);
-  const tabsEl=document.getElementById('cat-tabs');
-  if(!tabsEl)return;
-  tabsEl.innerHTML=cats.map(function(c){
-    const count=c==='Tout'?actions.length:actions.filter(function(a){return a.categorie===c;}).length;
-    const isActive=c===activeTab?' active':'';
-    return '<div class="cat-tab'+isActive+'" onclick="filterCat(\"'+c+'\")">'
-      +c+'<span class="cat-count">'+count+'</span></div>';
+  var dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
+  document.getElementById('dims-grid').innerHTML=dims.map(function(d){
+    var dim=s[d.key];if(!dim)return'';
+    return '<div class="dim-card"><div class="dim-top"><div class="dim-name">'+d.label+'</div><div class="dim-score">'+dim.score+'</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:'+dim.score+'%"></div></div><div class="dim-verdict">'+(dim.verdict_court||'')+'</div><div class="dim-footer"><span class="dim-footer-count">'+(dim.nb_optimisations||'?')+' optimisations</span><span class="dim-footer-gain">'+(dim.gain_potentiel||'')+'</span></div></div>';
   }).join('');
-}
-function filterCat(cat){
-  activeTab=cat;
-  buildCatTabs(allActions);
-  renderActions(allActions,cat);
-}
-function renderActions(actions,cat){
-  const filtered=cat==='Tout'?actions:actions.filter(function(a){return a.categorie===cat;});
-  const html=filtered.map(function(a){
-    const catBadge=a.categorie?'<div style="font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:3px 8px;border-radius:4px">'+a.categorie+'</div>':'';
-    const faire=(a.ce_que_vous_faites||'').replace(/'/g,'&#39;');
-    return '<div class="action-card">'
-      +'<div class="a-meta">'
-      +'<div class="a-rang">'+a.rang+'</div>'
-      +'<div class="a-dim">'+(a.dimension||'')+'</div>'
-      +catBadge
-      +'<div class="a-delai" style="margin-left:auto">'+(a.delai||'')+'</div>'
-      +'</div>'
-      +'<div class="a-titre">'+(a.titre_court||'')+'</div>'
-      +'<div class="a-faire">'+(a.ce_que_vous_faites||'')+'</div>'
-      +'<div class="a-pourquoi">'+(a.pourquoi||'')+'</div>'
-      +'<div class="a-footer">'
-      +'<div class="a-impact">'+(a.impact_chiffre||'')+'</div>'
-      +'<button class="copy-btn" onclick="copyText(this,&quot;'+faire+'&quot;)">Copier</button>'
-      +'</div>'
-      +'</div>';
-  }).join('');
-  document.getElementById('actions-list').innerHTML=html;
-}
-function renderWording(w) {
-  if (!w) return;
-  let html = '<div style="margin-top:32px">';
-  html += '<div class="s-label-r">Réécriture de votre annonce</div>';
-  // Description
-  html += '<div class="action-card" style="margin-bottom:14px">';
-  html += '<div class="a-titre">Description réécrite</div>';
-  html += '<div class="a-faire" style="white-space:pre-line">' + (w.description_reecrite||'') + '</div>';
-  html += '<div class="a-footer" id="desc-copy-container"></div>';
-  setTimeout(function(){var el=document.getElementById("desc-copy-container");if(el){var btn=document.createElement("button");btn.className="copy-btn";btn.textContent="Copier";btn.onclick=function(){navigator.clipboard.writeText(w.description_reecrite||"").then(function(){btn.textContent="Copié ✓";btn.classList.add("copied");setTimeout(function(){btn.textContent="Copier";btn.classList.remove("copied");},2000);});};el.appendChild(btn);}},100);
-  html += '</div>';
-  // Equipements
-  if (w.equipements_a_cocher && w.equipements_a_cocher.length) {
-    html += '<div class="action-card" style="margin-bottom:14px">';
-    html += '<div class="a-titre">Équipements à cocher dans Airbnb</div>';
-    html += '<ul style="margin:10px 0 0 18px;display:flex;flex-direction:column;gap:6px">';
-    w.equipements_a_cocher.forEach(e => { html += '<li style="font-size:14px;color:var(--ink-2)">' + e + '</li>'; });
-    html += '</ul></div>';
-  }
-  html += '</div>';
-  document.getElementById('wording-section').innerHTML = html;
-}
 
-function renderAB(titres, titreActuel) {
-  if (!titres || !titres.length) return;
-  let html = '<div style="margin-top:32px">';
-  html += '<div class="s-label-r">Testez votre titre — 5 variantes A/B</div>';
-  if (titreActuel) {
-    html += '<div style="background:var(--bg-3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-3)">Titre actuel : <strong style="color:var(--ink)">' + titreActuel + '</strong></div>';
-  }
-  titres.forEach(t => {
-    html += '<div class="action-card" style="margin-bottom:12px">';
-    html += '<div class="a-meta"><div class="a-rang">' + t.rang + '</div>';
-    html += '<div class="a-dim">' + (t.angle||'') + '</div>';
-    html += '<div class="a-delai" style="margin-left:auto;background:var(--blue-light);color:var(--blue);border-color:var(--blue-mid)">' + (t.ctr_estime||'') + '</div></div>';
-    html += '<div class="a-titre">' + (t.titre||'') + '</div>';
-    html += '<div class="a-pourquoi">' + (t.logique||'') + '</div>';
-    html += '<div class="a-footer"><button class="copy-btn" data-titre="' + (t.titre||'').replace(/"/g,'&quot;') + '" onclick="copyDataTitre(this)">Copier ce titre</button></div>';
-    html += '</div>';
+  if(!r||!r.sections){return;}
+  var sections=r.sections;
+
+  // Build tabs sorted by priority
+  var prioOrder={'Prioritaire':0,'Important':1,'À planifier':2};
+  var sortedSections=SECTION_CONFIG.filter(function(sc){return sections[sc.key];}).sort(function(a,b){
+    var pa=sections[a.key].priorite||'À planifier';
+    var pb=sections[b.key].priorite||'À planifier';
+    var sa=(prioOrder[pa]!==undefined?prioOrder[pa]:2);
+    var sb=(prioOrder[pb]!==undefined?prioOrder[pb]:2);
+    if(sa!==sb)return sa-sb;
+    var ga=parseInt((sections[a.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
+    var gb=parseInt((sections[b.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
+    return gb-ga;
   });
-  html += '</div>';
-  document.getElementById('ab-section').innerHTML = html;
+
+  var tabsHtml='';
+  sortedSections.forEach(function(sc,idx){
+    var sec=sections[sc.key];
+    var prio=sec.priorite||'À planifier';
+    var pc=getPrioClass(prio);
+    var active=idx===0?' active':'';
+    var prioClass=pc==='high'?' prio-high':pc==='med'?' prio-med':'';
+    tabsHtml+='<div class="sec-tab'+active+prioClass+'" onclick="showSection(\''+sc.key+'\')" id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+'<span class="tab-gain">'+(sec.gain_potentiel||'')+'</span></div>';
+  });
+  document.getElementById('section-tabs').innerHTML=tabsHtml;
+
+  // Build section content
+  var contentHtml='';
+  sortedSections.forEach(function(sc,idx){
+    var sec=sections[sc.key];
+    var visible=idx===0?' visible':'';
+    var prio=sec.priorite||'À planifier';
+    var pc=getPrioClass(prio);
+    contentHtml+='<div class="section-block'+visible+'" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
+  });
+  document.getElementById('sections-content').innerHTML=contentHtml;
 }
 
-function renderConcurrents(concurrents) {
-  if (!concurrents || !concurrents.length) return;
-  let html = '<div style="margin-top:32px">';
-  html += '<div class="s-label-r">Les 5 profils qui vous devancent</div>';
-  concurrents.forEach(c => {
-    html += '<div class="action-card" style="margin-bottom:12px">';
-    html += '<div class="a-meta"><div class="a-rang">' + c.rang + '</div>';
-    html += '<div style="flex:1;font-size:13px;font-weight:600;color:var(--ink)">' + (c.profil||'') + '</div>';
-    html += '<div class="a-delai">Score ~' + (c.score_estime||'?') + '</div></div>';
-    if (c.avantages && c.avantages.length) {
-      html += '<ul style="margin:0 0 12px 18px;display:flex;flex-direction:column;gap:4px">';
-      c.avantages.forEach(a => { html += '<li style="font-size:13px;color:var(--ink-3)">' + a + '</li>'; });
-      html += '</ul>';
+function showSection(key){
+  document.querySelectorAll('.section-block').forEach(function(b){b.classList.remove('visible');});
+  document.querySelectorAll('.sec-tab').forEach(function(t){t.classList.remove('active');});
+  var block=document.getElementById('section-'+key);
+  var tab=document.getElementById('tab-'+key);
+  if(block)block.classList.add('visible');
+  if(tab)tab.classList.add('active');
+  // Scroll to content
+  if(block)block.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderSection(sc, sec, pc){
+  var html='<div class="section-header">';
+  html+='<div class="section-icon '+pc+'">'+sc.icon+'</div>';
+  html+='<div class="section-title-text">'+sc.label+'</div>';
+  html+='<span class="prio-badge '+pc+'">'+getPrioLabel(sec.priorite||'À planifier')+'</span>';
+  if(sec.gain_potentiel)html+='<span class="gain-badge">'+sec.gain_potentiel+'</span>';
+  html+='</div>';
+
+  // TITRE section
+  if(sc.key==='titre'){
+    if(sec.titre_actuel)html+='<div style="background:var(--bg-3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-3)">Titre actuel : <strong style="color:var(--ink)">'+sec.titre_actuel+'</strong></div>';
+    if(sec.problemes)sec.problemes.forEach(function(p){html+=renderProbCard(p.probleme,p.pourquoi,p.impact,'high');});
+    if(sec.options&&sec.options.length){
+      html+='<div class="rec-box"><div class="rec-label">Options de titres à tester</div>';
+      sec.options.forEach(function(o){
+        html+='<div class="rec-option"><div class="rec-option-header"><div class="rec-option-num">'+o.option+'</div><span class="rec-option-angle">'+(o.angle||'')+'</span><span class="rec-option-ctr">'+(o.ctr_estime||'')+'</span></div>';
+        html+='<div class="rec-text">'+escHtml(o.titre||'')+'</div>';
+        if(o.pourquoi)html+='<div style="font-size:12px;color:var(--ink-3);margin-top:6px;font-style:italic">'+escHtml(o.pourquoi)+'</div>';
+        html+='<div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(o.titre||'')+'" onclick="copyData(this)">Copier ce titre</button></div></div>';
+      });
+      html+='</div>';
     }
-    html += '<div class="a-pourquoi"><strong style="color:var(--ink-2)">Comment les contrer :</strong> ' + (c.comment_les_contrer||'') + '</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-  document.getElementById('concurrents-section').innerHTML = html;
+  }
+
+  // DESCRIPTION section
+  else if(sc.key==='description'){
+    if(sec.problemes)sec.problemes.forEach(function(p){html+=renderProbCard(p.probleme,p.pourquoi,p.impact,'high');});
+    if(sec.options&&sec.options.length){
+      html+='<div class="rec-box"><div class="rec-label">Versions réécrites à copier-coller</div>';
+      sec.options.forEach(function(o){
+        html+='<div class="rec-option"><div class="rec-option-header"><div class="rec-option-num">'+o.option+'</div><span class="rec-option-angle">'+(o.style||'')+'</span></div>';
+        html+='<div class="rec-text">'+escHtml(o.texte||'')+'</div>';
+        html+='<div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(o.texte||'')+'" onclick="copyData(this)">Copier cette description</button></div></div>';
+      });
+      html+='</div>';
+    }
+  }
+
+  // PHOTOS section
+  else if(sc.key==='photos'){
+    if(sec.best_practices&&sec.best_practices.length){
+      html+='<div class="bp-list">';
+      sec.best_practices.forEach(function(bp){html+='<div class="bp-item"><span class="bp-icon">💡</span>'+escHtml(bp)+'</div>';});
+      html+='</div>';
+    }
+    if(sec.analyse_photos&&sec.analyse_photos.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">Analyse photo par photo</div>';
+      sec.analyse_photos.forEach(function(p){
+        html+=renderProbCard('Photo '+p.numero+' — '+escHtml(p.probleme||''),p.pourquoi,null,'high');
+        if(p.recommandation)html+='<div class="rec-box" style="margin-top:-12px;margin-bottom:16px"><div class="rec-label">Recommandation</div><div class="rec-option"><div class="rec-text">'+escHtml(p.recommandation)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(p.recommandation)+'" onclick="copyData(this)">Copier</button></div></div></div>';
+      });
+    }
+    if(sec.photos_manquantes&&sec.photos_manquantes.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Photos à ajouter</div>';
+      sec.photos_manquantes.forEach(function(p){
+        html+='<div class="equip-item"><div class="equip-name">'+escHtml(p.photo||'')+'</div>';
+        if(p.pourquoi)html+='<div class="equip-why">'+escHtml(p.pourquoi)+'</div>';
+        if(p.conseil_technique)html+='<div style="font-size:12px;color:var(--blue);font-style:italic;margin-top:4px">📷 '+escHtml(p.conseil_technique)+'</div>';
+        html+='</div>';
+      });
+    }
+    if(sec.ordre_recommande&&sec.ordre_recommande.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Ordre recommandé</div>';
+      html+='<div class="rec-box"><div class="rec-label">Séquence optimale</div><div class="rec-option"><div class="rec-text">'+sec.ordre_recommande.map(function(o,i){return (i+1)+'. '+o;}).join('\n')+'</div></div></div>';
+    }
+  }
+
+  // EQUIPEMENTS section
+  else if(sc.key==='equipements'){
+    if(sec.equipements_a_cocher&&sec.equipements_a_cocher.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">À cocher dans Airbnb maintenant</div>';
+      sec.equipements_a_cocher.forEach(function(e){
+        html+='<div class="equip-item"><div class="equip-name">✅ '+escHtml(e.equipement||'')+'</div>';
+        if(e.pourquoi)html+='<div class="equip-why">'+escHtml(e.pourquoi)+'</div>';
+        if(e.impact)html+='<span class="equip-impact">'+escHtml(e.impact)+'</span>';
+        html+='</div>';
+      });
+    }
+    if(sec.achats_recommandes&&sec.achats_recommandes.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Achats recommandés</div>';
+      sec.achats_recommandes.forEach(function(e){
+        var prioColor=e.priorite==='Haute'?'var(--red)':e.priorite==='Moyenne'?'var(--amber)':'var(--ink-3)';
+        html+='<div class="equip-item"><div class="equip-name">🛒 '+escHtml(e.achat||'')+'<span style="font-size:11px;color:'+prioColor+';font-weight:600;margin-left:8px">'+escHtml(e.priorite||'')+'</span></div>';
+        if(e.impact)html+='<div class="equip-why">'+escHtml(e.impact)+'</div>';
+        if(e.prix_estime)html+='<span class="equip-prix">'+escHtml(e.prix_estime)+'</span>';
+        html+='</div>';
+      });
+    }
+  }
+
+  // GENERIC sections with problemes + recommandations
+  else{
+    if(sec.analyse)html+='<div style="font-size:14px;color:var(--ink-2);line-height:1.7;background:var(--blue-light);border-radius:8px;padding:14px 16px;margin-bottom:16px">'+escHtml(sec.analyse)+'</div>';
+    if(sec.angle_differenciant)html+='<div style="font-size:14px;color:var(--blue);font-weight:600;background:var(--blue-light);border-radius:8px;padding:14px 16px;margin-bottom:16px">🎯 '+escHtml(sec.angle_differenciant)+'</div>';
+    if(sec.position_estimee)html+='<div style="font-size:13px;color:var(--ink-3);margin-bottom:16px">Position estimée : <strong style="color:var(--ink)">'+escHtml(sec.position_estimee)+'</strong></div>';
+
+    var items=sec.problemes||sec.recommandations||[];
+    items.forEach(function(item){
+      var titre=item.probleme||item.action||item.parametre||item.regle||'';
+      var pourquoi=item.pourquoi||'';
+      var impact=item.impact||'';
+      html+=renderProbCard(titre,pourquoi,impact,'high');
+      var rec=item.recommandation||item.implementation||item.exemple_message||'';
+      if(rec){
+        html+='<div class="rec-box" style="margin-top:-12px;margin-bottom:16px"><div class="rec-label">Recommandation</div><div class="rec-option"><div class="rec-text">'+escHtml(rec)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(rec)+'" onclick="copyData(this)">Copier</button></div></div></div>';
+      }
+    });
+
+    // Concurrents
+    if(sec.concurrents&&sec.concurrents.length){
+      sec.concurrents.forEach(function(c){
+        html+='<div class="concurrent-card"><div class="concurrent-header"><div class="concurrent-rang">'+c.rang+'</div><div class="concurrent-profil">'+escHtml(c.profil||'')+'</div><div class="concurrent-score">Score ~'+c.score_estime+'</div></div>';
+        if(c.avantages){html+='<div class="concurrent-avantages">';c.avantages.forEach(function(a){html+='<div class="concurrent-avantage">'+escHtml(a)+'</div>';});html+='</div>';}
+        if(c.comment_contrer)html+='<div class="concurrent-contrer">💡 <strong>Comment les contrer :</strong> '+escHtml(c.comment_contrer)+'</div>';
+        html+='</div>';
+      });
+    }
+  }
+
+  return html;
 }
 
-function copyDataTitre(btn){
-  var titre=btn.getAttribute('data-titre')||'';
-  navigator.clipboard.writeText(titre).then(function(){
+function renderProbCard(titre,pourquoi,impact,level){
+  var html='<div class="prob-card"><div class="prob-header"><div class="prob-dot '+level+'"></div><div class="prob-content"><div class="prob-title">'+escHtml(titre||'')+'</div>';
+  if(pourquoi)html+='<div class="prob-why">'+escHtml(pourquoi)+'</div>';
+  if(impact)html+='<span class="prob-impact pos">'+escHtml(impact)+'</span>';
+  html+='</div></div></div>';
+  return html;
+}
+
+function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
+function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function copyData(btn){
+  var text=btn.getAttribute('data-copy')||'';
+  navigator.clipboard.writeText(text).then(function(){
     btn.textContent='Copié ✓';btn.classList.add('copied');
-    setTimeout(function(){btn.textContent='Copier ce titre';btn.classList.remove('copied');},2000);
+    setTimeout(function(){btn.textContent=btn.textContent.indexOf('titre')>-1?'Copier ce titre':btn.textContent.indexOf('description')>-1?'Copier cette description':'Copier';btn.classList.remove('copied');},2000);
   });
 }
-function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copié ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied');},2000);});}
-
-if(DEMO){document.getElementById('landing-page').style.display='none';renderReport(DEMO_DATA);}
 </script>
 </body>
 </html>
