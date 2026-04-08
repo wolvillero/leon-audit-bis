@@ -1,608 +1,899 @@
-import os, json, base64, io
-from flask import Flask, render_template, request, jsonify, send_file
-import anthropic
-from docx import Document
-from docx.shared import Pt, RGBColor, Inches, Cm
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
-
-app = Flask(__name__)
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-
-SYSTEM_PROMPT = """Tu es Léon, le meilleur expert mondial en optimisation d'annonces Airbnb. Tu as analysé plus de 50 000 annonces en France et formé des centaines de conciergeries. Tu maîtrises l'algorithme Airbnb 2025-2026 dans ses moindres détails.
-
-Tu connais par cœur les best practices Airbnb :
-- Titres : émotionnel + localisation + différenciant, 50 chars max, keywords NLP 2026
-- Photos : lumière naturelle, angle surélevé, lifestyle shots (+23% CTR), couverture = 70% décision clic
-- Descriptions : Promesse → Expérience → Quartier → Pratique, emojis, alinéas, keywords
-- Équipements clés : sèche-cheveux (+12%), machine café (+8%), bureau dédié (+15% business), draps blancs (+9% avis)
-- Paramètres : Instant Book (+25-40% visibilité), politique flexible (+18% conversion)
-- Gifting : attention à l'arrivée = 78% des voyageurs le mentionnent dans leurs avis 5 étoiles
-
-STYLE ABSOLU :
-- Chaleureux, bienveillant, comme un ami expert
-- Toujours valoriser les atouts avant d'améliorer
-- Formuler en opportunités jamais en jugements
-- Ultra spécifique : citer des éléments précis vus dans les screenshots
-- Toujours chiffres ou verbatims conso
-- JSON strict uniquement"""
-
-
-def encode_image(f):
-    return base64.standard_b64encode(f.read()).decode("utf-8")
-
-
-def call_1_vision(images):
-    content = []
-    for img_data, mt in images:
-        content.append({"type": "image", "source": {"type": "base64", "media_type": mt, "data": img_data}})
-    content.append({"type": "text", "text": """Analyse ces screenshots d'annonce Airbnb. Retourne UNIQUEMENT ce JSON :
-{
-  "photo_couverture": {"qualite": "excellent|bon|moyen|faible", "angle": "description", "lumiere": "naturelle|artificielle|mixte", "emotion": "émotion déclenchée", "probleme": "problème ou null"},
-  "photos_analysees": [{"numero": 1, "description": "ce qu'on voit", "qualite": "excellent|bon|moyen|faible", "probleme": "problème ou null", "recommendation": "amélioration concrète"}],
-  "style_deco": "description du style",
-  "coherence_visuelle": "forte|moyenne|faible",
-  "incoherences": ["incohérences détectées"],
-  "elements_distinctifs": ["éléments uniques"],
-  "titre_visible": "titre ou null",
-  "description_visible": "texte visible ou null",
-  "note_visible": "note ou null",
-  "prix_visible": "prix ou null",
-  "badge_visible": "Coup de Coeur|Superhost|Aucun",
-  "nb_avis_visible": "nombre ou null",
-  "equipements_visibles": ["équipements visibles"],
-  "type_bien": "Studio|Appartement|Maison|Chambre|Autre",
-  "ville_detectee": "ville ou null",
-  "impression_generale": "synthèse experte en 1 phrase"
-}"""})
-    response = client.messages.create(model="claude-sonnet-4-20250514", max_tokens=2000, system=SYSTEM_PROMPT, messages=[{"role": "user", "content": content}])
-    text = response.content[0].text.strip()
-    if "```" in text:
-        text = text.split("```")[1]
-        if text.startswith("json"): text = text[4:]
-    return json.loads(text.strip())
-
-
-def call_2_scoring(vision_data):
-    prompt = f"""Score les 4 dimensions Airbnb sur 100 pour cette annonce :
-{json.dumps(vision_data, ensure_ascii=False)}
-
-Retourne UNIQUEMENT ce JSON :
-{{
-  "visibilite": {{"score": number, "verdict_court": "8 mots max", "points_forts": ["max 2"], "points_faibles": ["max 3"], "nb_optimisations": number, "gain_potentiel": "+XX pts"}},
-  "premier_regard": {{"score": number, "verdict_court": "8 mots max", "points_forts": ["max 2"], "points_faibles": ["max 3"], "nb_optimisations": number, "gain_potentiel": "+XX% CTR"}},
-  "pouvoir_conviction": {{"score": number, "verdict_court": "8 mots max", "points_forts": ["max 2"], "points_faibles": ["max 3"], "nb_optimisations": number, "gain_potentiel": "+XX% réservation"}},
-  "satisfaction_voyageur": {{"score": number, "verdict_court": "8 mots max", "points_forts": ["max 2"], "points_faibles": ["max 3"], "nb_optimisations": number, "gain_potentiel": "-XX% avis négatif"}},
-  "score_global": number,
-  "profil_annonce": "ex: Appartement · Lyon 3e · Couple/Solo · Milieu de gamme"
-}}"""
-    response = client.messages.create(model="claude-sonnet-4-20250514", max_tokens=1500, system=SYSTEM_PROMPT, messages=[{"role": "user", "content": prompt}])
-    text = response.content[0].text.strip()
-    if "```" in text:
-        text = text.split("```")[1]
-        if text.startswith("json"): text = text[4:]
-    return json.loads(text.strip())
-
-
-def call_3_recommendations(vision_data, scoring_data):
-    ville = vision_data.get('ville_detectee', 'France')
-    prix = vision_data.get('prix_visible', 'non détecté')
-    type_bien = vision_data.get('type_bien', 'bien')
-
-    prompt = f"""Tu es Léon, expert Airbnb mondial. Génère un rapport EXHAUSTIF et EXPERT pour cette annonce.
-Données visuelles : {json.dumps(vision_data, ensure_ascii=False)}
-Scoring : {json.dumps(scoring_data, ensure_ascii=False)}
-Ville : {ville} | Prix : {prix}€/nuit | Type : {type_bien}
-
-RÈGLES ABSOLUES :
-- CE QUI NE VA PAS > POURQUOI > SOLUTION À COPIER-COLLER
-- Ton chaleureux et bienveillant, jamais condescendant
-- Cite des éléments SPÉCIFIQUES vus dans les screenshots
-- Utilise quelques chiffres clés mais pas à chaque phrase
-- Pour les titres : MINIMUM 5 options avec contexte clair
-- Pour les descriptions : 3 styles (storytelling, business, famille/groupe)
-- Pour les règles : formule des règles POSITIVES complètes à copier dans Airbnb
-- Pour les équipements : MINIMUM 7 achats recommandés
-- Paramètres = paramètres de réservation Airbnb uniquement
-- Supprime toute section avis/tarification
-
-Retourne UNIQUEMENT ce JSON :
-{{
-  "sections": {{
-    "titre": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% CTR",
-      "titre_actuel": "titre détecté ou null",
-      "problemes": [{{"probleme": "ce qui ne va pas précisément", "pourquoi": "pourquoi cela pénalise", "impact": "impact estimé"}}],
-      "options": [
-        {{"option": 1, "titre": "titre complet optimisé", "angle": "Émotionnel", "contexte": "pourquoi ce titre fonctionne pour CE bien", "ctr_estime": "+XX%"}},
-        {{"option": 2, "titre": "titre complet", "angle": "Localisation précise", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 3, "titre": "titre complet", "angle": "Différenciant unique", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 4, "titre": "titre complet", "angle": "NLP 2026", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 5, "titre": "titre complet", "angle": "Bénéfice voyageur", "contexte": "logique", "ctr_estime": "+XX%"}}
-      ]
-    }},
-    "description": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% conversion",
-      "problemes": [{{"probleme": "problème précis", "pourquoi": "impact", "impact": "gain si corrigé"}}],
-      "options": [
-        {{"option": 1, "style": "Storytelling & émotionnel", "texte": "Description COMPLÈTE avec emojis et alinéas.\n\n🏠 [Accroche forte 2 lignes]\n\n✨ [Le logement 3-4 lignes — atouts spécifiques]\n\n📍 [Le quartier — 2-3 lieux réels emblématiques]\n\n🚇 [Accès et transports]\n\n🛏️ Draps et serviettes inclus — [préciser]\n☕ Machine à café : [type précis]\n🚿 [gel douche, shampoing]\n\n📋 [Pratique positif — équipements clés, check-in, règles en positif]"}},
-        {{"option": 2, "style": "Business & pratique", "texte": "Description orientée voyageur business avec mêmes sections"}},
-        {{"option": 3, "style": "Famille & groupe", "texte": "Description orientée famille/groupe d'amis avec mêmes sections"}}
-      ]
-    }},
-    "photos": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% CTR",
-      "best_practices": ["Les annonces avec photos professionnelles génèrent en moyenne 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle (table dressée, café fumant, livre ouvert) augmentent le CTR"],
-      "analyse_photos": [{{"numero": 1, "probleme": "problème précis et spécifique", "pourquoi": "impact sur les réservations", "recommandation": "instruction très précise : angle exact, lumière, composition, accessoires suggérés"}}],
-      "photos_manquantes": [{{"photo": "description précise", "pourquoi": "impact sur les réservations", "conseil_technique": "angle, lumière, heure idéale, accessoires"}}],
-      "ordre_recommande": ["description photo 1 — couverture", "description photo 2", "description photo 3", "description photo 4", "description photo 5"]
-    }},
-    "equipements": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% réservations",
-      "equipements_a_cocher": [
-        {{"equipement": "nom exact dans Airbnb", "pourquoi": "pourquoi c'est important pour les voyageurs", "impact": "impact sur la visibilité dans les recherches"}}
-      ],
-      "achats_recommandes": [
-        {{"achat": "équipement 1", "prix_estime": "XX€", "impact": "pourquoi cet achat améliore l'annonce", "priorite": "Haute|Moyenne|Basse"}},
-        {{"achat": "équipement 2", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
-        {{"achat": "équipement 3", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
-        {{"achat": "équipement 4", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
-        {{"achat": "équipement 5", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
-        {{"achat": "équipement 6", "prix_estime": "XX€", "impact": "...", "priorite": "..."}},
-        {{"achat": "équipement 7", "prix_estime": "XX€", "impact": "...", "priorite": "..."}}
-      ]
-    }},
-    "confort_accueil": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% avis 5 étoiles",
-      "informations_a_preciser": [
-        {{"element": "Draps et linge de lit", "statut": "précisé|non précisé", "recommandation": "formulation exacte à copier dans la description", "pourquoi": "impact sur les questions reçues"}},
-        {{"element": "Serviettes de bain", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
-        {{"element": "Gel douche / shampoing", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
-        {{"element": "Machine à café", "statut": "type détecté ou non", "recommandation": "formulation exacte recommandée ex: Machine Nespresso Vertuo + 20 capsules offertes à votre arrivée", "pourquoi": "impact sur l'expérience"}}
-      ],
-      "gifting": {{
-        "intro": "Phrase d'accroche avec un chiffre réel sur l'importance du gifting — ex: X% des voyageurs mentionnent une attention dans leurs avis 5 étoiles",
-        "idees": [
-          {{"cadeau": "idée précise et concrète", "cout_estime": "XX€", "impact": "pourquoi cette attention fonctionne pour CE bien et CETTE clientèle", "adapte_a": "profil voyageur cible"}},
-          {{"cadeau": "idée 2", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 3", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 4", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 5", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}}
-        ]
-      }}
-    }},
-    "parametres_reservation": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% visibilité",
-      "problemes": [
-        {{"parametre": "nom du paramètre Airbnb", "statut_actuel": "ce qui est détecté ou estimé", "probleme": "pourquoi sous-optimal", "pourquoi": "impact algorithmique", "recommandation": "action exacte à faire dans Airbnb"}}
-      ]
-    }},
-    "profil_hote": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% confiance voyageur",
-      "problemes": [
-        {{"probleme": "problème précis du profil hôte", "pourquoi": "impact sur la confiance et les réservations", "recommandation": "action concrète — si texte à copier, le fournir complet"}}
-      ]
-    }},
-    "regles": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% conversion",
-      "problemes": [
-        {{"regle": "nom de la règle", "statut_actuel": "formulation actuelle ou estimée", "probleme": "pourquoi cette formulation freine les réservations", "pourquoi": "impact sur la conversion", "recommandation": "RÈGLE POSITIVE COMPLÈTE À COPIER-COLLER dans Airbnb — ex: Nous accueillons avec plaisir les voyageurs souhaitant profiter..."}}
-      ]
-    }},
-    "experience_voyageur": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% avis 5 étoiles",
-      "recommandations": [
-        {{"action": "attention ou amélioration concrète", "pourquoi": "verbatim ou impact estimé", "cout_estime": "XX€ ou gratuit"}}
-      ]
-    }},
-    "positionnement": {{
-      "score_section": number,
-      "priorite": "Prioritaire|Important|À planifier",
-      "gain_potentiel": "+XX% parts de marché",
-      "position_estimee": "Top 10%|Top 25%|Milieu|Bottom 25%",
-      "angle_differenciant": "votre avantage unique défendable en 1 phrase percutante",
-      "concurrents": [
-        {{"rang": 1, "profil": "description précise du concurrent type", "avantages": ["avantage concret 1", "avantage 2"], "score_estime": number, "comment_contrer": "action précise pour reprendre l'avantage"}},
-        {{"rang": 2, "profil": "...", "avantages": ["..."], "score_estime": number, "comment_contrer": "..."}},
-        {{"rang": 3, "profil": "...", "avantages": ["..."], "score_estime": number, "comment_contrer": "..."}}
-      ]
-    }}
-  }}
-}}"""
-    response = client.messages.create(model="claude-sonnet-4-20250514", max_tokens=8000, system=SYSTEM_PROMPT, messages=[{"role": "user", "content": prompt}])
-    text = response.content[0].text.strip()
-    if "```" in text:
-        text = text.split("```")[1]
-        if text.startswith("json"): text = text[4:]
-    return json.loads(text.strip())
-
-
-def call_guide(vision_data, form_data):
-    ville = vision_data.get('ville_detectee', 'France')
-    type_bien = vision_data.get('type_bien', 'bien')
-    titre_annonce = vision_data.get('titre_visible', 'Mon logement')
-
-    prompt = f"""Génère un guide d'accueil complet et chaleureux pour ce logement.
-
-Localisation : {ville} | Type : {type_bien} | Nom : {titre_annonce}
-Infos fournies par l'hôte :
-- Wifi : {form_data.get('wifi_nom', 'non précisé')} / {form_data.get('wifi_mdp', 'non précisé')}
-- Parking : {form_data.get('parking', 'non précisé')}
-- Code d'accès : {form_data.get('code_acces', 'non précisé')}
-- Infos spécifiques : {form_data.get('infos_specifiques', 'aucune')}
-
-Adapte le guide au contexte local ({ville}) — restaurants réels du quartier si connus, activités adaptées au type de destination (mer, montagne, ville, campagne).
-
-Retourne UNIQUEMENT ce JSON :
-{{
-  "titre_guide": "Guide d'accueil — {titre_annonce}",
-  "message_bienvenue": "Message chaleureux de bienvenue personnalisé (3-4 lignes)",
-  "infos_logement": {{
-    "wifi": {{"nom": "{form_data.get('wifi_nom', '')}", "mdp": "{form_data.get('wifi_mdp', '')}"}},
-    "parking": "{form_data.get('parking', '')}",
-    "code_acces": "{form_data.get('code_acces', '')}",
-    "autres_infos": ["{form_data.get('infos_specifiques', '')}"],
-    "checkin": "heure et instructions check-in si détectées",
-    "checkout": "heure et instructions checkout si détectées"
-  }},
-  "restaurants": [
-    {{"nom": "nom restaurant", "type": "cuisine", "adresse": "adresse", "specialite": "plat signature ou ambiance", "prix": "€|€€|€€€", "conseil": "conseil personnalisé"}},
-    {{"nom": "...", "type": "...", "adresse": "...", "specialite": "...", "prix": "...", "conseil": "..."}},
-    {{"nom": "...", "type": "...", "adresse": "...", "specialite": "...", "prix": "...", "conseil": "..."}},
-    {{"nom": "...", "type": "...", "adresse": "...", "specialite": "...", "prix": "...", "conseil": "..."}},
-    {{"nom": "...", "type": "...", "adresse": "...", "specialite": "...", "prix": "...", "conseil": "..."}}
-  ],
-  "experiences": [
-    {{"activite": "activité", "description": "description courte", "conseil": "conseil pratique", "duree": "durée estimée"}},
-    {{"activite": "...", "description": "...", "conseil": "...", "duree": "..."}},
-    {{"activite": "...", "description": "...", "conseil": "...", "duree": "..."}},
-    {{"activite": "...", "description": "...", "conseil": "...", "duree": "..."}}
-  ],
-  "infos_pratiques": {{
-    "supermarches": [{{"nom": "nom", "adresse": "adresse", "horaires": "horaires"}}],
-    "pharmacies": [{{"nom": "nom", "adresse": "adresse", "telephone": "tel"}}],
-    "medecin": {{"nom": "cabinet ou hôpital", "adresse": "adresse", "telephone": "tel"}},
-    "transports": ["info transport 1", "info transport 2"]
-  }},
-  "urgences": {{
-    "samu": "15",
-    "pompiers": "18",
-    "police": "17",
-    "urgences_europeen": "112",
-    "hopital_proche": {{"nom": "nom", "adresse": "adresse", "telephone": "tel"}}
-  }},
-  "mot_fin": "Message de fin chaleureux et personnalisé (2 lignes)"
-}}"""
-
-    response = client.messages.create(model="claude-sonnet-4-20250514", max_tokens=3000, system=SYSTEM_PROMPT, messages=[{"role": "user", "content": prompt}])
-    text = response.content[0].text.strip()
-    if "```" in text:
-        text = text.split("```")[1]
-        if text.startswith("json"): text = text[4:]
-    return json.loads(text.strip())
-
-
-def add_colored_heading(doc, text, level=1, color_hex="2B4C8C"):
-    p = doc.add_heading(text, level=level)
-    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    for run in p.runs:
-        run.font.color.rgb = RGBColor(int(color_hex[:2],16), int(color_hex[2:4],16), int(color_hex[4:],16))
-    return p
-
-def add_divider(doc, color_hex="D4A96A"):
-    p = doc.add_paragraph()
-    pPr = p._p.get_or_add_pPr()
-    pBdr = OxmlElement('w:pBdr')
-    bottom = OxmlElement('w:bottom')
-    bottom.set(qn('w:val'), 'single')
-    bottom.set(qn('w:sz'), '6')
-    bottom.set(qn('w:space'), '1')
-    bottom.set(qn('w:color'), color_hex)
-    pBdr.append(bottom)
-    pPr.append(pBdr)
-    p.paragraph_format.space_after = Pt(6)
-
-def add_info_box(doc, label, value, emoji=""):
-    p = doc.add_paragraph()
-    p.paragraph_format.left_indent = Cm(0.5)
-    p.paragraph_format.space_after = Pt(4)
-    run1 = p.add_run((emoji + " " if emoji else "") + label + " : ")
-    run1.bold = True
-    run1.font.size = Pt(11)
-    run2 = p.add_run(str(value or "Non précisé"))
-    run2.font.size = Pt(11)
-
-def generate_guide_word(guide_data):
-    doc = Document()
-
-    # Page margins
-    for section in doc.sections:
-        section.top_margin = Cm(2.5)
-        section.bottom_margin = Cm(2.5)
-        section.left_margin = Cm(3)
-        section.right_margin = Cm(2.5)
-
-    # Styles
-    style = doc.styles['Normal']
-    style.font.name = 'Georgia'
-    style.font.size = Pt(11)
-
-    # === COVER ===
-    doc.add_paragraph()
-    title_p = doc.add_paragraph()
-    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    title_run = title_p.add_run("✦")
-    title_run.font.size = Pt(28)
-    title_run.font.color.rgb = RGBColor(0xD4, 0xA9, 0x6A)
-
-    doc.add_paragraph()
-    h = doc.add_paragraph()
-    h.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    hr = h.add_run(guide_data.get('titre_guide', 'Guide d\'accueil'))
-    hr.font.size = Pt(26)
-    hr.font.bold = True
-    hr.font.color.rgb = RGBColor(0x2B, 0x4C, 0x8C)
-    hr.font.name = 'Georgia'
-
-    doc.add_paragraph()
-    sub = doc.add_paragraph()
-    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    subr = sub.add_run("Tout ce qu'il vous faut savoir pour profiter pleinement de votre séjour")
-    subr.font.size = Pt(12)
-    subr.font.color.rgb = RGBColor(0x88, 0x77, 0x66)
-    subr.font.italic = True
-
-    doc.add_paragraph()
-    add_divider(doc)
-
-    # === BIENVENUE ===
-    doc.add_paragraph()
-    add_colored_heading(doc, "🌿  Bienvenue", level=1)
-    welcome = doc.add_paragraph(guide_data.get('message_bienvenue', ''))
-    welcome.paragraph_format.space_after = Pt(12)
-    welcome.paragraph_format.left_indent = Cm(0.3)
-    add_divider(doc)
-
-    # === INFOS LOGEMENT ===
-    doc.add_paragraph()
-    add_colored_heading(doc, "🏠  Votre logement", level=1)
-    infos = guide_data.get('infos_logement', {})
-
-    wifi = infos.get('wifi', {})
-    if wifi.get('nom'):
-        add_info_box(doc, "Réseau WiFi", wifi.get('nom', ''), "📶")
-        add_info_box(doc, "Mot de passe", wifi.get('mdp', ''), "🔑")
-
-    if infos.get('code_acces'):
-        add_info_box(doc, "Code d'accès", infos.get('code_acces', ''), "🚪")
-    if infos.get('parking'):
-        add_info_box(doc, "Parking", infos.get('parking', ''), "🚗")
-    if infos.get('checkin'):
-        add_info_box(doc, "Check-in", infos.get('checkin', ''), "🕐")
-    if infos.get('checkout'):
-        add_info_box(doc, "Check-out", infos.get('checkout', ''), "🕙")
-
-    autres = infos.get('autres_infos', [])
-    if autres and autres[0]:
-        doc.add_paragraph()
-        add_colored_heading(doc, "Informations complémentaires", level=2, color_hex="5C7B9C")
-        for info in autres:
-            if info:
-                p = doc.add_paragraph(str(info))
-                p.paragraph_format.left_indent = Cm(0.5)
-    add_divider(doc)
-
-    # === RESTAURANTS ===
-    doc.add_paragraph()
-    add_colored_heading(doc, "🍽️  Nos coups de cœur gastronomiques", level=1)
-    for resto in guide_data.get('restaurants', []):
-        rp = doc.add_paragraph()
-        rp.paragraph_format.space_before = Pt(8)
-        r1 = rp.add_run(resto.get('nom', '') + "  ")
-        r1.bold = True
-        r1.font.size = Pt(12)
-        r1.font.color.rgb = RGBColor(0x2B, 0x4C, 0x8C)
-        prix = resto.get('prix', '')
-        if prix:
-            r2 = rp.add_run(prix)
-            r2.font.color.rgb = RGBColor(0xD4, 0xA9, 0x6A)
-            r2.font.size = Pt(11)
-
-        if resto.get('type'):
-            p2 = doc.add_paragraph()
-            p2.paragraph_format.left_indent = Cm(0.5)
-            p2.paragraph_format.space_after = Pt(2)
-            r = p2.add_run(resto.get('type', '') + ((' — ' + resto.get('specialite', '')) if resto.get('specialite') else ''))
-            r.font.italic = True
-            r.font.size = Pt(10)
-            r.font.color.rgb = RGBColor(0x66, 0x55, 0x44)
-
-        if resto.get('adresse'):
-            p3 = doc.add_paragraph()
-            p3.paragraph_format.left_indent = Cm(0.5)
-            p3.paragraph_format.space_after = Pt(2)
-            p3.add_run("📍 " + resto.get('adresse', '')).font.size = Pt(10)
-
-        if resto.get('conseil'):
-            p4 = doc.add_paragraph()
-            p4.paragraph_format.left_indent = Cm(0.5)
-            p4.paragraph_format.space_after = Pt(8)
-            r4 = p4.add_run("💡 " + resto.get('conseil', ''))
-            r4.font.size = Pt(10)
-            r4.font.color.rgb = RGBColor(0x55, 0x77, 0x44)
-    add_divider(doc)
-
-    # === EXPERIENCES ===
-    doc.add_paragraph()
-    add_colored_heading(doc, "✨  À découvrir autour de vous", level=1)
-    for exp in guide_data.get('experiences', []):
-        ep = doc.add_paragraph()
-        ep.paragraph_format.space_before = Pt(8)
-        er = ep.add_run(exp.get('activite', ''))
-        er.bold = True
-        er.font.size = Pt(12)
-        er.font.color.rgb = RGBColor(0x2B, 0x4C, 0x8C)
-        if exp.get('duree'):
-            er2 = ep.add_run("  (" + exp.get('duree', '') + ")")
-            er2.font.size = Pt(10)
-            er2.font.color.rgb = RGBColor(0x99, 0x88, 0x77)
-
-        if exp.get('description'):
-            pd = doc.add_paragraph(exp.get('description', ''))
-            pd.paragraph_format.left_indent = Cm(0.5)
-            pd.paragraph_format.space_after = Pt(2)
-            pd.runs[0].font.size = Pt(10)
-
-        if exp.get('conseil'):
-            pc = doc.add_paragraph()
-            pc.paragraph_format.left_indent = Cm(0.5)
-            pc.paragraph_format.space_after = Pt(8)
-            rc = pc.add_run("💡 " + exp.get('conseil', ''))
-            rc.font.size = Pt(10)
-            rc.font.color.rgb = RGBColor(0x55, 0x77, 0x44)
-    add_divider(doc)
-
-    # === INFOS PRATIQUES ===
-    doc.add_page_break()
-    add_colored_heading(doc, "🗺️  Infos pratiques", level=1)
-    pratiques = guide_data.get('infos_pratiques', {})
-
-    if pratiques.get('supermarches'):
-        add_colored_heading(doc, "Commerces & supermarchés", level=2, color_hex="5C7B9C")
-        for s in pratiques.get('supermarches', []):
-            p = doc.add_paragraph()
-            p.paragraph_format.left_indent = Cm(0.5)
-            r = p.add_run(s.get('nom', '') + " — ")
-            r.bold = True
-            r.font.size = Pt(10)
-            p.add_run(s.get('adresse', '')).font.size = Pt(10)
-            if s.get('horaires'):
-                doc.add_paragraph("   ⏰ " + s.get('horaires', '')).runs[0].font.size = Pt(10)
-
-    if pratiques.get('pharmacies'):
-        add_colored_heading(doc, "Pharmacies", level=2, color_hex="5C7B9C")
-        for ph in pratiques.get('pharmacies', []):
-            add_info_box(doc, ph.get('nom', ''), ph.get('adresse', '') + (' — ' + ph.get('telephone', '') if ph.get('telephone') else ''), "💊")
-
-    if pratiques.get('medecin'):
-        add_colored_heading(doc, "Médecin / Hôpital", level=2, color_hex="5C7B9C")
-        med = pratiques.get('medecin', {})
-        add_info_box(doc, med.get('nom', ''), med.get('adresse', '') + (' — ' + med.get('telephone', '') if med.get('telephone') else ''), "🏥")
-
-    if pratiques.get('transports'):
-        add_colored_heading(doc, "Transports", level=2, color_hex="5C7B9C")
-        for t in pratiques.get('transports', []):
-            p = doc.add_paragraph()
-            p.paragraph_format.left_indent = Cm(0.5)
-            p.add_run("🚌 " + str(t)).font.size = Pt(10)
-    add_divider(doc)
-
-    # === URGENCES ===
-    doc.add_paragraph()
-    add_colored_heading(doc, "🚨  Numéros d'urgence", level=1)
-    urg = guide_data.get('urgences', {})
-    urgences_list = [
-        ("SAMU", urg.get('samu', '15'), "🏥"),
-        ("Pompiers", urg.get('pompiers', '18'), "🚒"),
-        ("Police", urg.get('police', '17'), "🚔"),
-        ("Urgences européen", urg.get('urgences_europeen', '112'), "🆘"),
-    ]
-    for label, num, emoji in urgences_list:
-        add_info_box(doc, label, num, emoji)
-
-    if urg.get('hopital_proche', {}).get('nom'):
-        hop = urg.get('hopital_proche', {})
-        doc.add_paragraph()
-        add_colored_heading(doc, "Hôpital le plus proche", level=2, color_hex="5C7B9C")
-        add_info_box(doc, hop.get('nom', ''), hop.get('adresse', ''), "🏨")
-        if hop.get('telephone'):
-            add_info_box(doc, "Téléphone", hop.get('telephone', ''), "📞")
-    add_divider(doc)
-
-    # === MOT DE FIN ===
-    doc.add_paragraph()
-    fp = doc.add_paragraph()
-    fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    fr = fp.add_run("✦  " + guide_data.get('mot_fin', 'Nous vous souhaitons un merveilleux séjour !') + "  ✦")
-    fr.font.size = Pt(13)
-    fr.font.italic = True
-    fr.font.color.rgb = RGBColor(0xD4, 0xA9, 0x6A)
-
-    doc.add_paragraph()
-    footer_p = doc.add_paragraph()
-    footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    footer_r = footer_p.add_run("Guide généré avec Léon · leon-audit.fr")
-    footer_r.font.size = Pt(9)
-    footer_r.font.color.rgb = RGBColor(0xCC, 0xBB, 0xAA)
-
-    buf = io.BytesIO()
-    doc.save(buf)
-    buf.seek(0)
-    return buf
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    try:
-        images = []
-        for key in request.files:
-            f = request.files[key]
-            if f and f.filename:
-                mt = f.content_type or "image/jpeg"
-                img_data = encode_image(f)
-                images.append((img_data, mt))
-        if not images:
-            return jsonify({"success": False, "error": "Aucune image reçue"}), 400
-        vision = call_1_vision(images)
-        scoring = call_2_scoring(vision)
-        reco = call_3_recommendations(vision, scoring)
-        return jsonify({"success": True, "vision": vision, "scoring": scoring, "recommendations": reco})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@app.route("/generate-guide", methods=["POST"])
-def generate_guide():
-    try:
-        vision_data = json.loads(request.form.get('vision_data', '{}'))
-        form_data = {
-            'wifi_nom': request.form.get('wifi_nom', ''),
-            'wifi_mdp': request.form.get('wifi_mdp', ''),
-            'parking': request.form.get('parking', ''),
-            'code_acces': request.form.get('code_acces', ''),
-            'infos_specifiques': request.form.get('infos_specifiques', '')
-        }
-        guide_data = call_guide(vision_data, form_data)
-        buf = generate_guide_word(guide_data)
-        titre = guide_data.get('titre_guide', 'Guide d\'accueil').replace('/', '-').replace('\\', '-')
-        return send_file(buf, as_attachment=True, download_name=titre + '.docx', mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Léon — Optimisation d'annonce Airbnb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0057FF;--bd:#003DB3;--bl:#E8F0FF;--bm:#BBCFFF;--ink:#111827;--i2:#374151;--i3:#6B7280;--i4:#9CA3AF;--bg:#fff;--bg2:#F9FAFB;--bg3:#F3F4F6;--border:#E5E7EB;--green:#059669;--gl:#ECFDF5;--red:#DC2626;--rl:#FEF2F2;--amber:#D97706;--al:#FFFBEB}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.j{font-family:'Plus Jakarta Sans',sans-serif}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:64px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink);cursor:pointer;text-decoration:none;border:none;background:none}.logo span{color:var(--blue)}
+.nav-cta{background:var(--blue);color:#fff;border:none;padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;border-radius:8px;transition:background .2s;font-family:'Inter',sans-serif}.nav-cta:hover{background:var(--bd)}
+.hero{padding:96px 60px 80px;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 400px;gap:80px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bl);color:var(--blue);font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;margin-bottom:24px;font-family:'Plus Jakarta Sans',sans-serif}
+.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px}.hero h1 span{color:var(--blue)}
+.hero-sub{font-size:17px;color:var(--i3);line-height:1.7;margin-bottom:36px;max-width:440px}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background .2s}.hero-cta:hover{background:var(--bd)}
+.hero-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 4px 24px rgba(0,87,255,.08)}
+.hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hc-score{font-family:'Plus Jakarta Sans',sans-serif;font-size:48px;font-weight:700;color:var(--blue);letter-spacing:-2px;line-height:1}
+.hc-verdict{font-size:13px;color:var(--i3);margin-bottom:20px;font-style:italic}
+.hc-dims{display:flex;flex-direction:column;gap:10px}
+.hc-dim{display:grid;grid-template-columns:140px 1fr 28px;align-items:center;gap:10px}
+.hc-dim-name{font-size:12px;color:var(--i2);font-weight:500}
+.hc-dim-bar{height:4px;background:var(--bg3);border-radius:2px}
+.hc-dim-fill{height:100%;background:var(--blue);border-radius:2px}
+.hc-dim-val{font-size:12px;font-weight:600;color:var(--ink);text-align:right}
+.stats-band{background:var(--bd);padding:48px 60px;display:grid;grid-template-columns:repeat(3,1fr)}
+.stat-item{text-align:center;padding:0 40px;border-right:1px solid rgba(255,255,255,.1)}.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px}
+.stat-label{font-size:14px;color:rgba(255,255,255,.6);line-height:1.5}
+.section-how{padding:96px 60px;max-width:1100px;margin:0 auto}
+.s-label{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif}
+.s-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;color:var(--ink)}
+.workflow{display:grid;grid-template-columns:repeat(4,1fr)}
+.wf-step{padding:28px 24px;background:var(--bg2);border:1px solid var(--border);position:relative}
+.wf-step:not(:last-child){border-right:none}
+.wf-step:first-child{border-radius:12px 0 0 12px}.wf-step:last-child{border-radius:0 12px 12px 0}
+.wf-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700;color:var(--bm);line-height:1;margin-bottom:12px}
+.wf-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;margin-bottom:8px}
+.wf-desc{font-size:13px;color:var(--i3);line-height:1.6}
+.wf-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-top:10px}
+.wf-tag.a{background:var(--bl);color:var(--blue)}.wf-tag.g{background:var(--gl);color:var(--green)}
+.section-pricing{background:var(--bg2);padding:96px 60px}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:48px}
+.p-col{padding:36px;background:var(--bg)}
+.p-col.mid{background:var(--bd);border-left:1px solid rgba(255,255,255,.15);border-right:1px solid rgba(255,255,255,.15)}
+.p-col.top{background:#0f172a}
+.p-tier{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;color:var(--ink)}
+.p-col.mid .p-tier,.p-col.top .p-tier{color:#fff}
+.p-col.top .p-tier{color:#FFD700}
+.p-desc{font-size:13px;color:var(--i3);margin-bottom:16px}
+.p-col.mid .p-desc,.p-col.top .p-desc{color:rgba(255,255,255,.5)}
+.p-price{font-family:'Plus Jakarta Sans',sans-serif;font-size:40px;font-weight:700;line-height:1;color:var(--ink);margin-bottom:20px}
+.p-col.mid .p-price{color:#fff}.p-col.top .p-price{color:#FFD700}
+.p-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.p-col.mid .p-divider,.p-col.top .p-divider{border-color:rgba(255,255,255,.15)}
+.p-items{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.p-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--i2);line-height:1.5}
+.p-col.mid .p-item,.p-col.top .p-item{color:rgba(255,255,255,.85)}
+.p-check{width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center}
+.p-check.g{background:var(--gl)}.p-check.w{background:rgba(255,255,255,.15)}.p-check.gold{background:rgba(255,215,0,.2)}
+.p-check svg{width:9px;height:9px}
+.p-highlight{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:13px;color:#FFD700;line-height:1.5}
+.p-cta{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;border:none;transition:all .2s}
+.p-cta.fc{background:var(--bl);color:var(--blue)}.p-cta.fc:hover{background:var(--bm)}
+.p-cta.pc{background:#fff;color:var(--bd)}.p-cta.pc:hover{background:var(--bl)}
+.p-cta.gc{background:#FFD700;color:#0f172a;font-weight:700}.p-cta.gc:hover{background:#FFC400}
+.section-trust{padding:96px 60px;max-width:1180px;margin:0 auto}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.testimonial{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px}
+.t-stars{color:#F59E0B;font-size:13px;margin-bottom:12px}
+.t-text{font-size:14px;color:var(--i2);line-height:1.7;margin-bottom:20px}
+.t-author{display:flex;align-items:center;gap:10px}
+.t-av{width:36px;height:36px;border-radius:50%;background:var(--bl);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0}
+.t-name{font-size:13px;font-weight:600}.t-bien{font-size:12px;color:var(--i4)}
+.t-result{display:inline-block;font-size:11px;font-weight:600;background:var(--gl);color:var(--green);padding:2px 8px;border-radius:4px;margin-top:3px}
+.section-cta{background:var(--blue);padding:96px 60px;text-align:center}
+.section-cta h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-1.5px;margin-bottom:16px}
+.section-cta p{font-size:17px;color:rgba(255,255,255,.7);margin-bottom:36px}
+.cta-w{background:#fff;color:var(--blue);padding:14px 32px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}.cta-w:hover{opacity:.92}
+/* FORM */
+.form-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.75);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.form-overlay.active{display:flex}
+.form-modal{background:var(--bg);width:100%;max-width:560px;border-radius:16px;overflow:hidden;max-height:92vh;display:flex;flex-direction:column}
+.form-header{background:var(--bd);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.fh-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#fff}.fh-logo span{color:var(--bm)}
+.form-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center}
+.form-progress{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.form-step-tab{flex:1;padding:12px;text-align:center;font-size:12px;font-weight:500;color:var(--i4);border-bottom:2px solid transparent;font-family:'Plus Jakarta Sans',sans-serif}
+.form-step-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.form-step-tab.done{color:var(--green);border-bottom-color:var(--green)}
+.form-body{padding:28px;overflow-y:auto;flex:1}
+.form-step{display:none}.form-step.active{display:block}
+.step-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;color:var(--ink);letter-spacing:-.5px}
+.step-sub{font-size:14px;color:var(--i3);margin-bottom:20px;line-height:1.6}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:var(--bl)}
+.u-icon{width:44px;height:44px;background:var(--bl);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.u-icon svg{width:20px;height:20px;color:var(--blue)}
+.u-text{font-size:14px;color:var(--i2);font-weight:500}.u-text span{color:var(--blue)}
+.u-sub{font-size:12px;color:var(--i4);margin-top:4px}
+.upload-files-list{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px}
+.u-tag{background:var(--bl);padding:4px 10px;font-size:12px;color:var(--blue);border-radius:6px;display:flex;align-items:center;gap:5px;font-weight:500}
+.u-tag button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:13px;opacity:.6}
+/* Progress bar for files */
+.file-progress{margin-top:12px}
+.file-progress-label{font-size:12px;color:var(--i3);margin-bottom:6px;display:flex;justify-content:space-between}
+.file-progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.file-progress-fill{height:100%;border-radius:3px;transition:width .3s ease;background:var(--green)}
+.file-progress-fill.warn{background:var(--amber)}
+.file-progress-fill.ok{background:var(--green)}
+.file-warning{font-size:12px;color:var(--amber);margin-top:6px;font-weight:500}
+.hint-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--i3);line-height:1.6;margin-top:14px}
+.hint-box strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px}
+.hint-box ul{margin-left:16px;margin-top:4px}
+.hint-box li{margin-bottom:2px}
+/* Step 2 loading */
+.loading-wrap{padding:8px 0}
+.loading-step-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--i3);position:relative}
+.loading-step-item:last-child{border-bottom:none}
+.loading-step-item.active{color:var(--ink);font-weight:500}
+.loading-step-item.done{color:var(--green)}
+.l-dot{width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .3s}
+.loading-step-item.active .l-dot{background:var(--blue);animation:pulse 1s infinite}
+.loading-step-item.done .l-dot{background:var(--green)}
+.l-progress{position:absolute;left:22px;top:100%;width:2px;height:calc(100% - 28px);background:var(--border);transform-origin:top}
+.loading-step-item.done .l-progress{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.loading-step-item .l-spinner{width:16px;height:16px;border:2px solid var(--bl);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;display:none}
+.loading-step-item.active .l-dot{display:none}
+.loading-step-item.active .l-spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-analyze{background:var(--blue);color:#fff;border:none;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;width:100%;margin-top:16px;transition:background .2s}.btn-analyze:hover{background:var(--bd)}
+/* Form fields */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--i3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;background:var(--bg)}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--blue)}
+.form-group textarea{resize:vertical;min-height:72px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* REPORT */
+#report-page{display:none;background:var(--bg2);min-height:100vh}
+.report-nav{background:var(--bg);border-bottom:1px solid var(--border);padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.rn-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--ink)}.rn-logo span{color:var(--blue)}
+.report-actions{display:flex;gap:10px}
+.btn-new-audit{border:1px solid var(--border);background:var(--bg);padding:8px 16px;font-size:13px;border-radius:8px;cursor:pointer;color:var(--i3);font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}.btn-new-audit:hover{border-color:var(--blue);color:var(--blue)}
+.report-wrap{max-width:860px;margin:0 auto;padding:40px 40px 80px}
+.r-score-card{background:var(--bd);border-radius:16px;padding:32px;margin-bottom:28px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.r-score-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:80px;font-weight:700;color:#fff;line-height:1;letter-spacing:-4px}
+.r-verdict{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-.5px}
+.r-profil{font-size:13px;color:rgba(255,255,255,.5)}
+.r-bar-label{font-size:10px;color:rgba(255,255,255,.4);margin-top:14px;margin-bottom:5px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.r-bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px}
+.r-bar-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s ease}
+/* Dimensions */
+.dims-section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--i4);margin-bottom:14px;font-family:'Plus Jakarta Sans',sans-serif}
+.dims-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+.dim-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px}
+.dim-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dim-name{font-size:13px;font-weight:700;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif}
+.dim-score{font-family:'Plus Jakarta Sans',sans-serif;font-size:30px;font-weight:700;color:var(--blue);line-height:1;letter-spacing:-1px}
+.dim-bar{height:3px;background:var(--bg3);border-radius:2px;margin-bottom:8px}
+.dim-bar-fill{height:100%;background:var(--blue);border-radius:2px}
+.dim-verdict{font-size:12px;color:var(--i3);margin-bottom:10px;line-height:1.4}
+.dim-footer{background:var(--bl);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center}
+.dim-footer-c{font-size:11px;font-weight:600;color:var(--blue)}
+.dim-footer-g{font-size:11px;color:var(--blue);opacity:.7}
+/* Section tabs */
+.section-tabs-wrap{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;position:sticky;top:64px;z-index:40}
+.section-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.sec-tab{display:flex;align-items:center;gap:5px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--i3);background:var(--bg);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap}
+.sec-tab:hover{border-color:var(--blue);color:var(--blue)}
+.sec-tab.active{border-color:var(--blue);background:var(--bl);color:var(--blue)}
+.sec-tab.ph{border-color:var(--red);color:var(--red)}.sec-tab.ph.active{background:var(--rl)}
+.sec-tab.pm{border-color:var(--amber);color:var(--amber)}.sec-tab.pm.active{background:var(--al)}
+.tab-gain{font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--bl);color:var(--blue)}
+.sec-tab.ph .tab-gain{background:var(--rl);color:var(--red)}
+.sec-tab.pm .tab-gain{background:var(--al);color:var(--amber)}
+/* Section blocks */
+.section-block{display:none;margin-bottom:20px}.section-block.visible{display:block}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.section-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.si-h{background:var(--rl)}.si-m{background:var(--al)}.si-l{background:var(--bl)}
+.section-title-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:700;color:var(--ink)}
+.prio-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px}
+.pb-h{background:var(--rl);color:var(--red)}.pb-m{background:var(--al);color:var(--amber)}.pb-l{background:var(--bl);color:var(--blue)}
+.gain-badge{font-size:12px;font-weight:600;background:var(--bd);color:#fff;padding:3px 10px;border-radius:100px;margin-left:auto}
+/* Problem + rec layout */
+.prob-rec-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;align-items:start}
+.prob-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.prob-dot-wrap{display:flex;align-items:flex-start;gap:10px}
+.prob-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px}
+.prob-dot.m{background:var(--amber)}.prob-dot.l{background:var(--blue)}
+.prob-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.prob-why{font-size:12px;color:var(--i3);line-height:1.5}
+.rec-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.rec-label-sm{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif}
+.rec-text{font-size:13px;color:var(--ink);line-height:1.6;white-space:pre-line}
+.rec-footer{display:flex;justify-content:flex-end;margin-top:8px}
+.copy-btn{background:var(--bl);border:none;padding:5px 12px;font-size:11px;font-weight:600;border-radius:5px;cursor:pointer;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--gl);color:var(--green)}
+/* Options (titres, descriptions) */
+.options-section{margin-bottom:16px}
+.options-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--i4);margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif}
+.option-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;align-items:start}
+.option-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px}
+.option-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.option-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--blue);background:var(--bl);width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.option-angle{font-size:10px;font-weight:600;color:var(--i3);background:var(--bg3);padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px}
+.option-ctr{font-size:11px;font-weight:600;color:var(--green);margin-left:auto}
+.option-text{font-size:13px;color:var(--ink);line-height:1.6;font-weight:500;white-space:pre-line}
+.option-context{font-size:12px;color:var(--i3);font-style:italic;margin-top:4px;line-height:1.5}
+.option-right{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px}
+/* Equip items */
+.equip-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.equip-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.equip-why{font-size:12px;color:var(--i3);line-height:1.5;margin-bottom:5px}
+.equip-impact{font-size:11px;font-weight:600;background:var(--gl);color:var(--green);padding:2px 7px;border-radius:3px}
+.equip-prix{font-size:11px;font-weight:600;background:var(--bg3);color:var(--i3);padding:2px 7px;border-radius:3px;margin-left:5px}
+/* Gift */
+.gift-card{background:linear-gradient(135deg,#f0f4ff,var(--bl));border:1px solid var(--bm);border-radius:10px;padding:14px;margin-bottom:8px}
+.gift-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--bd);margin-bottom:4px}
+.gift-why{font-size:12px;color:var(--i2);line-height:1.5;margin-bottom:6px}
+.gift-meta{display:flex;gap:6px;flex-wrap:wrap}
+.gift-badge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:3px}
+.gb-b{background:var(--gl);color:var(--green)}.gb-q{background:var(--al);color:var(--amber)}
+/* Confort */
+.confort-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.confort-head{padding:12px 14px;border-bottom:1px solid var(--border)}
+.confort-name{font-size:13px;font-weight:600;color:var(--ink)}
+.confort-statut{font-size:11px;font-weight:600;padding:2px 7px;border-radius:3px;margin-left:8px}
+.confort-statut.ok{background:var(--gl);color:var(--green)}.confort-statut.nok{background:var(--rl);color:var(--red)}
+.confort-rec{padding:12px 14px;background:var(--bg2)}
+.confort-why{font-size:12px;color:var(--i3);line-height:1.5;margin-bottom:8px}
+.confort-text{font-size:13px;color:var(--ink);line-height:1.6}
+/* Concurrent */
+.concurrent-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
+.concurrent-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.concurrent-rang{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--blue);background:var(--bl);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.concurrent-profil{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.concurrent-score{font-size:11px;color:var(--i3);border:1px solid var(--border);padding:2px 7px;border-radius:4px}
+.concurrent-av{font-size:12px;color:var(--i3);padding:2px 0 2px 12px;position:relative}.concurrent-av:before{content:"•";position:absolute;left:0;color:var(--red)}
+.concurrent-contrer{font-size:12px;color:var(--i2);background:var(--gl);border-radius:7px;padding:8px 12px;line-height:1.5;margin-top:8px}
+/* BP */
+.bp-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--i2);line-height:1.5;background:var(--bl);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+/* Guide banner */
+.guide-banner{background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);border-radius:16px;padding:32px;margin-top:32px;display:flex;align-items:center;gap:28px}
+.guide-banner-text h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:6px}
+.guide-banner-text p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;max-width:500px}
+.btn-guide{background:#FFD700;color:#1a1a2e;border:none;padding:12px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;white-space:nowrap;transition:all .2s}.btn-guide:hover{background:#FFC400}
+.btn-guide-sub{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:5px}
+/* Confirm dialog */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.75);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.confirm-overlay.active{display:flex}
+.confirm-modal{background:var(--bg);border-radius:16px;padding:32px;max-width:420px;width:100%}
+.confirm-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px}
+.confirm-text{font-size:14px;color:var(--i3);line-height:1.6;margin-bottom:24px}
+.confirm-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel{border:1px solid var(--border);background:var(--bg);padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;color:var(--i2)}
+.btn-confirm-exit{background:var(--red);color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+.btn-pdf{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+/* Guide overlay */
+.guide-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.85);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.guide-overlay.active{display:flex}
+.guide-modal{background:var(--bg);width:100%;max-width:600px;border-radius:16px;overflow:hidden;max-height:92vh;display:flex;flex-direction:column}
+.guide-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.guide-header h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:#FFD700}
+.guide-body{padding:28px;overflow-y:auto;flex:1}
+.guide-loading{text-align:center;padding:40px 20px;display:none}
+.guide-loading-icon{font-size:32px;margin-bottom:12px}
+.guide-loading-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;color:var(--i3);line-height:1.6}
+@media(max-width:768px){
+  nav,.report-nav{padding:0 20px}
+  .hero{grid-template-columns:1fr;padding:60px 20px;gap:40px}.hero h1{font-size:34px}.hero-card{display:none}
+  .stats-band{grid-template-columns:1fr;padding:40px 20px;gap:32px}.stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 28px}.stat-item:last-child{border-bottom:none}
+  .section-how,.section-trust{padding:60px 20px}.workflow{grid-template-columns:1fr 1fr}
+  .wf-step:nth-child(2){border-right:none}.wf-step:nth-child(1){border-radius:12px 0 0 0}.wf-step:nth-child(2){border-radius:0 12px 0 0}.wf-step:nth-child(3){border-radius:0 0 0 12px;border-top:none}.wf-step:nth-child(4){border-radius:0 0 12px 0;border-top:none;border-left:none}
+  .section-pricing{padding:60px 20px}.pricing-grid{grid-template-columns:1fr}
+  .p-col.mid{border-left:none;border-right:none;border-top:1px solid rgba(255,255,255,.15)}
+  .testimonials{grid-template-columns:1fr}
+  .section-cta{padding:60px 20px}.section-cta h2{font-size:30px}
+  .dims-grid{grid-template-columns:1fr}.report-wrap{padding:28px 16px 60px}
+  .r-score-card{grid-template-columns:1fr;gap:16px}.r-score-num{font-size:60px}
+  .prob-rec-row,.option-row{grid-template-columns:1fr}
+  .section-tabs-wrap{top:56px;border-radius:0;border-left:none;border-right:none}
+  .guide-banner{flex-direction:column;gap:16px}
+  .form-grid-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<nav>
+  <button class="logo j" onclick="goHome()">Léon<span>.</span></button>
+  <button class="nav-cta" onclick="openForm()">Analyser mon annonce</button>
+</nav>
+
+<div id="landing-page">
+<section class="hero">
+  <div>
+    <div class="hero-badge">✦ Audit Airbnb — Propulsé par IA</div>
+    <h1 class="j">Libérez tout le potentiel<br>de <span>votre annonce</span> locative.</h1>
+    <p class="hero-sub">Léon analyse votre annonce et vous donne toutes les optimisations à faire pour obtenir plus de réservations, plus rapidement — sur 10 dimensions clés.</p>
+    <button class="hero-cta" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
+  </div>
+  <div class="hero-card">
+    <div class="hc-top"><div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--i4)">Exemple de rapport Léon</div><div class="hc-score">54</div></div>
+    <div class="hc-verdict">Votre annonce a du potentiel inexploité</div>
+    <div class="hc-dims">
+      <div class="hc-dim"><span class="hc-dim-name">Visibilité dans les recherches</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:42%"></div></div><span class="hc-dim-val">42</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Attractivité de l'annonce</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:68%"></div></div><span class="hc-dim-val">68</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Capacité à convaincre</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:55%"></div></div><span class="hc-dim-val">55</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Qualité de l'expérience</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:72%"></div></div><span class="hc-dim-val">72</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band">
+  <div class="stat-item"><div class="stat-num">91%</div><div class="stat-label">des annonces françaises ont un contenu sous-optimisé</div></div>
+  <div class="stat-item"><div class="stat-num">800+</div><div class="stat-label">signaux analysés par l'algorithme Airbnb</div></div>
+  <div class="stat-item"><div class="stat-num">+40%</div><div class="stat-label">de revenus pour les annonces bien positionnées</div></div>
+</div>
+
+<section class="section-how">
+  <div class="s-label">Comment Léon analyse votre annonce</div>
+  <h2 class="s-title j">Une analyse fondée sur les données Airbnb 2025-2026.</h2>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-num">01</div><div class="wf-title">Lecture visuelle IA</div><div class="wf-desc">Léon analyse vos screenshots — titre, photos, description, note, badge, prix, équipements visibles, contexte géographique.</div><span class="wf-tag a">Vision IA</span></div>
+    <div class="wf-step"><div class="wf-num">02</div><div class="wf-title">Scoring algorithmique</div><div class="wf-desc">4 dimensions issues des signaux de l'algorithme Airbnb : visibilité dans les recherches, attractivité, conviction, expérience.</div><span class="wf-tag a">Algo Airbnb</span></div>
+    <div class="wf-step"><div class="wf-num">03</div><div class="wf-title">Benchmark local</div><div class="wf-desc">Comparaison avec les top annonces de votre ville et type de bien. Identification précise des écarts à combler.</div><span class="wf-tag a">Data locale</span></div>
+    <div class="wf-step"><div class="wf-num">04</div><div class="wf-title">Rapport actionnable</div><div class="wf-desc">10 sections d'optimisation avec chaque problème, son impact et la solution prête à copier-coller directement dans Airbnb.</div><span class="wf-tag g">Prêt à l'emploi</span></div>
+  </div>
+</section>
+
+<section class="section-pricing">
+  <div class="pricing-inner">
+    <div class="s-label">Nos offres</div>
+    <h2 class="s-title j">Du diagnostic à l'expérience voyageur complète.</h2>
+    <div class="pricing-grid">
+      <div class="p-col">
+        <div class="p-tier j">Gratuit</div>
+        <div class="p-desc">Pour découvrir votre score et vos opportunités</div>
+        <div class="p-price j">0€</div>
+        <hr class="p-divider">
+        <ul class="p-items">
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global + 4 dimensions analysées</li>
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>10 sections d'optimisation complètes</li>
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations à copier-coller</li>
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Classement par priorité et gain estimé</li>
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Titres et descriptions réécrites (5+ options)</li>
+          <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations gifting personnalisées</li>
+        </ul>
+        <button class="p-cta fc" onclick="openForm()">Commencer gratuitement →</button>
+      </div>
+      <div class="p-col mid">
+        <div class="p-tier j">Premium</div>
+        <div class="p-desc">Pour optimiser en profondeur avec suivi</div>
+        <div class="p-price j">9€</div>
+        <hr class="p-divider">
+        <ul class="p-items">
+          <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu Gratuit inclus</li>
+          <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Nouvel audit après modifications</li>
+          <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Comparaison des scores avant/après</li>
+          <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Support prioritaire</li>
+        </ul>
+        <button class="p-cta pc" onclick="alert('Bientôt disponible')">Bientôt disponible →</button>
+      </div>
+      <div class="p-col top">
+        <div class="p-tier j">Premium+</div>
+        <div class="p-desc">Pour créer une expérience voyageur complète</div>
+        <div class="p-price j" style="color:#FFD700">19€</div>
+        <hr class="p-divider">
+        <div class="p-highlight">✨ Guide d'accueil personnalisé — téléchargeable au format Word</div>
+        <ul class="p-items">
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu Premium inclus</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Guide adapté : ski, mer, ville, campagne…</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Restaurants et expériences locales</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Numéros utiles et urgences</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Infos pratiques maison intégrées</li>
+        </ul>
+        <button class="p-cta gc" onclick="openForm()">Essayer maintenant →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-trust">
+  <div class="s-label">Témoignages</div>
+  <h2 class="s-title j">Ils ont libéré le potentiel de leur annonce.</h2>
+  <div class="testimonials">
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"En 3 minutes, Léon a identifié que ma photo de couverture tuait mon taux de clic. J'ai changé. Résultat : +290€ de revenus dès le mois suivant."</p><div class="t-author"><div class="t-av">SB</div><div><div class="t-name">Sophie B.</div><div class="t-bien">Appartement · Lyon 2e</div><div class="t-result">+290€/mois</div></div></div></div>
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"Je pensais que mon annonce était bien. Léon m'a montré 6 incohérences que je n'avais pas vues. Corrections faites en une soirée."</p><div class="t-author"><div class="t-av">MR</div><div><div class="t-name">Marc R.</div><div class="t-bien">Studio · Bordeaux centre</div><div class="t-result">+340€/mois</div></div></div></div>
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"Le guide d'accueil généré par Léon a transformé l'expérience de mes voyageurs. Mes revenus ont grimpé grâce à des avis bien meilleurs."</p><div class="t-author"><div class="t-av">CF</div><div><div class="t-name">Claire F.</div><div class="t-bien">Maison · Biarritz</div><div class="t-result">+420€/mois</div></div></div></div>
+  </div>
+</section>
+
+<section class="section-cta">
+  <h2 class="j">Libérez le potentiel de votre annonce.</h2>
+  <p>Diagnostic complet gratuit — résultat immédiat, sans inscription.</p>
+  <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
+</section>
+</div>
+
+<!-- FORM OVERLAY -->
+<div class="form-overlay" id="formOverlay">
+  <div class="form-modal">
+    <div class="form-header"><div class="fh-logo j">Léon<span>.</span></div><button class="form-close" onclick="closeForm()">×</button></div>
+    <div class="form-progress">
+      <div class="form-step-tab active" id="tab1">01 · Screenshots</div>
+      <div class="form-step-tab" id="tab2">02 · Analyse</div>
+    </div>
+    <div class="form-body">
+      <div class="form-step active" id="step1">
+        <div class="step-title j">Déposez vos screenshots</div>
+        <p class="step-sub">Jusqu'à 20 captures de votre annonce Airbnb. Léon lit tout automatiquement.</p>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <div class="u-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+          <div class="u-text"><span>Cliquez pour sélectionner</span> ou glissez ici</div>
+          <div class="u-sub">JPG, PNG · Jusqu'à 20 images</div>
+        </div>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+        <div class="upload-files-list" id="filesList"></div>
+        <div class="file-progress" id="fileProgress" style="display:none">
+          <div class="file-progress-label"><span id="fileProgressLabel">0 / 20 screenshots</span><span id="fileProgressStatus"></span></div>
+          <div class="file-progress-bar"><div class="file-progress-fill" id="fileProgressFill" style="width:0%"></div></div>
+          <div class="file-warning" id="fileWarning" style="display:none">⚠️ Moins de 5 screenshots — l'analyse sera moins complète</div>
+        </div>
+        <div class="hint-box"><strong>Quoi capturer pour une analyse complète ?</strong>
+          <ul>
+            <li>Le titre et les premières photos</li>
+            <li>La galerie photo complète</li>
+            <li>La description</li>
+            <li>Votre profil hôte</li>
+            <li>La liste des équipements</li>
+          </ul>
+        </div>
+        <button class="btn-analyze" onclick="startAnalysis()">Lancer l'analyse →</button>
+      </div>
+      <div class="form-step" id="step2">
+        <div class="step-title j">Léon analyse votre annonce…</div>
+        <p class="step-sub">Environ 45 secondes pour une analyse complète sur 10 dimensions.</p>
+        <div class="loading-wrap">
+          <div class="loading-step-item active" id="load1">
+            <div class="l-dot"></div><div class="l-spinner"></div>
+            <span>Lecture et analyse visuelle IA</span>
+            <div class="l-progress"></div>
+          </div>
+          <div class="loading-step-item" id="load2">
+            <div class="l-dot"></div><div class="l-spinner"></div>
+            <span>Scoring sur 4 dimensions algorithmiques</span>
+            <div class="l-progress"></div>
+          </div>
+          <div class="loading-step-item" id="load3">
+            <div class="l-dot"></div><div class="l-spinner"></div>
+            <span>Génération du rapport complet — 10 sections</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-modal">
+    <div class="confirm-title j">Quitter le rapport ?</div>
+    <div class="confirm-text">Votre rapport sera perdu. Voulez-vous d'abord le télécharger en PDF ?</div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
+      <button class="btn-pdf" onclick="downloadPDF()">Télécharger le PDF</button>
+      <button class="btn-confirm-exit" onclick="confirmExit()">Quitter sans sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE OVERLAY -->
+<div class="guide-overlay" id="guideOverlay">
+  <div class="guide-modal">
+    <div class="guide-header"><h3>Guide d'accueil — Informations complémentaires</h3><button class="form-close" onclick="closeGuide()">×</button></div>
+    <div class="guide-body">
+      <div id="guide-form-content">
+        <p style="font-size:14px;color:var(--i3);margin-bottom:20px;line-height:1.6">Renseignez les informations pratiques de votre logement pour personnaliser le guide.</p>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif">Arrivée</div>
+        <div class="form-grid-2">
+          <div class="form-group"><label>Heure check-in</label><input type="text" id="g-checkin" placeholder="Dès 15h00"></div>
+          <div class="form-group"><label>Code d'accès / boîte à clés</label><input type="text" id="g-code" placeholder="Boîte à clés : 4521"></div>
+        </div>
+        <div class="form-group"><label>Instructions parking</label><textarea id="g-parking" placeholder="ex: Parking gratuit dans la rue, pas de stationnement les lundis matin de 8h à 12h..."></textarea></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:16px 0 12px;font-family:'Plus Jakarta Sans',sans-serif">Pendant le séjour</div>
+        <div class="form-grid-2">
+          <div class="form-group"><label>Nom réseau Wifi</label><input type="text" id="g-wifi-nom" placeholder="MonWifi_5G"></div>
+          <div class="form-group"><label>Mot de passe Wifi</label><input type="text" id="g-wifi-mdp" placeholder="motdepasse2024"></div>
+        </div>
+        <div class="form-group"><label>Infos pratiques logement</label><textarea id="g-infos" placeholder="ex: Poubelles le mardi soir, chauffage via thermostat dans l'entrée, TV via télécommande noire, lave-linge mode 30°..."></textarea></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:16px 0 12px;font-family:'Plus Jakarta Sans',sans-serif">Départ</div>
+        <div class="form-group"><label>Heure check-out</label><input type="text" id="g-checkout" placeholder="Avant 11h00"></div>
+        <div class="form-group"><label>Instructions départ</label><textarea id="g-depart" placeholder="ex: Laisser les clés sur la table, fermer les volets, vider le réfrigérateur..."></textarea></div>
+        <button class="btn-analyze" style="background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#FFD700;margin-top:8px" onclick="generateGuide()">Générer mon guide d'accueil Word →</button>
+      </div>
+      <div class="guide-loading" id="guide-loading">
+        <div class="guide-loading-icon">✨</div>
+        <div class="guide-loading-text">Léon génère votre guide d'accueil personnalisé…<br><span style="font-size:12px;color:var(--i4)">Restaurants, expériences locales, numéros utiles — environ 30 secondes</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT PAGE -->
+<div id="report-page">
+  <div class="report-nav">
+    <button class="rn-logo j" onclick="askConfirmExit()">Léon<span>.</span></button>
+    <div class="report-actions">
+      <button class="btn-new-audit" onclick="askConfirmExit()">← Nouvel audit</button>
+    </div>
+  </div>
+  <div class="report-wrap">
+    <div class="r-score-card">
+      <div class="r-score-num" id="r-score">—</div>
+      <div>
+        <div class="r-verdict" id="r-verdict"></div>
+        <div class="r-profil" id="r-profil"></div>
+        <div class="r-bar-label">Score global</div>
+        <div class="r-bar"><div class="r-bar-fill" id="r-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="dims-section-label">4 dimensions analysées</div>
+    <div class="dims-grid" id="dims-grid"></div>
+    <div class="section-tabs-wrap"><div class="section-tabs" id="section-tabs"></div></div>
+    <div id="sections-content"></div>
+    <div class="guide-banner" id="guide-banner" style="display:none">
+      <div class="guide-banner-text">
+        <h3>✨ Guide d'accueil personnalisé</h3>
+        <p>Générez un guide complet au format Word — restaurants, expériences locales, numéros utiles, infos pratiques maison — adapté à votre destination.</p>
+      </div>
+      <div style="flex-shrink:0">
+        <button class="btn-guide" onclick="openGuide()">Générer mon guide Word →</button>
+        <div class="btn-guide-sub">Premium+ · 19€ — actuellement gratuit en beta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var selectedFiles=[];
+var currentVisionData={};
+var currentReportData={};
+
+function goHome(){askConfirmExit();}
+function openForm(){
+  selectedFiles=[];
+  document.getElementById('filesList').innerHTML='';
+  document.getElementById('fileProgress').style.display='none';
+  updateFileProgress();
+  goToStep(1);
+  document.getElementById('formOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeForm(){document.getElementById('formOverlay').classList.remove('active');document.body.style.overflow='';}
+function openGuide(){document.getElementById('guideOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeGuide(){document.getElementById('guideOverlay').classList.remove('active');document.body.style.overflow='';document.getElementById('guide-form-content').style.display='block';document.getElementById('guide-loading').style.display='none';}
+function askConfirmExit(){
+  if(document.getElementById('report-page').style.display==='block'){
+    document.getElementById('confirmOverlay').classList.add('active');
+  } else {
+    goHome2();
+  }
+}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('active');}
+function confirmExit(){closeConfirm();goHome2();}
+function goHome2(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';window.scrollTo(0,0);}
+
+function downloadPDF(){
+  closeConfirm();
+  var el=document.getElementById('report-page');
+  var style=document.createElement('style');
+  style.textContent='.report-nav,.section-tabs-wrap,.guide-banner,.report-actions{display:none!important}.report-wrap{padding:20px!important}';
+  document.head.appendChild(style);
+  window.print();
+  document.head.removeChild(style);
+}
+
+function goToStep(n){
+  document.querySelectorAll('.form-step').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.form-step-tab').forEach(function(t){t.classList.remove('active','done');});
+  document.getElementById('step'+n).classList.add('active');
+  document.getElementById('tab'+n).classList.add('active');
+  for(var i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');
+}
+
+function handleFiles(f){
+  selectedFiles=selectedFiles.concat(Array.from(f)).slice(0,20);
+  renderFilesList();
+  updateFileProgress();
+}
+function handleDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
+function handleDragLeave(e){e.currentTarget.classList.remove('dragover');}
+function handleDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');handleFiles(e.dataTransfer.files);}
+function removeFile(i){selectedFiles.splice(i,1);renderFilesList();updateFileProgress();}
+function renderFilesList(){
+  document.getElementById('filesList').innerHTML=selectedFiles.map(function(f,i){
+    return '<div class="u-tag">'+f.name+'<button onclick="removeFile('+i+')">×</button></div>';
+  }).join('');
+}
+function updateFileProgress(){
+  var n=selectedFiles.length;
+  var prog=document.getElementById('fileProgress');
+  var fill=document.getElementById('fileProgressFill');
+  var label=document.getElementById('fileProgressLabel');
+  var warn=document.getElementById('fileWarning');
+  var status=document.getElementById('fileProgressStatus');
+  if(n===0){prog.style.display='none';return;}
+  prog.style.display='block';
+  var pct=Math.min(n/20*100,100);
+  fill.style.width=pct+'%';
+  label.textContent=n+' / 20 screenshots';
+  if(n<5){fill.className='file-progress-fill warn';warn.style.display='block';status.textContent='Insuffisant';}
+  else if(n<10){fill.className='file-progress-fill ok';warn.style.display='none';status.textContent='Correct';}
+  else{fill.className='file-progress-fill ok';warn.style.display='none';status.textContent='Excellent';}
+}
+
+function setLoadStep(n){
+  ['load1','load2','load3'].forEach(function(id,idx){
+    var el=document.getElementById(id);
+    el.className='loading-step-item';
+    if(idx+1<n)el.classList.add('done');
+    else if(idx+1===n)el.classList.add('active');
+  });
+}
+
+async function startAnalysis(){
+  if(selectedFiles.length===0){alert('Déposez au moins un screenshot.');return;}
+  goToStep(2);setLoadStep(1);
+  setTimeout(function(){setLoadStep(2);},10000);
+  setTimeout(function(){setLoadStep(3);},25000);
+  var fd=new FormData();
+  selectedFiles.forEach(function(f,i){fd.append('image_'+i,f);});
+  try{
+    var res=await fetch('/analyze',{method:'POST',body:fd});
+    var data=await res.json();
+    if(data.success){setLoadStep(4);setTimeout(function(){renderReport(data);},600);}
+    else{alert('Erreur : '+data.error);goToStep(1);}
+  }catch(e){alert('Erreur de connexion.');goToStep(1);}
+}
+
+async function generateGuide(){
+  var formData={
+    wifi_nom:document.getElementById('g-wifi-nom').value,
+    wifi_mdp:document.getElementById('g-wifi-mdp').value,
+    parking:document.getElementById('g-parking').value,
+    code_acces:document.getElementById('g-code').value,
+    checkin:document.getElementById('g-checkin').value,
+    checkout:document.getElementById('g-checkout').value,
+    infos_specifiques:document.getElementById('g-infos').value,
+    instructions_depart:document.getElementById('g-depart').value
+  };
+  document.getElementById('guide-form-content').style.display='none';
+  document.getElementById('guide-loading').style.display='block';
+  try{
+    var res=await fetch('/generate-guide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vision:currentVisionData,form:formData})});
+    if(res.ok){
+      var blob=await res.blob();
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      var titre=(currentVisionData.titre_visible||'logement').substring(0,40);
+      a.href=url;a.download="Guide d'accueil - "+titre+".docx";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeGuide();
+    }else{alert('Erreur lors de la génération.');closeGuide();}
+  }catch(e){alert('Erreur de connexion.');closeGuide();}
+}
+
+function getVerdict(s){if(s<=40)return'Votre annonce passe inaperçue';if(s<=60)return'Votre annonce sous-performe';if(s<=80)return'Votre annonce a du potentiel inexploité';return'Votre annonce est bien positionnée';}
+function getPrioClass(p){if(p==='Prioritaire')return'h';if(p==='Important')return'm';return'l';}
+function getPrioLabel(p){if(p==='Prioritaire')return'🔴 Prioritaire';if(p==='Important')return'🟡 Important';return'⚪ À planifier';}
+
+var SECTION_CONFIG=[
+  {key:'titre',label:'Titre',icon:'📝'},
+  {key:'description',label:'Description',icon:'📄'},
+  {key:'photos',label:'Photos',icon:'📸'},
+  {key:'equipements',label:'Équipements',icon:'🛋️'},
+  {key:'confort_accueil',label:'Confort & Accueil',icon:'🎁'},
+  {key:'parametres_reservation',label:'Paramètres de réservation',icon:'⚙️'},
+  {key:'profil_hote',label:'Profil hôte',icon:'👤'},
+  {key:'regles',label:'Règles',icon:'📋'},
+  {key:'experience_voyageur',label:'Expérience',icon:'✨'},
+  {key:'positionnement',label:'Concurrents',icon:'🏆'}
+];
+
+function renderReport(data){
+  closeForm();
+  currentVisionData=data.vision||{};
+  currentReportData=data;
+  document.getElementById('landing-page').style.display='none';
+  document.getElementById('report-page').style.display='block';
+  window.scrollTo(0,0);
+  var s=data.scoring,r=data.recommendations;
+  document.getElementById('r-score').textContent=s.score_global;
+  document.getElementById('r-verdict').textContent=getVerdict(s.score_global);
+  document.getElementById('r-profil').textContent=s.profil_annonce||'';
+  setTimeout(function(){document.getElementById('r-bar').style.width=s.score_global+'%';},100);
+
+  var DIMS=[
+    {key:'visibilite',label:'Visibilité dans les recherches'},
+    {key:'premier_regard',label:"Attractivité de l'annonce"},
+    {key:'pouvoir_conviction',label:'Capacité à convaincre'},
+    {key:'satisfaction_voyageur',label:"Qualité de l'expérience"}
+  ];
+  document.getElementById('dims-grid').innerHTML=DIMS.map(function(d){
+    var dim=s[d.key];if(!dim)return'';
+    return '<div class="dim-card"><div class="dim-top"><div class="dim-name">'+d.label+'</div><div class="dim-score">'+dim.score+'</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:'+dim.score+'%"></div></div><div class="dim-verdict">'+(dim.verdict_court||'')+'</div><div class="dim-footer"><span class="dim-footer-c">'+(dim.nb_optimisations||'?')+' optimisations</span><span class="dim-footer-g">'+(dim.gain_potentiel||'')+'</span></div></div>';
+  }).join('');
+
+  if(!r||!r.sections)return;
+  var secs=r.sections;
+  var prioOrder={'Prioritaire':0,'Important':1,'À planifier':2};
+  var sorted=SECTION_CONFIG.filter(function(sc){return secs[sc.key];}).sort(function(a,b){
+    var pa=prioOrder[secs[a.key].priorite]!==undefined?prioOrder[secs[a.key].priorite]:2;
+    var pb=prioOrder[secs[b.key].priorite]!==undefined?prioOrder[secs[b.key].priorite]:2;
+    if(pa!==pb)return pa-pb;
+    var ga=parseInt((secs[a.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
+    var gb=parseInt((secs[b.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
+    return gb-ga;
+  });
+
+  document.getElementById('section-tabs').innerHTML=sorted.map(function(sc,idx){
+    var sec=secs[sc.key];
+    var pc=getPrioClass(sec.priorite||'');
+    var active=idx===0?' active':'';
+    var prioTab=pc==='h'?' ph':pc==='m'?' pm':'';
+    return '<div class="sec-tab'+active+prioTab+'" onclick="showSection(\''+sc.key+'\')" id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+'<span class="tab-gain">'+(sec.gain_potentiel||'')+'</span></div>';
+  }).join('');
+
+  document.getElementById('sections-content').innerHTML=sorted.map(function(sc,idx){
+    var sec=secs[sc.key];
+    var pc=getPrioClass(sec.priorite||'');
+    return '<div class="section-block'+(idx===0?' visible':'')+'" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
+  }).join('');
+
+  document.getElementById('guide-banner').style.display='flex';
+}
+
+function showSection(key){
+  document.querySelectorAll('.section-block').forEach(function(b){b.classList.remove('visible');});
+  document.querySelectorAll('.sec-tab').forEach(function(t){t.classList.remove('active');});
+  var block=document.getElementById('section-'+key);
+  var tab=document.getElementById('tab-'+key);
+  if(block)block.classList.add('visible');
+  if(tab)tab.classList.add('active');
+  if(block){setTimeout(function(){var y=block.getBoundingClientRect().top+window.scrollY-140;window.scrollTo({top:y,behavior:'smooth'});},50);}
+}
+
+function renderProbRec(prob,pourquoi,impact,rec,recLabel){
+  var html='<div class="prob-rec-row">';
+  html+='<div class="prob-card"><div class="prob-dot-wrap"><div class="prob-dot"></div><div><div class="prob-title">'+escHtml(prob||'')+'</div>';
+  if(pourquoi)html+='<div class="prob-why">'+escHtml(pourquoi)+'</div>';
+  if(impact)html+='<div style="font-size:11px;font-weight:600;color:var(--green);margin-top:4px">'+escHtml(impact)+'</div>';
+  html+='</div></div></div>';
+  if(rec){
+    html+='<div class="rec-card"><div class="rec-label-sm">'+(recLabel||'Recommandation')+'</div><div class="rec-text">'+escHtml(rec)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(rec)+'" onclick="copyData(this)">Copier</button></div></div>';
+  } else {
+    html+='<div></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function renderSection(sc,sec,pc){
+  var html='<div class="section-header"><div class="section-icon si-'+pc+'">'+sc.icon+'</div><div class="section-title-text">'+sc.label+'</div><span class="prio-badge pb-'+pc+'">'+getPrioLabel(sec.priorite||'À planifier')+'</span>';
+  if(sec.gain_potentiel)html+='<span class="gain-badge">'+sec.gain_potentiel+'</span>';
+  html+='</div>';
+
+  if(sc.key==='titre'){
+    if(sec.titre_actuel)html+='<div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--i3)">Titre actuel : <strong style="color:var(--ink)">'+escHtml(sec.titre_actuel)+'</strong></div>';
+    if(sec.problemes)sec.problemes.forEach(function(p){
+      html+=renderProbRec(p.probleme,p.pourquoi,p.impact,null,null);
+    });
+    if(sec.options&&sec.options.length){
+      html+='<div class="options-section"><div class="options-label">Léon vous recommande ces titres — testez-les en A/B</div>';
+      for(var i=0;i<sec.options.length;i+=2){
+        html+='<div class="option-row">';
+        var o1=sec.options[i];
+        html+='<div class="option-card"><div class="option-hdr"><div class="option-num">'+o1.option+'</div><span class="option-angle">'+(o1.angle||'')+'</span><span class="option-ctr">'+(o1.ctr_estime||'')+'</span></div><div class="option-text">'+escHtml(o1.titre||'')+'</div><div class="option-context">'+(o1.contexte?escHtml(o1.contexte):'')+'</div><div class="rec-footer" style="margin-top:8px"><button class="copy-btn" data-copy="'+escAttr(o1.titre||'')+'" onclick="copyData(this)">Copier</button></div></div>';
+        if(sec.options[i+1]){
+          var o2=sec.options[i+1];
+          html+='<div class="option-card"><div class="option-hdr"><div class="option-num">'+o2.option+'</div><span class="option-angle">'+(o2.angle||'')+'</span><span class="option-ctr">'+(o2.ctr_estime||'')+'</span></div><div class="option-text">'+escHtml(o2.titre||'')+'</div><div class="option-context">'+(o2.contexte?escHtml(o2.contexte):'')+'</div><div class="rec-footer" style="margin-top:8px"><button class="copy-btn" data-copy="'+escAttr(o2.titre||'')+'" onclick="copyData(this)">Copier</button></div></div>';
+        } else {html+='<div></div>';}
+        html+='</div>';
+      }
+      html+='</div>';
+    }
+  } else if(sc.key==='description'){
+    if(sec.problemes)sec.problemes.forEach(function(p){html+=renderProbRec(p.probleme,p.pourquoi,p.impact,null,null);});
+    if(sec.options&&sec.options.length){
+      html+='<div class="options-section"><div class="options-label">Léon vous recommande ces descriptions</div>';
+      sec.options.forEach(function(o){
+        html+='<div style="margin-bottom:12px"><div class="option-card" style="grid-column:1/-1"><div class="option-hdr"><div class="option-num">'+o.option+'</div><span class="option-angle">'+(o.style||'')+'</span></div><div class="rec-text" style="white-space:pre-line;font-size:13px;color:var(--ink);line-height:1.7">'+escHtml(o.texte||'')+'</div><div class="rec-footer" style="margin-top:10px"><button class="copy-btn" data-copy="'+escAttr(o.texte||'')+'" onclick="copyData(this)">Copier cette description</button></div></div></div>';
+      });
+      html+='</div>';
+    }
+  } else if(sc.key==='photos'){
+    if(sec.best_practices&&sec.best_practices.length){
+      sec.best_practices.forEach(function(bp){html+='<div class="bp-item"><span>💡</span>'+escHtml(bp)+'</div>';});
+    }
+    if(sec.analyse_photos&&sec.analyse_photos.length){
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:14px 0 10px">Analyse photo par photo</div>';
+      sec.analyse_photos.forEach(function(p){
+        html+=renderProbRec('Photo '+p.numero+' — '+escHtml(p.probleme||''),p.pourquoi,null,p.recommandation,'Comment refaire cette photo');
+      });
+    }
+    if(sec.photos_manquantes&&sec.photos_manquantes.length){
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:14px 0 10px">Photos à ajouter</div>';
+      sec.photos_manquantes.forEach(function(p){
+        html+=renderProbRec('📸 '+escHtml(p.photo||''),p.pourquoi,null,p.conseil_technique,'Conseil technique');
+      });
+    }
+  } else if(sc.key==='equipements'){
+    if(sec.equipements_a_cocher&&sec.equipements_a_cocher.length){
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin-bottom:10px">✅ À COCHER DANS AIRBNB MAINTENANT</div>';
+      sec.equipements_a_cocher.forEach(function(e){
+        html+='<div class="equip-item"><div class="equip-name">'+escHtml(e.equipement||'')+'</div>';
+        if(e.pourquoi)html+='<div class="equip-why">'+escHtml(e.pourquoi)+'</div>';
+        if(e.impact)html+='<span class="equip-impact">'+escHtml(e.impact)+'</span>';
+        html+='</div>';
+      });
+    }
+    if(sec.achats_recommandes&&sec.achats_recommandes.length){
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:16px 0 10px">🛒 Achats recommandés</div>';
+      sec.achats_recommandes.forEach(function(e){
+        var pc2=e.priorite==='Haute'?'var(--red)':e.priorite==='Moyenne'?'var(--amber)':'var(--i3)';
+        html+='<div class="equip-item"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><div class="equip-name" style="margin:0">'+escHtml(e.achat||'')+'</div><span style="font-size:11px;font-weight:600;color:'+pc2+'">'+escHtml(e.priorite||'')+'</span></div>';
+        if(e.impact)html+='<div class="equip-why">'+escHtml(e.impact)+'</div>';
+        if(e.prix_estime)html+='<span class="equip-prix">~'+escHtml(e.prix_estime)+'</span>';
+        html+='</div>';
+      });
+    }
+  } else if(sc.key==='confort_accueil'){
+    if(sec.informations_a_preciser&&sec.informations_a_preciser.length){
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin-bottom:10px">Informations à préciser dans votre annonce</div>';
+      sec.informations_a_preciser.forEach(function(e){
+        var estOk=e.statut&&!e.statut.includes('non');
+        html+='<div class="confort-item"><div class="confort-head" style="display:flex;align-items:center;gap:8px"><span class="confort-name">'+escHtml(e.element||'')+'</span><span class="confort-statut '+(estOk?'ok':'nok')+'">'+(estOk?'Précisé':'Non précisé')+'</span></div>';
+        html+='<div class="confort-rec"><div class="confort-why">'+(e.pourquoi?escHtml(e.pourquoi):'')+'</div>';
+        if(e.recommandation)html+='<div class="confort-text">'+escHtml(e.recommandation)+'</div><div class="rec-footer" style="margin-top:8px"><button class="copy-btn" data-copy="'+escAttr(e.recommandation)+'" onclick="copyData(this)">Copier</button></div>';
+        html+='</div></div>';
+      });
+    }
+    if(sec.gifting){
+      var g=sec.gifting;
+      html+='<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin:20px 0 10px">🎁 Gifting & Attentions</div>';
+      if(g.intro)html+='<div style="font-size:13px;color:var(--i2);background:var(--bl);border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.6">'+escHtml(g.intro)+'</div>';
+      if(g.idees)g.idees.forEach(function(gi){
+        html+='<div class="gift-card"><div class="gift-name">'+escHtml(gi.cadeau||'')+'</div>';
+        if(gi.impact)html+='<div class="gift-why">'+escHtml(gi.impact)+'</div>';
+        html+='<div class="gift-meta">';
+        if(gi.cout_estime)html+='<span class="gift-badge gb-b">Budget : '+escHtml(gi.cout_estime)+'</span>';
+        if(gi.adapte_a)html+='<span class="gift-badge gb-q">'+escHtml(gi.adapte_a)+'</span>';
+        html+='</div></div>';
+      });
+    }
+  } else if(sc.key==='positionnement'){
+    if(sec.position_estimee)html+='<div style="font-size:13px;color:var(--i3);margin-bottom:10px">Position estimée : <strong style="color:var(--ink)">'+escHtml(sec.position_estimee)+'</strong></div>';
+    if(sec.angle_differenciant)html+='<div style="font-size:13px;color:var(--blue);font-weight:600;background:var(--bl);border-radius:8px;padding:12px 14px;margin-bottom:16px;line-height:1.5">🎯 '+escHtml(sec.angle_differenciant)+'</div>';
+    if(sec.concurrents)sec.concurrents.forEach(function(c){
+      html+='<div class="concurrent-card"><div class="concurrent-hdr"><div class="concurrent-rang">'+c.rang+'</div><div class="concurrent-profil">'+escHtml(c.profil||'')+'</div><div class="concurrent-score">Score ~'+c.score_estime+'</div></div>';
+      if(c.avantages)c.avantages.forEach(function(a){html+='<div class="concurrent-av">'+escHtml(a)+'</div>';});
+      if(c.comment_contrer)html+='<div class="concurrent-contrer">💡 '+escHtml(c.comment_contrer)+'</div>';
+      html+='</div>';
+    });
+  } else {
+    var items=sec.problemes||sec.recommandations||[];
+    items.forEach(function(item){
+      var titre=item.probleme||item.action||item.parametre||item.regle||'';
+      var pourquoi=item.pourquoi||'';
+      var impact=item.impact||'';
+      var rec=item.recommandation||item.implementation||item.exemple_message||'';
+      html+=renderProbRec(titre,pourquoi,impact,rec,'Recommandation');
+    });
+    if(sec.analyse)html='<div style="font-size:13px;color:var(--i2);background:var(--bl);border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.6">'+escHtml(sec.analyse)+'</div>'+html;
+  }
+  return html;
+}
+
+function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function copyData(btn){
+  var text=btn.getAttribute('data-copy')||'';
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;btn.textContent='Copié ✓';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);
+  });
+}
+</script>
+</body>
+</html>
