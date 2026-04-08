@@ -129,6 +129,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 
 .report-wrap{max-width:760px;margin:0 auto;padding:48px 40px}
 .demo-banner{background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:#92400E;display:none}
+.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.cat-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--bg);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.cat-tab:hover{border-color:var(--blue);color:var(--blue)}
+.cat-tab.active{border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+.cat-tab .cat-count{background:var(--blue);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cat-tab:not(.active) .cat-count{background:var(--bg-3);color:var(--ink-3)}
+.cat-tab.active .cat-count{background:var(--blue);color:#fff}
 
 .r-score-card{background:var(--blue-dark);border-radius:16px;padding:36px;margin-bottom:28px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
 .r-score-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:88px;font-weight:700;color:#fff;line-height:1;letter-spacing:-4px}
@@ -357,6 +364,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <div class="s-label-r">4 dimensions analysées</div>
     <div class="dims-grid" id="dims-grid"></div>
     <div class="s-label-r" style="margin-top:32px">Recommandations prioritaires</div>
+    <div class="cat-tabs" id="cat-tabs"></div>
     <div id="actions-list"></div>
     <div id="wording-section"></div>
     <div id="ab-section"></div>
@@ -412,12 +420,54 @@ function renderReport(data){
   setTimeout(()=>{document.getElementById('r-bar').style.width=s.score_global+'%';},100);
   const dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
   document.getElementById('dims-grid').innerHTML=dims.map(d=>{const dim=s[d.key];if(!dim)return'';const actionsForDim=r?.actions?r.actions.filter(a=>a.dimension===d.label).length:0;const countLabel=actionsForDim>0?`${actionsForDim} optimisation${actionsForDim>1?'s':''} identifiée${actionsForDim>1?'s':''}`:(dim.nb_optimisations_cachees?`${dim.nb_optimisations_cachees} optimisations identifiées`:'Analysé');return`<div class="dim-card"><div class="dim-top"><div class="dim-name">${d.label}</div><div class="dim-score">${dim.score}</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:${dim.score}%"></div></div><div class="dim-verdict">${dim.verdict_court||''}</div><div class="dim-locked"><span class="dim-locked-c">${countLabel}</span><span class="dim-locked-i">${dim.impact_potentiel||''}</span></div></div>`;}).join('');
-  if(r?.actions){document.getElementById('actions-list').innerHTML=r.actions.map(a=>{const catBadge=a.categorie?`<div style="font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:#F3F4F6;color:#6B7280;padding:3px 7px;border-radius:4px">${a.categorie}</div>`:'';return`<div class="action-card"><div class="a-meta"><div class="a-rang">${a.rang}</div><div class="a-dim">${a.dimension}</div>${catBadge}<div class="a-delai" style="margin-left:auto">${a.delai}</div></div><div class="a-titre">${a.titre_court}</div><div class="a-faire">${a.ce_que_vous_faites}</div><div class="a-pourquoi">${a.pourquoi}</div><div class="a-footer"><div class="a-impact">${a.impact_chiffre}</div><button class="copy-btn" onclick="copyText(this,\`${(a.ce_que_vous_faites||'').replace(/\`/g,"'")}\`)">Copier</button></div></div>`;}).join('');}
+  let allActions=[];let activeTab='Tout';
+if(r?.actions){
+  allActions=r.actions;
+  buildCatTabs(allActions);
+  renderActions(allActions,'Tout');
+}
   renderWording(r?.wording);
   renderAB(r?.ab_titres, r?.wording?.titre_actuel);
   renderConcurrents(r?.concurrents);
 }
 
+function buildCatTabs(actions){
+  const cats=['Tout',...[...new Set(actions.map(a=>a.categorie||'Autre'))]];
+  const tabsEl=document.getElementById('cat-tabs');
+  if(!tabsEl)return;
+  tabsEl.innerHTML=cats.map(c=>{
+    const count=c==='Tout'?actions.length:actions.filter(a=>a.categorie===c).length;
+    return`<div class="cat-tab${c===activeTab?' active':''}" onclick="filterCat('${c}')">
+      ${c}<span class="cat-count">${count}</span>
+    </div>`;
+  }).join('');
+}
+function filterCat(cat){
+  activeTab=cat;
+  buildCatTabs(allActions);
+  renderActions(allActions,cat);
+}
+function renderActions(actions,cat){
+  const filtered=cat==='Tout'?actions:actions.filter(a=>a.categorie===cat);
+  document.getElementById('actions-list').innerHTML=filtered.map(a=>{
+    const catBadge=a.categorie?`<div style="font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:3px 8px;border-radius:4px">${a.categorie}</div>`:'';
+    return`<div class="action-card">
+      <div class="a-meta">
+        <div class="a-rang">${a.rang}</div>
+        <div class="a-dim">${a.dimension}</div>
+        ${catBadge}
+        <div class="a-delai" style="margin-left:auto">${a.delai}</div>
+      </div>
+      <div class="a-titre">${a.titre_court}</div>
+      <div class="a-faire">${a.ce_que_vous_faites}</div>
+      <div class="a-pourquoi">${a.pourquoi}</div>
+      <div class="a-footer">
+        <div class="a-impact">${a.impact_chiffre}</div>
+        <button class="copy-btn" onclick="copyText(this,\`${(a.ce_que_vous_faites||'').replace(/`/g,"'")}\`)">Copier</button>
+      </div>
+    </div>`;
+  }).join('');
+}
 function renderWording(w) {
   if (!w) return;
   let html = '<div style="margin-top:32px">';
