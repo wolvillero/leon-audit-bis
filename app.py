@@ -142,18 +142,31 @@ def call_3_recommendations(vision_data, scoring_data, form_data):
 Et de l'analyse visuelle :
 {json.dumps(vision_data, ensure_ascii=False, indent=2)}
 
-Ville détectée : {scoring_data.get('ville_detectee', 'N/A')} · Prix : {scoring_data.get('prix_detecte', 'N/A')}€/nuit
+Ville : {scoring_data.get('ville_detectee', 'N/A')} · Prix : {scoring_data.get('prix_detecte', 'N/A')}€/nuit
 
-Génère le rapport complet. Retourne UNIQUEMENT ce JSON :
+RÈGLE ABSOLUE : génère MINIMUM 8 actions, idéalement 10 à 12. Tu dois couvrir OBLIGATOIREMENT chacune de ces 8 catégories — au moins 1 action par catégorie :
+1. PHOTOS — couverture, angles, lumière, ordre, photos manquantes
+2. TITRE — mots-clés NLP, différenciation vs concurrents locaux
+3. DESCRIPTION — structure, storytelling, ratio règles/bénéfices, keywords Airbnb 2026
+4. ÉQUIPEMENTS — équipements non cochés impactant les filtres (Espace de travail, Parking, Clim, Wifi fibre, etc.)
+5. PARAMÈTRES AIRBNB — Instant Book, politique annulation, durée min séjour, fenêtre réservation
+6. TARIFICATION — prix vs marché local, pricing dynamique, promotions, événements locaux
+7. PROFIL HÔTE — photo profil, biographie, taux de réponse, temps de réponse affiché
+8. VISIBILITÉ ALGO — badge manquant, signaux qualité, vitalité annonce, cohérence globale
+
+Chaque action doit être ULTRA SPÉCIFIQUE à cette annonce. Cite des éléments précis vus dans les screenshots. JAMAIS de conseil générique comme "améliorez vos photos" — toujours "la photo 3 montre X, faites Y car Z".
+
+Retourne UNIQUEMENT ce JSON :
 {{
   "actions": [
     {{
       "rang": 1,
       "dimension": "Visibilité|Premier regard|Pouvoir de conviction|Satisfaction voyageur",
-      "titre_court": "Action en 6 mots max",
-      "ce_que_vous_faites": "Instruction précise, actionnable, spécifique à CETTE annonce — jamais générique",
-      "pourquoi": "Logique algorithmique précise en 2 phrases — mentionner la dimension impactée",
-      "impact_chiffre": "+XX% CTR ou +XX€/mois ou autre métrique chiffrée",
+      "categorie": "Photos|Titre|Description|Équipements|Paramètres|Tarification|Profil hôte|Visibilité algo",
+      "titre_court": "Action en 6 mots max — spécifique, pas générique",
+      "ce_que_vous_faites": "Instruction ultra précise — cite un élément spécifique vu dans les screenshots ou déduit du contexte",
+      "pourquoi": "Logique algorithmique en 2 phrases — impact direct sur ranking ou conversion",
+      "impact_chiffre": "+XX% CTR ou +XX€/mois ou +XX pts score",
       "delai": "48h|7 jours|30 jours"
     }}
   ],
@@ -240,7 +253,7 @@ Génère le rapport complet. Retourne UNIQUEMENT ce JSON :
 
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=4000,
+        max_tokens=6000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}]
     )
