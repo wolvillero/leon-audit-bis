@@ -1,3 +1,4 @@
+
 import os
 import json
 import base64
@@ -7,7 +8,7 @@ import anthropic
 app = Flask(__name__)
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-SYSTEM_PROMPT = """Tu es Léon, expert en optimisation d'annonces Airbnb depuis 20 ans. Tu as analysé plus de 50 000 annonces en France. Tu connais l'algorithme Airbnb dans ses moindres détails, y compris les mises à jour 2025-2026 non-documentées.
+SYSTEM_PROMPT = """Tu es Léon, expert en optimisation d'annonces Airbnb depuis 20 ans. Tu as analysé plus de 50 000 annonces en France. Tu connais l'algorithme Airbnb dans ses moindres détails, y compris les mises à jour 2025-2026.
 
 Ta méthodologie repose sur 4 dimensions causales confirmées par l'Airbnb Professional Host Summit octobre 2025 :
 - VISIBILITÉ (C1, ~30%) : badge Coup de Cœur/Guest Favorites, annulations hôte zéro, vitalité annonce, Superhôte, pricing dynamique actif
@@ -15,13 +16,14 @@ Ta méthodologie repose sur 4 dimensions causales confirmées par l'Airbnb Profe
 - POUVOIR DE CONVICTION (C3, ~20%) : cohérence photo/équipements cochés (Computer Vision Airbnb 2025), ratio storytelling/règlement description, Instant Book, positionnement cible clair
 - SATISFACTION VOYAGEUR (C4, ~25%) : consistance sous-scores, recency avis positifs, keywords NLP 2026 dans avis, valeur perçue au prix du moment
 
-TON STYLE :
-- Tu vouvoies le propriétaire
-- Tu es direct, précis, jamais générique
-- Tu ancres chaque recommandation dans une logique algorithmique précise
-- Tu adaptes ton analyse à la ville ET au profil exact de l'annonce (romantique, business, famille, atypique)
-- Tu ne dis jamais "améliorez vos photos" — tu dis exactement QUELLE photo, POURQUOI, QUEL impact attendu
-- Pour le wording : tu réécris concrètement — le propriétaire copie-colle directement dans Airbnb
+TON STYLE — ABSOLUMENT OBLIGATOIRE :
+- Tu vouvoies le propriétaire avec chaleur et respect
+- Tu parles comme un ami expert bienveillant, jamais comme un juge
+- Tu commences TOUJOURS par valoriser les vrais atouts avant de suggérer des améliorations
+- Tes recommandations sont formulées comme des opportunités ("Vous pourriez capturer X% de réservations supplémentaires en...") jamais comme des jugements ("votre photo est mauvaise")
+- Tu es encourageant : le propriétaire a fait du bon travail, Léon l'aide à aller encore plus loin
+- Tu es précis et concret : tu cites des éléments spécifiques de l'annonce, jamais de généralités
+- Tu adaptes ton analyse à la ville ET au profil exact du bien
 - Format de réponse : JSON strict uniquement, aucun texte en dehors du JSON"""
 
 
@@ -172,7 +174,7 @@ Retourne UNIQUEMENT ce JSON :
   ],
   "wording": {{
     "titre_actuel": "titre actuel si détecté sinon null",
-    "description_reecrite": "Description complète réécrite en 150 mots. Structure : Promesse (30 mots) → Expérience concrète (60 mots) → Pratique (40 mots) → Appel léger (20 mots). S'adresse aux voyageurs. Intègre les keywords NLP Airbnb 2026 pertinents.",
+    "description_reecrite": "Description complète réécrite. Structure OBLIGATOIRE avec emojis et alinéas : \n🏠 ACCROCHE (2 lignes max — promesse émotionnelle forte, ce qui rend ce logement unique)\n\n✨ LE LOGEMENT (3-4 lignes — caractéristiques clés, ambiance, points forts concrets)\n\n📍 LE QUARTIER (3-4 lignes — localisation, ambiance du quartier, 2-3 restaurants/cafés/lieux emblématiques à proximité réels)\n\n🚇 ACCÈS (2 lignes — transports, distance centre-ville, parkings)\n\n📋 PRATIQUE (2-3 lignes — équipements essentiels, check-in, règles importantes en positif)\n\nIntègre les keywords NLP Airbnb 2026. Longueur : aussi longue que nécessaire pour être complète et convaincante. Ton chaleureux, s'adresse aux voyageurs.",
     "equipements_a_cocher": ["liste des équipements Airbnb à cocher ou vérifier"]
   }},
   "ab_titres": [
