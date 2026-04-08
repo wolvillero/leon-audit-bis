@@ -562,7 +562,8 @@ def generate_guide_word(guide_data):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    import os
+    return send_file(os.path.join(os.path.dirname(__file__), 'templates', 'index.html'))
 
 
 @app.route("/analyze", methods=["POST"])
