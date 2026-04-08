@@ -464,7 +464,7 @@ function renderActions(actions,cat){
       +'<div class="a-pourquoi">'+(a.pourquoi||'')+'</div>'
       +'<div class="a-footer">'
       +'<div class="a-impact">'+(a.impact_chiffre||'')+'</div>'
-      +'<button class="copy-btn" onclick="copyText(this,''+faire+'')">Copier</button>'
+      +'<button class="copy-btn" onclick="copyText(this,&quot;'+faire+'&quot;)">Copier</button>'
       +'</div>'
       +'</div>';
   }).join('');
@@ -507,7 +507,7 @@ function renderAB(titres, titreActuel) {
     html += '<div class="a-delai" style="margin-left:auto;background:var(--blue-light);color:var(--blue);border-color:var(--blue-mid)">' + (t.ctr_estime||'') + '</div></div>';
     html += '<div class="a-titre">' + (t.titre||'') + '</div>';
     html += '<div class="a-pourquoi">' + (t.logique||'') + '</div>';
-    html += '<div class="a-footer"><button class="copy-btn" data-titre="' + (t.titre||'').replace(/"/g,"&quot;") + '" onclick="this.previousText=this.textContent;navigator.clipboard.writeText(this.dataset.titre).then(function(){});this.textContent='Copié ✓';this.classList.add('copied');setTimeout(function(){},2000)">Copier ce titre</button></div>';
+    html += '<div class="a-footer"><button class="copy-btn" data-titre="' + (t.titre||'').replace(/"/g,'&quot;') + '" onclick="copyDataTitre(this)">Copier ce titre</button></div>';
     html += '</div>';
   });
   html += '</div>';
@@ -535,6 +535,13 @@ function renderConcurrents(concurrents) {
   document.getElementById('concurrents-section').innerHTML = html;
 }
 
+function copyDataTitre(btn){
+  var titre=btn.getAttribute('data-titre')||'';
+  navigator.clipboard.writeText(titre).then(function(){
+    btn.textContent='Copié ✓';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copier ce titre';btn.classList.remove('copied');},2000);
+  });
+}
 function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copié ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied');},2000);});}
 
 if(DEMO){document.getElementById('landing-page').style.display='none';renderReport(DEMO_DATA);}
