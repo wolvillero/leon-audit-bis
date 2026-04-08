@@ -7,13 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#0057FF;--blue-dark:#003DB3;--blue-light:#E8F0FF;--blue-mid:#BBCFFF;--ink:#111827;--ink-2:#374151;--ink-3:#6B7280;--ink-4:#9CA3AF;--bg:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;--border:#E5E7EB;--green:#059669;--green-light:#ECFDF5;--red:#DC2626;--red-light:#FEF2F2;--amber:#D97706;--amber-light:#FFFBEB}
+:root{--blue:#0057FF;--blue-dark:#003DB3;--blue-light:#E8F0FF;--blue-mid:#BBCFFF;--ink:#111827;--ink-2:#374151;--ink-3:#6B7280;--ink-4:#9CA3AF;--bg:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;--border:#E5E7EB;--green:#059669;--green-light:#ECFDF5;--red:#DC2626;--red-light:#FEF2F2;--amber:#D97706;--amber-light:#FFFBEB;--gold:#C49A3C;--gold-light:#FDF8EE}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 .j{font-family:'Plus Jakarta Sans',sans-serif}
 
 nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:64px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
-.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}.logo span{color:var(--blue)}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink);cursor:pointer;text-decoration:none}.logo span{color:var(--blue)}
 .nav-cta{background:var(--blue);color:#fff;border:none;padding:10px 22px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border-radius:8px;transition:background .2s}.nav-cta:hover{background:var(--blue-dark)}
 
 .hero{padding:96px 60px 80px;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center}
@@ -21,7 +21,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;line-height:1.1;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px}.hero h1 span{color:var(--blue)}
 .hero-sub{font-size:17px;color:var(--ink-3);line-height:1.7;margin-bottom:36px;max-width:440px}
 .hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background .2s}.hero-cta:hover{background:var(--blue-dark)}
-.hero-note{font-size:13px;color:var(--ink-4);margin-top:14px}
 .hero-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 4px 24px rgba(0,87,255,.08)}
 .hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .hc-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4)}
@@ -41,31 +40,47 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 
 .section-how{padding:96px 60px;max-width:1000px;margin:0 auto}
 .s-label{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif}
-.s-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1px;margin-bottom:56px;color:var(--ink)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
-.step-badge{width:36px;height:36px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--blue);margin-bottom:16px}
-.step h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:600;margin-bottom:8px}
-.step p{font-size:14px;color:var(--ink-3);line-height:1.7}
+.s-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1px;margin-bottom:48px;color:var(--ink)}
 
-.section-pricing{background:var(--bg-2);padding:96px 60px}
-.section-pricing-inner{max-width:860px;margin:0 auto}
-.pricing-table{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg);margin-top:48px}
-.pricing-col{padding:36px}.pricing-col.free{border-right:1px solid var(--border)}.pricing-col.premium{background:var(--blue-dark)}
-.p-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin-bottom:12px}
-.p-tag.ft{background:var(--bg-3);color:var(--ink-3)}.p-tag.pt{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
-.p-price{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1.5px;color:var(--ink);line-height:1;margin-bottom:4px}
-.pricing-col.premium .p-price{color:#fff}
-.p-price-sub{font-size:13px;color:var(--ink-3)}.pricing-col.premium .p-price-sub{color:rgba(255,255,255,.5)}
-.p-divider{border:none;border-top:1px solid var(--border);margin:24px 0}.pricing-col.premium .p-divider{border-color:rgba(255,255,255,.15)}
-.p-items{list-style:none;display:flex;flex-direction:column;gap:12px}
-.p-item{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink-2);line-height:1.5}
-.pricing-col.premium .p-item{color:rgba(255,255,255,.8)}
-.p-check{width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.pricing-col.premium .p-check{background:rgba(255,255,255,.15)}
-.p-check svg{width:10px;height:10px}
-.p-cta{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;border:none;margin-top:24px;transition:all .2s}
-.p-cta.fc{background:var(--blue-light);color:var(--blue)}.p-cta.fc:hover{background:var(--blue-mid)}
-.p-cta.pc{background:#fff;color:var(--blue-dark)}.p-cta.pc:hover{background:var(--blue-light)}
+.workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.workflow:before{content:'';position:absolute;top:24px;left:calc(12.5%);right:calc(12.5%);height:2px;background:var(--blue-light);z-index:0}
+.wf-step{text-align:center;position:relative;z-index:1;padding:0 16px}
+.wf-num{width:48px;height:48px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin:0 auto 16px}
+.wf-icon{font-size:20px;display:block;margin-bottom:8px}
+.wf-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.wf-desc{font-size:13px;color:var(--ink-3);line-height:1.6}
+.wf-basis{background:var(--blue-light);border-radius:12px;padding:20px;margin-top:40px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.wf-basis-item{text-align:center}
+.wf-basis-icon{font-size:22px;margin-bottom:6px}
+.wf-basis-label{font-size:12px;font-weight:600;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif}
+.wf-basis-desc{font-size:11px;color:var(--ink-3);margin-top:2px}
+
+.section-pricing{padding:96px 60px;background:var(--bg-2)}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;max-width:1100px;margin:48px auto 0;align-items:start}
+.pricing-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative}
+.pricing-card.featured{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.pricing-card.premium-plus{border-color:var(--gold);background:linear-gradient(145deg,#fffef9,#fdf8ee)}
+.pricing-popular{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.5px}
+.pricing-popular.gold{background:var(--gold)}
+.p-tag2{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin-bottom:12px}
+.p-tag2.free{background:var(--bg-3);color:var(--ink-3)}
+.p-tag2.prem{background:var(--blue-light);color:var(--blue)}
+.p-tag2.gold{background:var(--gold-light);color:var(--gold)}
+.p-price2{font-family:'Plus Jakarta Sans',sans-serif;font-size:40px;font-weight:700;letter-spacing:-1.5px;color:var(--ink);line-height:1;margin-bottom:4px}
+.p-price2.gold{color:var(--gold)}
+.p-sub2{font-size:13px;color:var(--ink-3);margin-bottom:20px}
+.p-divider2{border:none;border-top:1px solid var(--border);margin:20px 0}
+.p-items2{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.p-item2{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink-2);line-height:1.5}
+.p-check2{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.p-check2.green{background:var(--green-light)}.p-check2.blue{background:var(--blue-light)}.p-check2.gold{background:var(--gold-light)}
+.p-check2 svg{width:9px;height:9px}
+.p-cta2{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;border:none;transition:all .2s}
+.p-cta2.free{background:var(--bg-3);color:var(--ink-2)}.p-cta2.free:hover{background:var(--border)}
+.p-cta2.prem{background:var(--blue);color:#fff}.p-cta2.prem:hover{background:var(--blue-dark)}
+.p-cta2.gold{background:var(--gold);color:#fff}.p-cta2.gold:hover{opacity:.9}
+.p-diff{font-size:12px;font-weight:600;color:var(--blue);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif}
+.p-diff.gold{color:var(--gold)}
 
 .section-trust{padding:96px 60px;max-width:1180px;margin:0 auto}
 .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
@@ -74,21 +89,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .t-text{font-size:14px;color:var(--ink-2);line-height:1.7;margin-bottom:20px}
 .t-author{display:flex;align-items:center;gap:10px}
 .t-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0}
-.t-name{font-size:13px;font-weight:600;color:var(--ink)}.t-bien{font-size:12px;color:var(--ink-4)}
+.t-name{font-size:13px;font-weight:600}.t-bien{font-size:12px;color:var(--ink-4)}
 .t-result{display:inline-block;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:4px;margin-top:3px}
 
 .section-cta{background:var(--blue);padding:96px 60px;text-align:center}
 .section-cta h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-1.5px;margin-bottom:16px}
 .section-cta p{font-size:17px;color:rgba(255,255,255,.7);margin-bottom:36px}
 .cta-w{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue);padding:14px 32px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}.cta-w:hover{opacity:.92}
-.cta-note{font-size:13px;color:rgba(255,255,255,.4);margin-top:14px}
 
 .form-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.75);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .form-overlay.active{display:flex}
-.form-modal{background:var(--bg);width:100%;max-width:540px;border-radius:16px;overflow:hidden}
-.form-header{background:var(--blue-dark);padding:22px 32px;display:flex;align-items:center;justify-content:space-between}
+.form-modal{background:var(--bg);width:100%;max-width:540px;border-radius:16px;overflow:hidden;max-height:90vh;overflow-y:auto}
+.form-header{background:var(--blue-dark);padding:22px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 .fh-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#fff}.fh-logo span{color:var(--blue-mid)}
-.form-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.form-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .form-progress{display:flex;border-bottom:1px solid var(--border)}
 .form-step-tab{flex:1;padding:12px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-4);border-bottom:2px solid transparent;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
 .form-step-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
@@ -117,11 +131,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
 .form-actions{margin-top:24px}
 .btn-analyze{background:var(--blue);color:#fff;border:none;padding:13px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s;width:100%}.btn-analyze:hover{background:var(--blue-dark)}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.3px}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);background:var(--bg);transition:border-color .2s;outline:none}
+.form-input:focus{border-color:var(--blue)}
+textarea.form-input{resize:vertical;min-height:80px}
 
-/* REPORT */
 #report-page{display:none;background:var(--bg-2);min-height:100vh}
 .report-nav{background:var(--bg);border-bottom:1px solid var(--border);padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.rn-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700}.rn-logo span{color:var(--blue)}
+.rn-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;cursor:pointer}.rn-logo span{color:var(--blue)}
 .new-audit-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg);padding:8px 16px;font-size:13px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink-3);transition:all .2s;font-weight:500}.new-audit-btn:hover{border-color:var(--blue);color:var(--blue)}
 .report-wrap{max-width:860px;margin:0 auto;padding:48px 40px}
 
@@ -145,7 +163,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .dim-footer-count{font-size:12px;font-weight:600;color:var(--blue)}
 .dim-footer-gain{font-size:11px;color:var(--blue);opacity:.7}
 
-/* Section tabs */
 .section-tabs-wrap{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px;position:sticky;top:64px;z-index:40}
 .section-tabs{display:flex;flex-wrap:wrap;gap:8px}
 .sec-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-3);background:var(--bg);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap}
@@ -157,9 +174,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .sec-tab.prio-high .tab-gain{background:var(--red-light);color:var(--red)}
 .sec-tab.prio-med .tab-gain{background:var(--amber-light);color:var(--amber)}
 
-/* Section cards */
 .section-block{display:none;margin-bottom:24px}.section-block.visible{display:block}
-.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
 .section-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .section-icon.high{background:var(--red-light)}.section-icon.med{background:var(--amber-light)}.section-icon.low{background:var(--blue-light)}
 .section-title-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}
@@ -167,20 +183,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .prio-badge.high{background:var(--red-light);color:var(--red)}
 .prio-badge.med{background:var(--amber-light);color:var(--amber)}
 .prio-badge.low{background:var(--blue-light);color:var(--blue)}
-.gain-badge{font-size:12px;font-weight:600;background:var(--bg-dark,#1e3a5f);color:#fff;background:var(--blue-dark);color:#fff;padding:3px 10px;border-radius:100px;margin-left:auto}
+.gain-badge{font-size:12px;font-weight:600;background:var(--blue-dark);color:#fff;padding:3px 10px;border-radius:100px;margin-left:auto}
 
-/* Problem card */
 .prob-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
-.prob-header{padding:16px 20px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none}
+.prob-header{padding:16px 20px;display:flex;align-items:flex-start;gap:12px}
 .prob-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
 .prob-dot.med{background:var(--amber)}.prob-dot.low{background:var(--blue)}
 .prob-content{flex:1}
 .prob-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
 .prob-why{font-size:13px;color:var(--ink-3);line-height:1.6}
-.prob-impact{display:inline-block;font-size:11px;font-weight:600;background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:4px;margin-top:6px}
-.prob-impact.pos{background:var(--green-light);color:var(--green)}
+.prob-impact{display:inline-block;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:4px;margin-top:6px}
 
-/* Recommendation box */
 .rec-box{border-top:1px solid var(--border);padding:16px 20px;background:var(--bg-2)}
 .rec-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif}
 .rec-option{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px}
@@ -193,58 +206,66 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .rec-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:10px}
 .copy-btn{background:var(--blue-light);border:none;padding:7px 14px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}.copy-btn:hover{background:var(--blue);color:#fff}.copy-btn.copied{background:var(--green-light);color:var(--green)}
 
-/* Best practices */
 .bp-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .bp-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink-2);line-height:1.6;background:var(--blue-light);border-radius:8px;padding:10px 14px}
-.bp-icon{font-size:14px;flex-shrink:0}
 
-/* Equipement item */
 .equip-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px}
 .equip-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
 .equip-why{font-size:13px;color:var(--ink-3);line-height:1.5;margin-bottom:6px}
 .equip-impact{display:inline-block;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:4px}
 .equip-prix{display:inline-block;font-size:11px;font-weight:600;background:var(--bg-3);color:var(--ink-3);padding:2px 8px;border-radius:4px;margin-left:6px}
 
-/* Concurrent card */
 .concurrent-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px}
 .concurrent-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .concurrent-rang{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-light);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .concurrent-profil{font-size:14px;font-weight:600;color:var(--ink);flex:1}
 .concurrent-score{font-size:12px;color:var(--ink-3);border:1px solid var(--border);padding:3px 8px;border-radius:5px}
-.concurrent-avantages{margin-bottom:10px}
 .concurrent-avantage{font-size:13px;color:var(--ink-3);padding:3px 0;padding-left:14px;position:relative}.concurrent-avantage:before{content:"•";position:absolute;left:0;color:var(--red)}
-.concurrent-contrer{font-size:13px;color:var(--ink-2);background:var(--green-light);border-radius:8px;padding:10px 14px;line-height:1.6}
+.concurrent-contrer{font-size:13px;color:var(--ink-2);background:var(--green-light);border-radius:8px;padding:10px 14px;line-height:1.6;margin-top:8px}
+
+/* Guide banner */
+.guide-banner{background:linear-gradient(135deg,#2B4C8C,#1a3060);border-radius:16px;padding:32px;margin-top:40px;text-align:center}
+.guide-banner h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px}
+.guide-banner p{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:20px;line-height:1.7;max-width:500px;margin-left:auto;margin-right:auto}
+.guide-banner-features{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
+.guide-feature{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px}
+.btn-guide{background:var(--gold);color:#fff;border:none;padding:13px 32px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;border-radius:10px;cursor:pointer;transition:opacity .2s}.btn-guide:hover{opacity:.9}
+.guide-price{font-size:13px;color:rgba(255,255,255,.5);margin-top:10px}
+
+/* Guide form */
+.guide-form-section{display:none}
+.guide-form-section.visible{display:block}
 
 @media(max-width:768px){
   nav,.report-nav{padding:0 20px}
   .hero{grid-template-columns:1fr;padding:60px 20px;gap:40px}.hero h1{font-size:34px}.hero-card{display:none}
   .stats-band{grid-template-columns:1fr;padding:40px 20px;gap:32px}
   .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 32px}.stat-item:last-child{border-bottom:none}
-  .section-how,.section-trust{padding:60px 20px}.steps{grid-template-columns:1fr}
-  .section-pricing{padding:60px 20px}.pricing-table{grid-template-columns:1fr}.pricing-col.free{border-right:none;border-bottom:1px solid var(--border)}
+  .section-how,.section-trust{padding:60px 20px}
+  .workflow{grid-template-columns:1fr 1fr;gap:24px}.workflow:before{display:none}
+  .wf-basis{grid-template-columns:1fr 1fr}
+  .section-pricing{padding:60px 20px}.pricing-grid{grid-template-columns:1fr}
   .testimonials{grid-template-columns:1fr}
   .section-cta{padding:60px 20px}.section-cta h2{font-size:30px}
   .dims-grid{grid-template-columns:1fr}.report-wrap{padding:32px 20px}
   .r-score-card{grid-template-columns:1fr;gap:16px}.r-score-num{font-size:60px}
-  .section-tabs-wrap{top:56px;border-radius:0;border-left:none;border-right:none}
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo j">Léon<span>.</span></div>
-  <button class="nav-cta" onclick="openForm()">Analyser mon annonce</button>
+  <a class="logo j" onclick="goHome()" href="#">Léon<span>.</span></a>
+  <button class="nav-cta" onclick="openForm()">Analyser mon annonce gratuitement</button>
 </nav>
 
 <div id="landing-page">
 <section class="hero">
   <div>
-    <div class="hero-badge">Audit Airbnb gratuit</div>
-    <h1 class="j">Découvrez ce qui <span>freine</span> votre annonce Airbnb.</h1>
-    <p class="hero-sub">En 3 minutes, Léon analyse vos screenshots et vous dit exactement quoi corriger — et dans quel ordre — pour obtenir plus de réservations.</p>
-    <button class="hero-cta" onclick="openForm()">Analyser mon annonce →</button>
-    <p class="hero-note">Sans inscription · Sans carte bancaire · Résultat immédiat</p>
+    <div class="hero-badge">Audit Airbnb · 100% gratuit</div>
+    <h1 class="j">Libérez tout le potentiel de votre <span>annonce locative.</span></h1>
+    <p class="hero-sub">Léon analyse votre annonce et vous donne les optimisations à faire pour obtenir plus de réservations, plus rapidement.</p>
+    <button class="hero-cta" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
   </div>
   <div class="hero-card">
     <div class="hc-top"><div class="hc-label">Exemple de rapport</div><div class="hc-score">54</div></div>
@@ -260,54 +281,124 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 
 <div class="stats-band">
   <div class="stat-item"><div class="stat-num">91%</div><div class="stat-label">des annonces françaises ont un contenu sous-optimisé</div></div>
-  <div class="stat-item"><div class="stat-num">800+</div><div class="stat-label">signaux analysés par l'algorithme Airbnb</div></div>
+  <div class="stat-item"><div class="stat-num">800+</div><div class="stat-label">signaux analysés par l'algorithme Airbnb 2026</div></div>
   <div class="stat-item"><div class="stat-num">+40%</div><div class="stat-label">de revenus pour les annonces bien positionnées</div></div>
 </div>
 
 <section class="section-how">
   <div class="s-label">Comment ça marche</div>
-  <h2 class="s-title j">Simple comme un screenshot.</h2>
-  <div class="steps">
-    <div class="step"><div class="step-badge">1</div><h3>Capturez votre annonce</h3><p>Prenez 3 à 5 screenshots de votre annonce Airbnb — titre, photos, description, note. Pas d'accès à votre compte requis.</p></div>
-    <div class="step"><div class="step-badge">2</div><h3>Léon analyse tout</h3><p>Léon lit automatiquement chaque élément visible et applique les best practices Airbnb 2025-2026 pour identifier vos opportunités.</p></div>
-    <div class="step"><div class="step-badge">3</div><h3>Copiez-collez</h3><p>Recevez votre diagnostic complet avec des recommandations prêtes à copier-coller directement dans Airbnb.</p></div>
+  <h2 class="s-title j">Un diagnostic complet en 3 minutes.</h2>
+  <div class="workflow">
+    <div class="wf-step">
+      <div class="wf-num">1</div>
+      <span class="wf-icon">📱</span>
+      <div class="wf-title">Vous capturez</div>
+      <div class="wf-desc">3 à 5 screenshots de votre annonce Airbnb — titre, photos, description, note</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">2</div>
+      <span class="wf-icon">🔍</span>
+      <div class="wf-title">Léon analyse</div>
+      <div class="wf-desc">Analyse visuelle, algorithmique et comparative sur 11 dimensions</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">3</div>
+      <span class="wf-icon">📊</span>
+      <div class="wf-title">Vous recevez</div>
+      <div class="wf-desc">Un score /100, vos points faibles classés par priorité et leur impact chiffré</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">4</div>
+      <span class="wf-icon">✂️</span>
+      <div class="wf-title">Vous appliquez</div>
+      <div class="wf-desc">Des recommandations prêtes à copier-coller directement dans Airbnb</div>
+    </div>
+  </div>
+  <div class="wf-basis">
+    <div class="wf-basis-item">
+      <div class="wf-basis-icon">👁️</div>
+      <div class="wf-basis-label">Analyse visuelle</div>
+      <div class="wf-basis-desc">Photos, mise en scène, cohérence</div>
+    </div>
+    <div class="wf-basis-item">
+      <div class="wf-basis-icon">🤖</div>
+      <div class="wf-basis-label">Algo Airbnb 2026</div>
+      <div class="wf-basis-desc">800+ signaux de ranking</div>
+    </div>
+    <div class="wf-basis-item">
+      <div class="wf-basis-icon">📍</div>
+      <div class="wf-basis-label">Marché local</div>
+      <div class="wf-basis-desc">Benchmark concurrents locaux</div>
+    </div>
+    <div class="wf-basis-item">
+      <div class="wf-basis-icon">💬</div>
+      <div class="wf-basis-label">NLP voyageurs</div>
+      <div class="wf-basis-desc">Attentes et comportements réels</div>
+    </div>
   </div>
 </section>
 
 <section class="section-pricing">
-  <div class="section-pricing-inner">
-    <div class="s-label">Ce que vous recevez</div>
-    <h2 class="s-title j">Un rapport complet sur 11 dimensions.</h2>
-    <div class="pricing-table">
-      <div class="pricing-col free">
-        <div class="p-tag ft">Gratuit</div>
-        <div class="p-price j">0€</div>
-        <div class="p-price-sub">Sans inscription</div>
-        <hr class="p-divider">
-        <ul class="p-items">
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global + 4 dimensions analysées</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>11 sections d'optimisation complètes</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations à copier-coller</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Classement par priorité et impact</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Chiffres et verbatims consommateurs</li>
-        </ul>
-        <button class="p-cta fc" onclick="openForm()">Commencer gratuitement →</button>
-      </div>
-      <div class="pricing-col premium">
-        <div class="p-tag pt">Bientôt</div>
-        <div class="p-price j">9€</div>
-        <div class="p-price-sub">Accès immédiat · Paiement sécurisé</div>
-        <hr class="p-divider">
-        <ul class="p-items">
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu gratuit inclus</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Suivi d'impact après modifications</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Comparaison avant/après</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Alertes algorithmiques mensuelles</li>
-          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Support prioritaire</li>
-        </ul>
-        <button class="p-cta pc" onclick="alert('Bientôt disponible')">Me notifier au lancement →</button>
-      </div>
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="s-label" style="text-align:center">Nos offres</div>
+    <h2 class="s-title j" style="text-align:center;margin-bottom:12px">Choisissez votre niveau d'optimisation.</h2>
+    <p style="text-align:center;font-size:16px;color:var(--ink-3);margin-bottom:0">De l'audit gratuit au guide d'accueil personnalisé.</p>
+  </div>
+  <div class="pricing-grid">
+
+    <!-- FREE -->
+    <div class="pricing-card">
+      <div class="p-tag2 free">Gratuit</div>
+      <div class="p-price2">0€</div>
+      <div class="p-sub2">Sans inscription · Résultat immédiat</div>
+      <hr class="p-divider2">
+      <ul class="p-items2">
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global /100 + 4 dimensions</li>
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>11 sections d'optimisation complètes</li>
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations à copier-coller</li>
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Classement par priorité et impact</li>
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Chiffres et verbatims consommateurs</li>
+        <li class="p-item2"><div class="p-check2 green"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Idées gifting + confort & accueil</li>
+      </ul>
+      <button class="p-cta2 free" onclick="openForm()">Commencer gratuitement →</button>
     </div>
+
+    <!-- PREMIUM -->
+    <div class="pricing-card featured">
+      <div class="pricing-popular">Le plus populaire</div>
+      <div class="p-tag2 prem">Premium</div>
+      <div class="p-price2">9€</div>
+      <div class="p-sub2">Paiement unique · Accès immédiat</div>
+      <hr class="p-divider2">
+      <div class="p-diff">Tout le gratuit, plus :</div>
+      <ul class="p-items2">
+        <li class="p-item2"><div class="p-check2 blue"><svg viewBox="0 0 10 10" fill="none" stroke="#0057FF" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Suivi d'impact après modifications</li>
+        <li class="p-item2"><div class="p-check2 blue"><svg viewBox="0 0 10 10" fill="none" stroke="#0057FF" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Comparaison avant/après</li>
+        <li class="p-item2"><div class="p-check2 blue"><svg viewBox="0 0 10 10" fill="none" stroke="#0057FF" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Alertes algorithmiques mensuelles</li>
+        <li class="p-item2"><div class="p-check2 blue"><svg viewBox="0 0 10 10" fill="none" stroke="#0057FF" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Support prioritaire</li>
+      </ul>
+      <button class="p-cta2 prem" onclick="alert('Bientôt disponible — inscrivez-vous à la newsletter')">Bientôt disponible →</button>
+    </div>
+
+    <!-- PREMIUM+ -->
+    <div class="pricing-card premium-plus">
+      <div class="pricing-popular gold">Nouveau ✦</div>
+      <div class="p-tag2 gold">Premium+</div>
+      <div class="p-price2 gold">19€</div>
+      <div class="p-sub2">En plus du rapport gratuit</div>
+      <hr class="p-divider2">
+      <div class="p-diff gold">Guide d'accueil personnalisé :</div>
+      <ul class="p-items2">
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Document Word style carnet de voyage</li>
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Restaurants & expériences locales</li>
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Infos pratiques maison (Wifi, parking...)</li>
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Numéros d'urgence locaux</li>
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Adapté à votre destination (ski, mer, ville)</li>
+        <li class="p-item2"><div class="p-check2 gold"><svg viewBox="0 0 10 10" fill="none" stroke="#C49A3C" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Téléchargeable · À partager aux voyageurs</li>
+      </ul>
+      <button class="p-cta2 gold" onclick="openForm()">Générer après l'audit →</button>
+    </div>
+
   </div>
 </section>
 
@@ -317,15 +408,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
   <div class="testimonials">
     <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"En 3 minutes, Léon a identifié que ma photo de couverture tuait mon taux de clic. J'ai changé. Les réservations ont augmenté dès la semaine suivante."</p><div class="t-author"><div class="t-avatar">SB</div><div><div class="t-name">Sophie B.</div><div class="t-bien">Appartement · Lyon 2e</div><div class="t-result">Score 48 → 74</div></div></div></div>
     <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"Je pensais que mon annonce était bien. Léon m'a montré 6 incohérences entre mes équipements et mes photos. Je ne savais pas que ça pénalisait le ranking."</p><div class="t-author"><div class="t-avatar">MR</div><div><div class="t-name">Marc R.</div><div class="t-bien">Studio · Bordeaux centre</div><div class="t-result">+340€/mois</div></div></div></div>
-    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"La description réécrite par Léon était exactement ce qu'il fallait. J'ai copié-collé et mon taux de réservation a grimpé en deux semaines."</p><div class="t-author"><div class="t-avatar">CF</div><div><div class="t-name">Claire F.</div><div class="t-bien">Maison · Biarritz</div><div class="t-result">58% → 79% d'occupation</div></div></div></div>
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"Le guide d'accueil généré par Léon était parfait — mes voyageurs le lisent systématiquement et mes avis ont nettement progressé depuis."</p><div class="t-author"><div class="t-avatar">CF</div><div><div class="t-name">Claire F.</div><div class="t-bien">Maison · Biarritz</div><div class="t-result">58% → 79% d'occupation</div></div></div></div>
   </div>
 </section>
 
 <section class="section-cta">
   <h2 class="j">Votre annonce mérite mieux.</h2>
   <p>Découvrez votre score et toutes vos opportunités d'amélioration — gratuitement.</p>
-  <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement →</button>
-  <p class="cta-note">Sans inscription · Sans carte bancaire · 3 minutes</p>
+  <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
 </section>
 </div>
 
@@ -340,7 +430,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <div class="form-body">
       <div class="form-step active" id="step1">
         <div class="step-title j">Déposez vos screenshots</div>
-        <p class="step-sub">3 à 5 captures de votre annonce Airbnb. Léon lit tout automatiquement.</p>
+        <p class="step-sub">3 à 5 captures de votre annonce Airbnb. Léon lit tout automatiquement — titre, note, prix, badge, description.</p>
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
           <div class="u-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
           <div class="u-text"><span>Cliquez pour sélectionner</span> ou glissez ici</div>
@@ -356,7 +446,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
         <p class="step-sub">Environ 45 secondes — analyse complète sur 11 dimensions.</p>
         <ul class="loading-steps">
           <li id="load1"><span class="l-dot"></span>Lecture et analyse visuelle</li>
-          <li id="load2"><span class="l-dot"></span>Calcul des 4 scores</li>
+          <li id="load2"><span class="l-dot"></span>Scoring sur 4 dimensions</li>
           <li id="load3"><span class="l-dot"></span>Génération du rapport complet</li>
         </ul>
       </div>
@@ -367,8 +457,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 <!-- REPORT -->
 <div id="report-page">
   <div class="report-nav">
-    <div class="rn-logo j">Léon<span>.</span></div>
-    <button class="new-audit-btn" onclick="resetToLanding()">← Nouvel audit</button>
+    <div class="rn-logo j" onclick="goHome()" style="cursor:pointer">Léon<span>.</span></div>
+    <button class="new-audit-btn" onclick="openForm()">+ Nouvel audit</button>
   </div>
   <div class="report-wrap">
     <div class="r-score-card">
@@ -382,29 +472,88 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     </div>
     <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif">4 dimensions analysées</div>
     <div class="dims-grid" id="dims-grid"></div>
-    <div class="section-tabs-wrap">
-      <div class="section-tabs" id="section-tabs"></div>
-    </div>
+    <div class="section-tabs-wrap"><div class="section-tabs" id="section-tabs"></div></div>
     <div id="sections-content"></div>
+
+    <!-- GUIDE BANNER -->
+    <div class="guide-banner" id="guide-banner">
+      <h3>✦ Guide d'accueil personnalisé</h3>
+      <p>Générez un document Word élégant style carnet de voyage à partager à vos voyageurs — restaurants, expériences locales, infos pratiques, numéros d'urgence, tout adapté à votre destination.</p>
+      <div class="guide-banner-features">
+        <span class="guide-feature">🍽️ Restaurants locaux</span>
+        <span class="guide-feature">✨ Expériences à faire</span>
+        <span class="guide-feature">📶 Infos pratiques</span>
+        <span class="guide-feature">🚨 Urgences locales</span>
+        <span class="guide-feature">📄 Format Word</span>
+      </div>
+      <button class="btn-guide" onclick="showGuideForm()">Générer mon guide d'accueil — 19€ →</button>
+      <div class="guide-price">Téléchargement immédiat · Personnalisé pour votre bien</div>
+    </div>
+
+    <!-- GUIDE FORM -->
+    <div class="guide-form-section" id="guide-form-section">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:32px;margin-top:24px">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px">Personnalisez votre guide</h3>
+        <p style="font-size:14px;color:var(--ink-3);margin-bottom:24px;line-height:1.6">Renseignez les informations pratiques de votre logement. Léon génère le reste automatiquement.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">Nom du réseau WiFi</label>
+            <input type="text" class="form-input" id="g-wifi-nom" placeholder="ex: FreeWifi_5G">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mot de passe WiFi</label>
+            <input type="text" class="form-input" id="g-wifi-mdp" placeholder="ex: MonMot2Passe!">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Instructions parking</label>
+          <input type="text" class="form-input" id="g-parking" placeholder="ex: Parking gratuit devant le portail, code 1234">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Code d'accès / Boîte à clés</label>
+          <input type="text" class="form-input" id="g-code" placeholder="ex: Boîte à clés n°3, code 4567">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Infos spécifiques (poubelles, chauffage, TV, règles...)</label>
+          <textarea class="form-input" id="g-infos" placeholder="ex: Poubelles vertes le mardi soir. Chauffage : thermostat dans le couloir. Netflix inclus, identifiant sur le frigo."></textarea>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button onclick="hideGuideForm()" style="flex:1;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--ink-3)">Annuler</button>
+          <button onclick="generateGuide()" style="flex:2;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;border:none;background:var(--gold);color:#fff" id="btn-generate-guide">Générer et télécharger le guide →</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
 var selectedFiles=[];
+var currentVisionData={};
 
+function goHome(){
+  document.getElementById('report-page').style.display='none';
+  document.getElementById('landing-page').style.display='block';
+  window.scrollTo(0,0);
+}
 function openForm(){document.getElementById('formOverlay').classList.add('active');document.body.style.overflow='hidden';}
 function closeForm(){document.getElementById('formOverlay').classList.remove('active');document.body.style.overflow='';}
-function resetToLanding(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';selectedFiles=[];document.getElementById('filesList').innerHTML='';goToStep(1);window.scrollTo(0,0);}
-function goToStep(n){document.querySelectorAll('.form-step').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.form-step-tab').forEach(function(t){t.classList.remove('active','done');});document.getElementById('step'+n).classList.add('active');document.getElementById('tab'+n).classList.add('active');for(var i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');}
+function goToStep(n){
+  document.querySelectorAll('.form-step').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.form-step-tab').forEach(function(t){t.classList.remove('active','done');});
+  document.getElementById('step'+n).classList.add('active');
+  document.getElementById('tab'+n).classList.add('active');
+  for(var i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');
+}
 function handleFiles(f){selectedFiles=selectedFiles.concat(Array.from(f)).slice(0,5);renderFilesList();}
 function handleDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
 function handleDragLeave(e){e.currentTarget.classList.remove('dragover');}
 function handleDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');handleFiles(e.dataTransfer.files);}
 function removeFile(i){selectedFiles.splice(i,1);renderFilesList();}
-function renderFilesList(){document.getElementById('filesList').innerHTML=selectedFiles.map(function(f,i){return '<div class="u-tag">'+f.name+'<button onclick="removeFile('+i+')">×</button></div>';}).join('');}
+function renderFilesList(){document.getElementById('filesList').innerHTML=selectedFiles.map(function(f,i){return '<div class="u-tag">'+escHtml(f.name)+'<button onclick="removeFile('+i+')">x</button></div>';}).join('');}
 
 async function startAnalysis(){
-  if(selectedFiles.length===0){alert('Déposez au moins un screenshot.');return;}
+  if(selectedFiles.length===0){alert('Deposez au moins un screenshot.');return;}
   goToStep(2);
   ['load1','load2','load3'].forEach(function(s){document.getElementById(s).className='';});
   document.getElementById('load1').classList.add('active');
@@ -415,56 +564,105 @@ async function startAnalysis(){
   try{
     var res=await fetch('/analyze',{method:'POST',body:fd});
     var data=await res.json();
-    if(data.success){document.getElementById('load3').classList.remove('active');document.getElementById('load3').classList.add('done');setTimeout(function(){renderReport(data);},600);}
-    else{alert('Erreur : '+data.error);goToStep(1);}
+    if(data.success){
+      document.getElementById('load3').classList.remove('active');
+      document.getElementById('load3').classList.add('done');
+      currentVisionData=data.vision||{};
+      setTimeout(function(){renderReport(data);},600);
+    }else{alert('Erreur : '+data.error);goToStep(1);}
   }catch(e){alert('Erreur de connexion.');goToStep(1);}
 }
 
-function getVerdict(s){if(s<=40)return'Votre annonce passe inaperçue';if(s<=60)return'Votre annonce sous-performe';if(s<=80)return'Votre annonce a du potentiel inexploité';return'Votre annonce est bien positionnée';}
-function getPrioClass(p){if(p==='Prioritaire')return'high';if(p==='Important')return'med';return'low';}
-function getPrioLabel(p){if(p==='Prioritaire')return'🔴 Prioritaire';if(p==='Important')return'🟡 Important';return'⚪ À planifier';}
+function showGuideForm(){
+  document.getElementById('guide-form-section').classList.add('visible');
+  document.getElementById('guide-banner').style.display='none';
+  document.getElementById('guide-form-section').scrollIntoView({behavior:'smooth'});
+}
+function hideGuideForm(){
+  document.getElementById('guide-form-section').classList.remove('visible');
+  document.getElementById('guide-banner').style.display='block';
+}
 
-var SECTION_CONFIG = [
-  {key:'titre',label:'Titre',icon:'📝'},
-  {key:'description',label:'Description',icon:'📄'},
-  {key:'photos',label:'Photos',icon:'📸'},
-  {key:'equipements',label:'Équipements',icon:'🛋️'},
-  {key:'tarification',label:'Tarification',icon:'💰'},
-  {key:'parametres',label:'Paramètres',icon:'⚙️'},
-  {key:'profil_hote',label:'Profil hôte',icon:'👤'},
-  {key:'regles_politique',label:'Règles',icon:'📋'},
-  {key:'avis_reputation',label:'Avis',icon:'⭐'},
-  {key:'experience_voyageur',label:'Expérience',icon:'✨'},
-  {key:'positionnement_concurrents',label:'Concurrents',icon:'🏆'}
+async function generateGuide(){
+  var btn=document.getElementById('btn-generate-guide');
+  btn.textContent='Generation en cours...';
+  btn.disabled=true;
+  var fd=new FormData();
+  fd.append('vision_data',JSON.stringify(currentVisionData));
+  fd.append('wifi_nom',document.getElementById('g-wifi-nom').value);
+  fd.append('wifi_mdp',document.getElementById('g-wifi-mdp').value);
+  fd.append('parking',document.getElementById('g-parking').value);
+  fd.append('code_acces',document.getElementById('g-code').value);
+  fd.append('infos_specifiques',document.getElementById('g-infos').value);
+  try{
+    var res=await fetch('/generate-guide',{method:'POST',body:fd});
+    if(res.ok){
+      var blob=await res.blob();
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url;
+      a.download='Guide_accueil.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      btn.textContent='Telecharge !';
+      setTimeout(function(){btn.textContent='Regenerer le guide';btn.disabled=false;},3000);
+    }else{
+      var err=await res.json();
+      alert('Erreur : '+(err.error||'inconnue'));
+      btn.textContent='Generer et telecharger le guide';
+      btn.disabled=false;
+    }
+  }catch(e){alert('Erreur de connexion.');btn.textContent='Generer et telecharger le guide';btn.disabled=false;}
+}
+
+function getVerdict(s){if(s<=40)return'Votre annonce passe inapercue';if(s<=60)return'Votre annonce sous-performe';if(s<=80)return'Votre annonce a du potentiel inexploite';return'Votre annonce est bien positionnee';}
+function getPrioClass(p){if(p==='Prioritaire')return'high';if(p==='Important')return'med';return'low';}
+function getPrioLabel(p){if(p==='Prioritaire')return'Prioritaire';if(p==='Important')return'Important';return'A planifier';}
+
+var SECTION_CONFIG=[
+  {key:'titre',label:'Titre',icon:'T'},
+  {key:'description',label:'Description',icon:'D'},
+  {key:'photos',label:'Photos',icon:'P'},
+  {key:'equipements',label:'Equipements',icon:'E'},
+  {key:'confort_accueil',label:'Confort & Accueil',icon:'C'},
+  {key:'tarification',label:'Tarification',icon:'$'},
+  {key:'parametres',label:'Parametres',icon:'G'},
+  {key:'profil_hote',label:'Profil hote',icon:'H'},
+  {key:'regles_politique',label:'Regles',icon:'R'},
+  {key:'avis_reputation',label:'Avis',icon:'A'},
+  {key:'experience_voyageur',label:'Experience',icon:'X'},
+  {key:'positionnement_concurrents',label:'Concurrents',icon:'C'}
 ];
 
 function renderReport(data){
   closeForm();
   document.getElementById('landing-page').style.display='none';
   document.getElementById('report-page').style.display='block';
+  document.getElementById('guide-form-section').classList.remove('visible');
+  document.getElementById('guide-banner').style.display='block';
   window.scrollTo(0,0);
-  var s=data.scoring, r=data.recommendations;
+  var s=data.scoring,r=data.recommendations;
   document.getElementById('r-score').textContent=s.score_global;
   document.getElementById('r-verdict').textContent=getVerdict(s.score_global);
   document.getElementById('r-profil').textContent=s.profil_annonce||'';
   setTimeout(function(){document.getElementById('r-bar').style.width=s.score_global+'%';},100);
 
-  var dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
+  var dims=[{key:'visibilite',label:'Visibilite'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
   document.getElementById('dims-grid').innerHTML=dims.map(function(d){
     var dim=s[d.key];if(!dim)return'';
     return '<div class="dim-card"><div class="dim-top"><div class="dim-name">'+d.label+'</div><div class="dim-score">'+dim.score+'</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:'+dim.score+'%"></div></div><div class="dim-verdict">'+(dim.verdict_court||'')+'</div><div class="dim-footer"><span class="dim-footer-count">'+(dim.nb_optimisations||'?')+' optimisations</span><span class="dim-footer-gain">'+(dim.gain_potentiel||'')+'</span></div></div>';
   }).join('');
 
-  if(!r||!r.sections){return;}
+  if(!r||!r.sections)return;
   var sections=r.sections;
-
-  // Build tabs sorted by priority
-  var prioOrder={'Prioritaire':0,'Important':1,'À planifier':2};
-  var sortedSections=SECTION_CONFIG.filter(function(sc){return sections[sc.key];}).sort(function(a,b){
-    var pa=sections[a.key].priorite||'À planifier';
-    var pb=sections[b.key].priorite||'À planifier';
-    var sa=(prioOrder[pa]!==undefined?prioOrder[pa]:2);
-    var sb=(prioOrder[pb]!==undefined?prioOrder[pb]:2);
+  var prioOrder={'Prioritaire':0,'Important':1,'A planifier':2,'a planifier':2};
+  var sorted=SECTION_CONFIG.filter(function(sc){return sections[sc.key];}).sort(function(a,b){
+    var pa=sections[a.key].priorite||'A planifier';
+    var pb=sections[b.key].priorite||'A planifier';
+    var sa=prioOrder[pa]!==undefined?prioOrder[pa]:2;
+    var sb=prioOrder[pb]!==undefined?prioOrder[pb]:2;
     if(sa!==sb)return sa-sb;
     var ga=parseInt((sections[a.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
     var gb=parseInt((sections[b.key].gain_potentiel||'0').replace(/[^0-9]/g,''))||0;
@@ -472,9 +670,9 @@ function renderReport(data){
   });
 
   var tabsHtml='';
-  sortedSections.forEach(function(sc,idx){
+  sorted.forEach(function(sc,idx){
     var sec=sections[sc.key];
-    var prio=sec.priorite||'À planifier';
+    var prio=sec.priorite||'A planifier';
     var pc=getPrioClass(prio);
     var active=idx===0?' active':'';
     var prioClass=pc==='high'?' prio-high':pc==='med'?' prio-med':'';
@@ -482,12 +680,11 @@ function renderReport(data){
   });
   document.getElementById('section-tabs').innerHTML=tabsHtml;
 
-  // Build section content
   var contentHtml='';
-  sortedSections.forEach(function(sc,idx){
+  sorted.forEach(function(sc,idx){
     var sec=sections[sc.key];
     var visible=idx===0?' visible':'';
-    var prio=sec.priorite||'À planifier';
+    var prio=sec.priorite||'A planifier';
     var pc=getPrioClass(prio);
     contentHtml+='<div class="section-block'+visible+'" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
   });
@@ -499,26 +696,20 @@ function showSection(key){
   document.querySelectorAll('.sec-tab').forEach(function(t){t.classList.remove('active');});
   var block=document.getElementById('section-'+key);
   var tab=document.getElementById('tab-'+key);
-  if(block)block.classList.add('visible');
+  if(block){block.classList.add('visible');block.scrollIntoView({behavior:'smooth',block:'start'});}
   if(tab)tab.classList.add('active');
-  // Scroll to content
-  if(block)block.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function renderSection(sc, sec, pc){
-  var html='<div class="section-header">';
-  html+='<div class="section-icon '+pc+'">'+sc.icon+'</div>';
-  html+='<div class="section-title-text">'+sc.label+'</div>';
-  html+='<span class="prio-badge '+pc+'">'+getPrioLabel(sec.priorite||'À planifier')+'</span>';
-  if(sec.gain_potentiel)html+='<span class="gain-badge">'+sec.gain_potentiel+'</span>';
+function renderSection(sc,sec,pc){
+  var html='<div class="section-header"><div class="section-icon '+pc+'">'+sc.icon+'</div><div class="section-title-text">'+sc.label+'</div><span class="prio-badge '+pc+'">'+getPrioLabel(sec.priorite||'A planifier')+'</span>';
+  if(sec.gain_potentiel)html+='<span class="gain-badge">'+escHtml(sec.gain_potentiel)+'</span>';
   html+='</div>';
 
-  // TITRE section
   if(sc.key==='titre'){
-    if(sec.titre_actuel)html+='<div style="background:var(--bg-3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-3)">Titre actuel : <strong style="color:var(--ink)">'+sec.titre_actuel+'</strong></div>';
-    if(sec.problemes)sec.problemes.forEach(function(p){html+=renderProbCard(p.probleme,p.pourquoi,p.impact,'high');});
+    if(sec.titre_actuel)html+='<div style="background:var(--bg-3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-3)">Titre actuel : <strong style="color:var(--ink)">'+escHtml(sec.titre_actuel)+'</strong></div>';
+    if(sec.problemes)sec.problemes.forEach(function(p){html+=probCard(p.probleme,p.pourquoi,p.impact);});
     if(sec.options&&sec.options.length){
-      html+='<div class="rec-box"><div class="rec-label">Options de titres à tester</div>';
+      html+='<div class="rec-box"><div class="rec-label">Options de titres a tester</div>';
       sec.options.forEach(function(o){
         html+='<div class="rec-option"><div class="rec-option-header"><div class="rec-option-num">'+o.option+'</div><span class="rec-option-angle">'+(o.angle||'')+'</span><span class="rec-option-ctr">'+(o.ctr_estime||'')+'</span></div>';
         html+='<div class="rec-text">'+escHtml(o.titre||'')+'</div>';
@@ -527,13 +718,10 @@ function renderSection(sc, sec, pc){
       });
       html+='</div>';
     }
-  }
-
-  // DESCRIPTION section
-  else if(sc.key==='description'){
-    if(sec.problemes)sec.problemes.forEach(function(p){html+=renderProbCard(p.probleme,p.pourquoi,p.impact,'high');});
+  } else if(sc.key==='description'){
+    if(sec.problemes)sec.problemes.forEach(function(p){html+=probCard(p.probleme,p.pourquoi,p.impact);});
     if(sec.options&&sec.options.length){
-      html+='<div class="rec-box"><div class="rec-label">Versions réécrites à copier-coller</div>';
+      html+='<div class="rec-box"><div class="rec-label">Versions reecrites a copier-coller</div>';
       sec.options.forEach(function(o){
         html+='<div class="rec-option"><div class="rec-option-header"><div class="rec-option-num">'+o.option+'</div><span class="rec-option-angle">'+(o.style||'')+'</span></div>';
         html+='<div class="rec-text">'+escHtml(o.texte||'')+'</div>';
@@ -541,108 +729,118 @@ function renderSection(sc, sec, pc){
       });
       html+='</div>';
     }
-  }
-
-  // PHOTOS section
-  else if(sc.key==='photos'){
+  } else if(sc.key==='photos'){
     if(sec.best_practices&&sec.best_practices.length){
       html+='<div class="bp-list">';
-      sec.best_practices.forEach(function(bp){html+='<div class="bp-item"><span class="bp-icon">💡</span>'+escHtml(bp)+'</div>';});
+      sec.best_practices.forEach(function(bp){html+='<div class="bp-item"><span style="flex-shrink:0">L</span>'+escHtml(bp)+'</div>';});
       html+='</div>';
     }
     if(sec.analyse_photos&&sec.analyse_photos.length){
-      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">Analyse photo par photo</div>';
       sec.analyse_photos.forEach(function(p){
-        html+=renderProbCard('Photo '+p.numero+' — '+escHtml(p.probleme||''),p.pourquoi,null,'high');
-        if(p.recommandation)html+='<div class="rec-box" style="margin-top:-12px;margin-bottom:16px"><div class="rec-label">Recommandation</div><div class="rec-option"><div class="rec-text">'+escHtml(p.recommandation)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(p.recommandation)+'" onclick="copyData(this)">Copier</button></div></div></div>';
+        html+=probCard('Photo '+p.numero+' — '+escHtml(p.probleme||''),p.pourquoi,null);
+        if(p.recommandation)html+=recBox(p.recommandation,'Recommandation');
       });
     }
     if(sec.photos_manquantes&&sec.photos_manquantes.length){
-      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Photos à ajouter</div>';
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Photos a ajouter</div>';
       sec.photos_manquantes.forEach(function(p){
         html+='<div class="equip-item"><div class="equip-name">'+escHtml(p.photo||'')+'</div>';
         if(p.pourquoi)html+='<div class="equip-why">'+escHtml(p.pourquoi)+'</div>';
-        if(p.conseil_technique)html+='<div style="font-size:12px;color:var(--blue);font-style:italic;margin-top:4px">📷 '+escHtml(p.conseil_technique)+'</div>';
+        if(p.conseil_technique)html+='<div style="font-size:12px;color:var(--blue);font-style:italic;margin-top:4px">P '+escHtml(p.conseil_technique)+'</div>';
         html+='</div>';
       });
     }
-    if(sec.ordre_recommande&&sec.ordre_recommande.length){
-      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Ordre recommandé</div>';
-      html+='<div class="rec-box"><div class="rec-label">Séquence optimale</div><div class="rec-option"><div class="rec-text">'+sec.ordre_recommande.map(function(o,i){return (i+1)+'. '+o;}).join('\n')+'</div></div></div>';
-    }
-  }
-
-  // EQUIPEMENTS section
-  else if(sc.key==='equipements'){
+  } else if(sc.key==='equipements'){
     if(sec.equipements_a_cocher&&sec.equipements_a_cocher.length){
-      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">À cocher dans Airbnb maintenant</div>';
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">A cocher dans Airbnb maintenant</div>';
       sec.equipements_a_cocher.forEach(function(e){
-        html+='<div class="equip-item"><div class="equip-name">✅ '+escHtml(e.equipement||'')+'</div>';
+        html+='<div class="equip-item"><div class="equip-name">V '+escHtml(e.equipement||'')+'</div>';
         if(e.pourquoi)html+='<div class="equip-why">'+escHtml(e.pourquoi)+'</div>';
         if(e.impact)html+='<span class="equip-impact">'+escHtml(e.impact)+'</span>';
         html+='</div>';
       });
     }
     if(sec.achats_recommandes&&sec.achats_recommandes.length){
-      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Achats recommandés</div>';
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin:16px 0 12px">Achats recommandes</div>';
       sec.achats_recommandes.forEach(function(e){
-        var prioColor=e.priorite==='Haute'?'var(--red)':e.priorite==='Moyenne'?'var(--amber)':'var(--ink-3)';
-        html+='<div class="equip-item"><div class="equip-name">🛒 '+escHtml(e.achat||'')+'<span style="font-size:11px;color:'+prioColor+';font-weight:600;margin-left:8px">'+escHtml(e.priorite||'')+'</span></div>';
+        var pc2=e.priorite==='Haute'?'var(--red)':e.priorite==='Moyenne'?'var(--amber)':'var(--ink-3)';
+        html+='<div class="equip-item"><div class="equip-name">S '+escHtml(e.achat||'')+'<span style="font-size:11px;color:'+pc2+';font-weight:600;margin-left:8px">'+escHtml(e.priorite||'')+'</span></div>';
         if(e.impact)html+='<div class="equip-why">'+escHtml(e.impact)+'</div>';
         if(e.prix_estime)html+='<span class="equip-prix">'+escHtml(e.prix_estime)+'</span>';
         html+='</div>';
       });
     }
-  }
-
-  // GENERIC sections with problemes + recommandations
-  else{
+  } else if(sc.key==='confort_accueil'){
+    if(sec.informations_a_preciser&&sec.informations_a_preciser.length){
+      html+='<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);margin-bottom:12px">Informations a preciser dans votre annonce</div>';
+      sec.informations_a_preciser.forEach(function(item){
+        html+=probCard(item.element+(item.statut?' — '+item.statut:''),item.pourquoi,null);
+        if(item.recommandation)html+=recBox(item.recommandation,'Formulation recommandee');
+      });
+    }
+    if(sec.gifting){
+      html+='<div style="background:var(--gold-light);border:1px solid #e8d5a0;border-radius:12px;padding:20px;margin-top:16px">';
+      html+='<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:8px">G Idees cadeaux & attentions</div>';
+      if(sec.gifting.intro)html+='<div style="font-size:13px;color:var(--ink-2);margin-bottom:16px;line-height:1.6">'+escHtml(sec.gifting.intro)+'</div>';
+      if(sec.gifting.idees&&sec.gifting.idees.length){
+        sec.gifting.idees.forEach(function(g){
+          html+='<div style="background:var(--bg);border:1px solid #e8d5a0;border-radius:8px;padding:12px 14px;margin-bottom:8px">';
+          html+='<div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px">'+escHtml(g.cadeau||'')+'</div>';
+          if(g.impact)html+='<div style="font-size:13px;color:var(--ink-3);margin-bottom:4px">'+escHtml(g.impact)+'</div>';
+          var meta='';
+          if(g.cout_estime)meta+='<span class="equip-prix">'+escHtml(g.cout_estime)+'</span> ';
+          if(g.adapte_a)meta+='<span style="font-size:11px;color:var(--gold);font-weight:600">'+escHtml(g.adapte_a)+'</span>';
+          if(meta)html+='<div style="margin-top:4px">'+meta+'</div>';
+          html+='</div>';
+        });
+      }
+      html+='</div>';
+    }
+  } else {
     if(sec.analyse)html+='<div style="font-size:14px;color:var(--ink-2);line-height:1.7;background:var(--blue-light);border-radius:8px;padding:14px 16px;margin-bottom:16px">'+escHtml(sec.analyse)+'</div>';
-    if(sec.angle_differenciant)html+='<div style="font-size:14px;color:var(--blue);font-weight:600;background:var(--blue-light);border-radius:8px;padding:14px 16px;margin-bottom:16px">🎯 '+escHtml(sec.angle_differenciant)+'</div>';
-    if(sec.position_estimee)html+='<div style="font-size:13px;color:var(--ink-3);margin-bottom:16px">Position estimée : <strong style="color:var(--ink)">'+escHtml(sec.position_estimee)+'</strong></div>';
-
+    if(sec.angle_differenciant)html+='<div style="font-size:14px;color:var(--blue);font-weight:600;background:var(--blue-light);border-radius:8px;padding:14px 16px;margin-bottom:16px">T '+escHtml(sec.angle_differenciant)+'</div>';
+    if(sec.position_estimee)html+='<div style="font-size:13px;color:var(--ink-3);margin-bottom:16px">Position estimee : <strong style="color:var(--ink)">'+escHtml(sec.position_estimee)+'</strong></div>';
     var items=sec.problemes||sec.recommandations||[];
     items.forEach(function(item){
       var titre=item.probleme||item.action||item.parametre||item.regle||'';
       var pourquoi=item.pourquoi||'';
       var impact=item.impact||'';
-      html+=renderProbCard(titre,pourquoi,impact,'high');
+      html+=probCard(titre,pourquoi,impact);
       var rec=item.recommandation||item.implementation||item.exemple_message||'';
-      if(rec){
-        html+='<div class="rec-box" style="margin-top:-12px;margin-bottom:16px"><div class="rec-label">Recommandation</div><div class="rec-option"><div class="rec-text">'+escHtml(rec)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(rec)+'" onclick="copyData(this)">Copier</button></div></div></div>';
-      }
+      if(rec)html+=recBox(rec,'Recommandation');
     });
-
-    // Concurrents
     if(sec.concurrents&&sec.concurrents.length){
       sec.concurrents.forEach(function(c){
         html+='<div class="concurrent-card"><div class="concurrent-header"><div class="concurrent-rang">'+c.rang+'</div><div class="concurrent-profil">'+escHtml(c.profil||'')+'</div><div class="concurrent-score">Score ~'+c.score_estime+'</div></div>';
-        if(c.avantages){html+='<div class="concurrent-avantages">';c.avantages.forEach(function(a){html+='<div class="concurrent-avantage">'+escHtml(a)+'</div>';});html+='</div>';}
-        if(c.comment_contrer)html+='<div class="concurrent-contrer">💡 <strong>Comment les contrer :</strong> '+escHtml(c.comment_contrer)+'</div>';
+        if(c.avantages){c.avantages.forEach(function(a){html+='<div class="concurrent-avantage">'+escHtml(a)+'</div>';});}
+        if(c.comment_contrer)html+='<div class="concurrent-contrer">L <strong>Comment les contrer :</strong> '+escHtml(c.comment_contrer)+'</div>';
         html+='</div>';
       });
     }
   }
-
   return html;
 }
 
-function renderProbCard(titre,pourquoi,impact,level){
-  var html='<div class="prob-card"><div class="prob-header"><div class="prob-dot '+level+'"></div><div class="prob-content"><div class="prob-title">'+escHtml(titre||'')+'</div>';
+function probCard(titre,pourquoi,impact){
+  var html='<div class="prob-card"><div class="prob-header"><div class="prob-dot"></div><div class="prob-content"><div class="prob-title">'+escHtml(titre||'')+'</div>';
   if(pourquoi)html+='<div class="prob-why">'+escHtml(pourquoi)+'</div>';
-  if(impact)html+='<span class="prob-impact pos">'+escHtml(impact)+'</span>';
+  if(impact)html+='<span class="prob-impact">'+escHtml(impact)+'</span>';
   html+='</div></div></div>';
   return html;
 }
 
-function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
-function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function recBox(text,label){
+  return '<div class="rec-box" style="margin-top:-12px;margin-bottom:16px"><div class="rec-label">'+(label||'Recommandation')+'</div><div class="rec-option"><div class="rec-text">'+escHtml(text)+'</div><div class="rec-footer"><button class="copy-btn" data-copy="'+escAttr(text)+'" onclick="copyData(this)">Copier</button></div></div></div>';
+}
 
+function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function copyData(btn){
   var text=btn.getAttribute('data-copy')||'';
   navigator.clipboard.writeText(text).then(function(){
-    btn.textContent='Copié ✓';btn.classList.add('copied');
-    setTimeout(function(){btn.textContent=btn.textContent.indexOf('titre')>-1?'Copier ce titre':btn.textContent.indexOf('description')>-1?'Copier cette description':'Copier';btn.classList.remove('copied');},2000);
+    var orig=btn.textContent;
+    btn.textContent='Copie !';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied');},2000);
   });
 }
 </script>
