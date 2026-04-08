@@ -438,7 +438,7 @@ function buildCatTabs(actions){
   tabsEl.innerHTML=cats.map(function(c){
     const count=c==='Tout'?actions.length:actions.filter(function(a){return a.categorie===c;}).length;
     const isActive=c===activeTab?' active':'';
-    return '<div class="cat-tab'+isActive+'" onclick="filterCat(''+c+'')">'
+    return '<div class="cat-tab'+isActive+'" onclick="filterCat(\"'+c+'\")">'
       +c+'<span class="cat-count">'+count+'</span></div>';
   }).join('');
 }
