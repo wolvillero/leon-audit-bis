@@ -419,7 +419,7 @@ function renderReport(data){
   document.getElementById('r-profil').textContent=s.profil_annonce||'';
   setTimeout(()=>{document.getElementById('r-bar').style.width=s.score_global+'%';},100);
   const dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
-  document.getElementById('dims-grid').innerHTML=dims.map(d=>{const dim=s[d.key];if(!dim)return'';const actionsForDim=r?.actions?r.actions.filter(a=>a.dimension===d.label).length:0;const countLabel=actionsForDim>0?`${actionsForDim} optimisation${actionsForDim>1?'s':''} identifiée${actionsForDim>1?'s':''}`:(dim.nb_optimisations_cachees?`${dim.nb_optimisations_cachees} optimisations identifiées`:'Analysé');return`<div class="dim-card"><div class="dim-top"><div class="dim-name">${d.label}</div><div class="dim-score">${dim.score}</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:${dim.score}%"></div></div><div class="dim-verdict">${dim.verdict_court||''}</div><div class="dim-locked"><span class="dim-locked-c">${countLabel}</span><span class="dim-locked-i">${dim.impact_potentiel||''}</span></div></div>`;}).join('');
+  document.getElementById('dims-grid').innerHTML=dims.map(function(d){const dim=s[d.key];if(!dim)return'';const actionsForDim=r&&r.actions?r.actions.filter(function(a){return a.dimension===d.label;}).length:0;const countLabel=actionsForDim>0?(actionsForDim+' optimisation'+(actionsForDim>1?'s':'')+' identifiée'+(actionsForDim>1?'s':'')):(dim.nb_optimisations_cachees?dim.nb_optimisations_cachees+' optimisations identifiées':'Analysé');return'<div class="dim-card"><div class="dim-top"><div class="dim-name">'+d.label+'</div><div class="dim-score">'+dim.score+'</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:'+dim.score+'%"></div></div><div class="dim-verdict">'+(dim.verdict_court||'')+'</div><div class="dim-locked"><span class="dim-locked-c">'+countLabel+'</span><span class="dim-locked-i">'+(dim.impact_potentiel||'')+'</span></div></div>';}).join('');
   let allActions=[];let activeTab='Tout';
 if(r?.actions){
   allActions=r.actions;
@@ -432,14 +432,14 @@ if(r?.actions){
 }
 
 function buildCatTabs(actions){
-  const cats=['Tout',...[...new Set(actions.map(a=>a.categorie||'Autre'))]];
+  const cats=['Tout'].concat([...new Set(actions.map(function(a){return a.categorie||'Autre';}))]);
   const tabsEl=document.getElementById('cat-tabs');
   if(!tabsEl)return;
-  tabsEl.innerHTML=cats.map(c=>{
-    const count=c==='Tout'?actions.length:actions.filter(a=>a.categorie===c).length;
-    return`<div class="cat-tab${c===activeTab?' active':''}" onclick="filterCat('${c}')">
-      ${c}<span class="cat-count">${count}</span>
-    </div>`;
+  tabsEl.innerHTML=cats.map(function(c){
+    const count=c==='Tout'?actions.length:actions.filter(function(a){return a.categorie===c;}).length;
+    const isActive=c===activeTab?' active':'';
+    return '<div class="cat-tab'+isActive+'" onclick="filterCat(''+c+'')">'
+      +c+'<span class="cat-count">'+count+'</span></div>';
   }).join('');
 }
 function filterCat(cat){
@@ -448,25 +448,27 @@ function filterCat(cat){
   renderActions(allActions,cat);
 }
 function renderActions(actions,cat){
-  const filtered=cat==='Tout'?actions:actions.filter(a=>a.categorie===cat);
-  document.getElementById('actions-list').innerHTML=filtered.map(a=>{
-    const catBadge=a.categorie?`<div style="font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:3px 8px;border-radius:4px">${a.categorie}</div>`:'';
-    return`<div class="action-card">
-      <div class="a-meta">
-        <div class="a-rang">${a.rang}</div>
-        <div class="a-dim">${a.dimension}</div>
-        ${catBadge}
-        <div class="a-delai" style="margin-left:auto">${a.delai}</div>
-      </div>
-      <div class="a-titre">${a.titre_court}</div>
-      <div class="a-faire">${a.ce_que_vous_faites}</div>
-      <div class="a-pourquoi">${a.pourquoi}</div>
-      <div class="a-footer">
-        <div class="a-impact">${a.impact_chiffre}</div>
-        <button class="copy-btn" onclick="copyText(this,\`${(a.ce_que_vous_faites||'').replace(/`/g,"'")}\`)">Copier</button>
-      </div>
-    </div>`;
+  const filtered=cat==='Tout'?actions:actions.filter(function(a){return a.categorie===cat;});
+  const html=filtered.map(function(a){
+    const catBadge=a.categorie?'<div style="font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:3px 8px;border-radius:4px">'+a.categorie+'</div>':'';
+    const faire=(a.ce_que_vous_faites||'').replace(/'/g,'&#39;');
+    return '<div class="action-card">'
+      +'<div class="a-meta">'
+      +'<div class="a-rang">'+a.rang+'</div>'
+      +'<div class="a-dim">'+(a.dimension||'')+'</div>'
+      +catBadge
+      +'<div class="a-delai" style="margin-left:auto">'+(a.delai||'')+'</div>'
+      +'</div>'
+      +'<div class="a-titre">'+(a.titre_court||'')+'</div>'
+      +'<div class="a-faire">'+(a.ce_que_vous_faites||'')+'</div>'
+      +'<div class="a-pourquoi">'+(a.pourquoi||'')+'</div>'
+      +'<div class="a-footer">'
+      +'<div class="a-impact">'+(a.impact_chiffre||'')+'</div>'
+      +'<button class="copy-btn" onclick="copyText(this,''+faire+'')">Copier</button>'
+      +'</div>'
+      +'</div>';
   }).join('');
+  document.getElementById('actions-list').innerHTML=html;
 }
 function renderWording(w) {
   if (!w) return;
@@ -476,7 +478,8 @@ function renderWording(w) {
   html += '<div class="action-card" style="margin-bottom:14px">';
   html += '<div class="a-titre">Description réécrite</div>';
   html += '<div class="a-faire" style="white-space:pre-line">' + (w.description_reecrite||'') + '</div>';
-  html += '<div class="a-footer"><button class="copy-btn" onclick="copyText(this,`' + (w.description_reecrite||'').replace(/`/g,"'") + '`)">Copier</button></div>';
+  html += '<div class="a-footer" id="desc-copy-container"></div>';
+  setTimeout(function(){var el=document.getElementById("desc-copy-container");if(el){var btn=document.createElement("button");btn.className="copy-btn";btn.textContent="Copier";btn.onclick=function(){navigator.clipboard.writeText(w.description_reecrite||"").then(function(){btn.textContent="Copié ✓";btn.classList.add("copied");setTimeout(function(){btn.textContent="Copier";btn.classList.remove("copied");},2000);});};el.appendChild(btn);}},100);
   html += '</div>';
   // Equipements
   if (w.equipements_a_cocher && w.equipements_a_cocher.length) {
@@ -504,7 +507,7 @@ function renderAB(titres, titreActuel) {
     html += '<div class="a-delai" style="margin-left:auto;background:var(--blue-light);color:var(--blue);border-color:var(--blue-mid)">' + (t.ctr_estime||'') + '</div></div>';
     html += '<div class="a-titre">' + (t.titre||'') + '</div>';
     html += '<div class="a-pourquoi">' + (t.logique||'') + '</div>';
-    html += '<div class="a-footer"><button class="copy-btn" onclick="copyText(this,`' + (t.titre||'').replace(/`/g,"'") + '`)">Copier ce titre</button></div>';
+    html += '<div class="a-footer"><button class="copy-btn" data-titre="' + (t.titre||'').replace(/"/g,"&quot;") + '" onclick="this.previousText=this.textContent;navigator.clipboard.writeText(this.dataset.titre).then(function(){});this.textContent='Copié ✓';this.classList.add('copied');setTimeout(function(){},2000)">Copier ce titre</button></div>';
     html += '</div>';
   });
   html += '</div>';
