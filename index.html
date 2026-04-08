@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Léon — Audit d'annonce Airbnb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0057FF;--blue-dark:#003DB3;--blue-light:#E8F0FF;--blue-mid:#BBCFFF;--ink:#111827;--ink-2:#374151;--ink-3:#6B7280;--ink-4:#9CA3AF;--bg:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;--border:#E5E7EB;--green:#059669;--green-light:#ECFDF5}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.j{font-family:'Plus Jakarta Sans',sans-serif}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:64px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
+.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}.logo span{color:var(--blue)}
+.nav-cta{background:var(--blue);color:#fff;border:none;padding:10px 22px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border-radius:8px;transition:background .2s}.nav-cta:hover{background:var(--blue-dark)}
+
+.hero{padding:96px 60px 80px;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;margin-bottom:24px;font-family:'Plus Jakarta Sans',sans-serif}
+.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:52px;font-weight:700;line-height:1.1;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px}.hero h1 span{color:var(--blue)}
+.hero-sub{font-size:17px;color:var(--ink-3);line-height:1.7;margin-bottom:36px;max-width:440px}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background .2s}.hero-cta:hover{background:var(--blue-dark)}
+.hero-note{font-size:13px;color:var(--ink-4);margin-top:14px}
+
+.hero-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 4px 24px rgba(0,87,255,.08)}
+.hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hc-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4)}
+.hc-score{font-family:'Plus Jakarta Sans',sans-serif;font-size:48px;font-weight:700;color:var(--blue);letter-spacing:-2px;line-height:1}
+.hc-verdict{font-size:13px;color:var(--ink-3);margin-bottom:24px;font-style:italic}
+.hc-dims{display:flex;flex-direction:column;gap:10px}
+.hc-dim{display:grid;grid-template-columns:130px 1fr 28px;align-items:center;gap:10px}
+.hc-dim-name{font-size:12px;color:var(--ink-2);font-weight:500}
+.hc-dim-bar{height:4px;background:var(--bg-3);border-radius:2px}
+.hc-dim-fill{height:100%;background:var(--blue);border-radius:2px}
+.hc-dim-val{font-size:12px;font-weight:600;color:var(--ink);text-align:right}
+
+.stats-band{background:var(--blue-dark);padding:48px 60px;display:grid;grid-template-columns:repeat(3,1fr)}
+.stat-item{text-align:center;padding:0 40px;border-right:1px solid rgba(255,255,255,.1)}.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px}
+.stat-label{font-size:14px;color:rgba(255,255,255,.6);line-height:1.5}
+
+.section-how{padding:96px 60px;max-width:1000px;margin:0 auto}
+.s-label{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;font-family:'Plus Jakarta Sans',sans-serif}
+.s-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1px;margin-bottom:56px;color:var(--ink)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+.step-badge{width:36px;height:36px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--blue);margin-bottom:16px}
+.step h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:600;margin-bottom:8px}
+.step p{font-size:14px;color:var(--ink-3);line-height:1.7}
+
+.section-pricing{background:var(--bg-2);padding:96px 60px}
+.section-pricing-inner{max-width:860px;margin:0 auto}
+.pricing-table{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg);margin-top:48px}
+.pricing-col{padding:36px}.pricing-col.free{border-right:1px solid var(--border)}.pricing-col.premium{background:var(--blue-dark)}
+.p-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin-bottom:12px}
+.p-tag.ft{background:var(--bg-3);color:var(--ink-3)}.p-tag.pt{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
+.p-price{font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:700;letter-spacing:-1.5px;color:var(--ink);line-height:1;margin-bottom:4px}
+.pricing-col.premium .p-price{color:#fff}
+.p-price-sub{font-size:13px;color:var(--ink-3)}.pricing-col.premium .p-price-sub{color:rgba(255,255,255,.5)}
+.p-divider{border:none;border-top:1px solid var(--border);margin:24px 0}.pricing-col.premium .p-divider{border-color:rgba(255,255,255,.15)}
+.p-items{list-style:none;display:flex;flex-direction:column;gap:12px}
+.p-item{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink-2);line-height:1.5}
+.pricing-col.premium .p-item{color:rgba(255,255,255,.8)}
+.p-check{width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pricing-col.premium .p-check{background:rgba(255,255,255,.15)}
+.p-check svg{width:10px;height:10px}
+.p-cta{width:100%;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;border:none;margin-top:24px;transition:all .2s}
+.p-cta.fc{background:var(--blue-light);color:var(--blue)}.p-cta.fc:hover{background:var(--blue-mid)}
+.p-cta.pc{background:#fff;color:var(--blue-dark)}.p-cta.pc:hover{background:var(--blue-light)}
+
+.section-trust{padding:96px 60px;max-width:1180px;margin:0 auto}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.testimonial{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:24px}
+.t-stars{color:#F59E0B;font-size:13px;margin-bottom:12px}
+.t-text{font-size:14px;color:var(--ink-2);line-height:1.7;margin-bottom:20px}
+.t-author{display:flex;align-items:center;gap:10px}
+.t-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0}
+.t-name{font-size:13px;font-weight:600;color:var(--ink)}.t-bien{font-size:12px;color:var(--ink-4)}
+.t-result{display:inline-block;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:4px;margin-top:3px}
+
+.section-cta{background:var(--blue);padding:96px 60px;text-align:center}
+.section-cta h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-1.5px;margin-bottom:16px}
+.section-cta p{font-size:17px;color:rgba(255,255,255,.7);margin-bottom:36px}
+.cta-w{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue);padding:14px 32px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s}.cta-w:hover{opacity:.92}
+.cta-note{font-size:13px;color:rgba(255,255,255,.4);margin-top:14px}
+
+.form-overlay{display:none;position:fixed;inset:0;background:rgba(17,24,39,.75);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.form-overlay.active{display:flex}
+.form-modal{background:var(--bg);width:100%;max-width:540px;border-radius:16px;overflow:hidden}
+.form-header{background:var(--blue-dark);padding:22px 32px;display:flex;align-items:center;justify-content:space-between}
+.fh-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#fff}.fh-logo span{color:var(--blue-mid)}
+.form-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.form-progress{display:flex;border-bottom:1px solid var(--border)}
+.form-step-tab{flex:1;padding:12px;text-align:center;font-size:12px;font-weight:500;color:var(--ink-4);border-bottom:2px solid transparent;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.form-step-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.form-step-tab.done{color:var(--green);border-bottom-color:var(--green)}
+.form-body{padding:32px}
+.form-step{display:none}.form-step.active{display:block}
+.step-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;color:var(--ink);letter-spacing:-.5px}
+.step-sub{font-size:14px;color:var(--ink-3);margin-bottom:24px;line-height:1.6}
+
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-2)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:var(--blue-light)}
+.u-icon{width:48px;height:48px;background:var(--blue-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.u-icon svg{width:22px;height:22px;color:var(--blue)}
+.u-text{font-size:14px;color:var(--ink-2);font-weight:500}.u-text span{color:var(--blue)}
+.u-sub{font-size:12px;color:var(--ink-4);margin-top:4px}
+.upload-files-list{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.u-tag{background:var(--blue-light);padding:5px 10px;font-size:12px;color:var(--blue);border-radius:6px;display:flex;align-items:center;gap:6px;font-weight:500}
+.u-tag button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:14px;line-height:1;opacity:.6}
+.hint-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--ink-3);line-height:1.6;margin-top:16px}
+.hint-box strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px}
+
+.loading-steps{list-style:none;margin:24px 0}
+.loading-steps li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--ink-3)}
+.loading-steps li.active{color:var(--ink);font-weight:500}.loading-steps li.done{color:var(--green)}
+.l-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+.loading-steps li.active .l-dot{background:var(--blue);animation:pulse 1s infinite}
+.loading-steps li.done .l-dot{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+
+.form-actions{margin-top:24px}
+.btn-analyze{background:var(--blue);color:#fff;border:none;padding:13px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s;width:100%}.btn-analyze:hover{background:var(--blue-dark)}
+
+#report-page{display:none;background:var(--bg-2);min-height:100vh}
+.report-nav{background:var(--bg);border-bottom:1px solid var(--border);padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.rn-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700}.rn-logo span{color:var(--blue)}
+.new-audit-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--bg);padding:8px 16px;font-size:13px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink-3);transition:all .2s;font-weight:500}.new-audit-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+.report-wrap{max-width:760px;margin:0 auto;padding:48px 40px}
+.demo-banner{background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:#92400E;display:none}
+
+.r-score-card{background:var(--blue-dark);border-radius:16px;padding:36px;margin-bottom:28px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
+.r-score-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:88px;font-weight:700;color:#fff;line-height:1;letter-spacing:-4px}
+.r-verdict{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.5px}
+.r-profil{font-size:13px;color:rgba(255,255,255,.5)}
+.r-bar-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:16px;margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.r-bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px}
+.r-bar-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s ease}
+
+.s-label-r{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif}
+.dims-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.dim-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px}
+.dim-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dim-name{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-4);font-family:'Plus Jakarta Sans',sans-serif}
+.dim-score{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:700;color:var(--blue);line-height:1;letter-spacing:-1px}
+.dim-bar{height:3px;background:var(--bg-3);border-radius:2px;margin-bottom:10px}
+.dim-bar-fill{height:100%;background:var(--blue);border-radius:2px}
+.dim-verdict{font-size:13px;color:var(--ink-3);margin-bottom:12px;line-height:1.5}
+.dim-locked{background:var(--blue-light);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+.dim-locked-c{font-size:12px;font-weight:600;color:var(--blue)}
+.dim-locked-i{font-size:11px;color:var(--blue);opacity:.7}
+
+.action-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:14px}
+.a-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.a-rang{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-light);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.a-dim{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-3);color:var(--ink-3);padding:4px 8px;border-radius:5px}
+.a-delai{font-size:11px;font-weight:500;border:1px solid var(--border);padding:4px 8px;border-radius:5px;color:var(--ink-4);margin-left:auto}
+.a-titre{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:10px;letter-spacing:-.3px;line-height:1.3}
+.a-faire{font-size:14px;color:var(--ink-2);line-height:1.7;margin-bottom:10px}
+.a-pourquoi{font-size:13px;color:var(--ink-3);line-height:1.6;padding:10px 14px;background:var(--bg-2);border-radius:8px;margin-bottom:12px;border-left:3px solid var(--blue-mid)}
+.a-footer{display:flex;align-items:center;gap:10px}
+.a-impact{display:inline-flex;align-items:center;background:var(--blue-dark);color:#fff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px}
+.copy-btn{background:var(--bg-2);border:1px solid var(--border);padding:6px 12px;font-size:12px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--ink-3);font-family:'Inter',sans-serif;transition:all .2s}.copy-btn:hover{border-color:var(--blue);color:var(--blue)}.copy-btn.copied{border-color:var(--green);color:var(--green)}
+
+.action-card.premium{position:relative;overflow:hidden}
+.prem-overlay{position:absolute;inset:0;background:rgba(249,250,251,.93);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;backdrop-filter:blur(2px)}
+.prem-overlay h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--ink)}
+.prem-overlay p{font-size:13px;color:var(--ink-3);max-width:280px;line-height:1.6}
+.btn-unlock{background:var(--blue);color:#fff;border:none;padding:11px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s}.btn-unlock:hover{background:var(--blue-dark)}
+.unlock-note{font-size:12px;color:var(--ink-4)}
+
+.wording-locked{background:var(--blue-dark);border-radius:16px;padding:36px;text-align:center;margin-top:32px}
+.wording-locked h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:10px}
+.wording-locked p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto}
+
+@media(max-width:768px){
+  nav,.report-nav{padding:0 20px}
+  .hero{grid-template-columns:1fr;padding:60px 20px;gap:40px}.hero h1{font-size:34px}.hero-card{display:none}
+  .stats-band{grid-template-columns:1fr;padding:40px 20px;gap:32px}
+  .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.1);padding:0 0 32px}.stat-item:last-child{border-bottom:none;padding-bottom:0}
+  .section-how,.section-trust{padding:60px 20px}.steps{grid-template-columns:1fr}
+  .section-pricing{padding:60px 20px}.pricing-table{grid-template-columns:1fr}.pricing-col.free{border-right:none;border-bottom:1px solid var(--border)}
+  .testimonials{grid-template-columns:1fr}
+  .section-cta{padding:60px 20px}.section-cta h2{font-size:30px}
+  .dims-grid{grid-template-columns:1fr}.report-wrap{padding:32px 20px}
+  .r-score-card{grid-template-columns:1fr;gap:16px}.r-score-num{font-size:60px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo j">Léon<span>.</span></div>
+  <button class="nav-cta" onclick="openForm()">Analyser mon annonce</button>
+</nav>
+
+<div id="landing-page">
+
+<section class="hero">
+  <div>
+    <div class="hero-badge">
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+      Audit Airbnb gratuit
+    </div>
+    <h1 class="j">Découvrez ce qui <span>freine</span> votre annonce Airbnb.</h1>
+    <p class="hero-sub">En 3 minutes, Léon analyse vos screenshots et vous dit exactement quoi corriger — et dans quel ordre — pour obtenir plus de réservations.</p>
+    <button class="hero-cta" onclick="openForm()">
+      Analyser mon annonce
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+    </button>
+    <p class="hero-note">Sans inscription · Sans carte bancaire · Résultat immédiat</p>
+  </div>
+  <div class="hero-card">
+    <div class="hc-top">
+      <div class="hc-label">Exemple de rapport</div>
+      <div class="hc-score">54</div>
+    </div>
+    <div class="hc-verdict">Votre annonce a du potentiel inexploité</div>
+    <div class="hc-dims">
+      <div class="hc-dim"><span class="hc-dim-name">Visibilité</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:42%"></div></div><span class="hc-dim-val">42</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Premier regard</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:68%"></div></div><span class="hc-dim-val">68</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Pouvoir de conviction</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:55%"></div></div><span class="hc-dim-val">55</span></div>
+      <div class="hc-dim"><span class="hc-dim-name">Satisfaction voyageur</span><div class="hc-dim-bar"><div class="hc-dim-fill" style="width:72%"></div></div><span class="hc-dim-val">72</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band">
+  <div class="stat-item"><div class="stat-num">91%</div><div class="stat-label">des annonces françaises ont un contenu sous-optimisé</div></div>
+  <div class="stat-item"><div class="stat-num">800+</div><div class="stat-label">signaux analysés par l'algorithme Airbnb</div></div>
+  <div class="stat-item"><div class="stat-num">+40%</div><div class="stat-label">de revenus pour les annonces bien positionnées</div></div>
+</div>
+
+<section class="section-how">
+  <div class="s-label">Comment ça marche</div>
+  <h2 class="s-title j">Simple comme un screenshot.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-badge">1</div><h3>Capturez votre annonce</h3><p>Prenez 3 à 5 screenshots de votre annonce Airbnb — titre, photos, description, note. Pas d'accès à votre compte requis.</p></div>
+    <div class="step"><div class="step-badge">2</div><h3>Léon lit tout</h3><p>Léon analyse automatiquement chaque élément visible — note, prix, badge, photos, description. Rien à saisir.</p></div>
+    <div class="step"><div class="step-badge">3</div><h3>Appliquez en 1 clic</h3><p>Recevez votre score, vos 4 dimensions et vos recommandations à copier-coller directement dans Airbnb.</p></div>
+  </div>
+</section>
+
+<section class="section-pricing">
+  <div class="section-pricing-inner">
+    <div class="s-label">Ce que vous recevez</div>
+    <h2 class="s-title j">Gratuit pour démarrer,<br>complet pour performer.</h2>
+    <div class="pricing-table">
+      <div class="pricing-col free">
+        <div class="p-tag ft">Gratuit</div>
+        <div class="p-price j">0€</div>
+        <div class="p-price-sub">Sans inscription</div>
+        <hr class="p-divider">
+        <ul class="p-items">
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score global sur 100</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>4 dimensions scorées avec diagnostic</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>2 recommandations prioritaires complètes</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Nombre d'optimisations identifiées par dimension</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Bouton copier pour chaque recommandation</li>
+        </ul>
+        <button class="p-cta fc" onclick="openForm()">Commencer gratuitement →</button>
+      </div>
+      <div class="pricing-col premium">
+        <div class="p-tag pt">Premium</div>
+        <div class="p-price j">9€</div>
+        <div class="p-price-sub">Accès immédiat · Paiement sécurisé</div>
+        <hr class="p-divider">
+        <ul class="p-items">
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu gratuit inclus</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Toutes les recommandations sans limite</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>3 variantes de titre réécrites à copier-coller</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Description complète réécrite (150 mots)</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Équipements manquants à cocher dans Airbnb</li>
+          <li class="p-item"><div class="p-check"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Benchmark vs concurrents locaux</li>
+        </ul>
+        <button class="p-cta pc" onclick="alert('Paiement à venir')">Débloquer pour 9€ →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-trust">
+  <div class="s-label">Témoignages</div>
+  <h2 class="s-title j">Ils ont corrigé ce que personne ne voyait.</h2>
+  <div class="testimonials">
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"En 3 minutes, Léon a identifié que ma photo de couverture tuait mon taux de clic. J'ai changé. Les réservations ont augmenté dès la semaine suivante."</p><div class="t-author"><div class="t-avatar">SB</div><div><div class="t-name">Sophie B.</div><div class="t-bien">Appartement · Lyon 2e</div><div class="t-result">Score 48 → 74</div></div></div></div>
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"Je pensais que mon annonce était bien. Léon m'a montré 6 incohérences entre mes équipements et mes photos. Je ne savais pas que ça pénalisait le ranking."</p><div class="t-author"><div class="t-avatar">MR</div><div><div class="t-name">Marc R.</div><div class="t-bien">Studio · Bordeaux centre</div><div class="t-result">+340€/mois</div></div></div></div>
+    <div class="testimonial"><div class="t-stars">★★★★★</div><p class="t-text">"La description réécrite par Léon était exactement ce qu'il fallait. J'ai copié-collé et mon taux de réservation a grimpé en deux semaines."</p><div class="t-author"><div class="t-avatar">CF</div><div><div class="t-name">Claire F.</div><div class="t-bien">Maison · Biarritz</div><div class="t-result">58% → 79% d'occupation</div></div></div></div>
+  </div>
+</section>
+
+<section class="section-cta">
+  <h2 class="j">Votre annonce mérite mieux.</h2>
+  <p>Découvrez votre score et les 2 actions qui auront le plus d'impact — gratuitement.</p>
+  <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement →</button>
+  <p class="cta-note">Sans inscription · Sans carte bancaire · 3 minutes</p>
+</section>
+
+</div>
+
+<!-- FORM -->
+<div class="form-overlay" id="formOverlay">
+  <div class="form-modal">
+    <div class="form-header">
+      <div class="fh-logo j">Léon<span>.</span></div>
+      <button class="form-close" onclick="closeForm()">×</button>
+    </div>
+    <div class="form-progress">
+      <div class="form-step-tab active" id="tab1">01 · Screenshots</div>
+      <div class="form-step-tab" id="tab2">02 · Analyse</div>
+    </div>
+    <div class="form-body">
+      <div class="form-step active" id="step1">
+        <div class="step-title j">Déposez vos screenshots</div>
+        <p class="step-sub">3 à 5 captures de votre annonce Airbnb. Léon lit tout automatiquement — note, prix, badge, description.</p>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <div class="u-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+          <div class="u-text"><span>Cliquez pour sélectionner</span> ou glissez ici</div>
+          <div class="u-sub">JPG, PNG · 3 à 5 images recommandées</div>
+        </div>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+        <div class="upload-files-list" id="filesList"></div>
+        <div class="hint-box"><strong>Quoi capturer ?</strong>L'écran principal (titre + photos) · La description · La page avec note et avis</div>
+        <div class="form-actions"><button class="btn-analyze" onclick="startAnalysis()">Lancer l'analyse →</button></div>
+      </div>
+      <div class="form-step" id="step2">
+        <div class="step-title j">Léon analyse votre annonce…</div>
+        <p class="step-sub">Environ 30 secondes.</p>
+        <ul class="loading-steps">
+          <li id="load1"><span class="l-dot"></span>Lecture et analyse visuelle</li>
+          <li id="load2"><span class="l-dot"></span>Calcul des 4 scores</li>
+          <li id="load3"><span class="l-dot"></span>Génération des recommandations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div id="report-page">
+  <div class="report-nav">
+    <div class="rn-logo j">Léon<span>.</span></div>
+    <button class="new-audit-btn" onclick="resetToLanding()">← Nouvel audit</button>
+  </div>
+  <div class="report-wrap">
+    <div class="demo-banner" id="demo-banner"><strong>Mode démo</strong> — Données fictives pour tester l'interface. <a href="/" style="color:#92400E;text-decoration:underline">Retour au site</a></div>
+    <div class="r-score-card">
+      <div class="r-score-num" id="r-score">—</div>
+      <div>
+        <div class="r-verdict" id="r-verdict"></div>
+        <div class="r-profil" id="r-profil"></div>
+        <div class="r-bar-label">Score global</div>
+        <div class="r-bar"><div class="r-bar-fill" id="r-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="s-label-r">4 dimensions analysées</div>
+    <div class="dims-grid" id="dims-grid"></div>
+    <div class="s-label-r" style="margin-top:32px">Recommandations prioritaires</div>
+    <div id="actions-list"></div>
+    <div id="wording-section"></div>
+    <div id="ab-section"></div>
+    <div id="concurrents-section"></div>
+  </div>
+</div>
+
+<script>
+let selectedFiles=[];
+const DEMO=new URLSearchParams(location.search).get('demo')==='1';
+const DEMO_DATA={success:true,vision:{},scoring:{score_global:54,profil_annonce:"Appartement 60m² · Lyon 6e · Couple/Famille · Milieu de gamme sous-exploité",visibilite:{score:42,verdict_court:"Badge absent, pricing statique pénalisant",nb_optimisations_cachees:4,impact_potentiel:"+18 pts score global"},premier_regard:{score:61,verdict_court:"Photo couverture inadaptée au mobile",nb_optimisations_cachees:3,impact_potentiel:"+28% CTR mobile"},pouvoir_conviction:{score:52,verdict_court:"Description trop orientée règles",nb_optimisations_cachees:5,impact_potentiel:"+22% taux de réservation"},satisfaction_voyageur:{score:68,verdict_court:"Bon historique, gap attentes/réalité",nb_optimisations_cachees:2,impact_potentiel:"-18% risque avis négatif"}},recommendations:{actions:[{rang:1,dimension:"Premier regard",titre_court:"Remplacer la photo de couverture",ce_que_vous_faites:"Prenez une nouvelle photo en contre-plongée depuis l'entrée, lumière naturelle, mettant en valeur les hauts plafonds et le parquet. C'est votre actif différenciant face aux 800+ annonces Lyon 6e.",pourquoi:"La photo actuelle génère de la méfiance en 0,3 seconde sur mobile. La couverture capte 70% de la décision de clic.",impact_chiffre:"+28% CTR mobile",delai:"48h"},{rang:2,dimension:"Pouvoir de conviction",titre_court:"Réécrire la description",ce_que_vous_faites:"Inversez la structure : commencez par les bénéfices (hauts plafonds, parquet XIXe, quartier central) et compressez les règles à 2 lignes en bas.",pourquoi:"Ratio actuel : 70% contraintes/30% storytelling. L'algorithme NLP 2026 détecte les keywords négatifs.",impact_chiffre:"+22% réservations",delai:"7 jours"},{rang:3,dimension:"Visibilité",titre_court:"Activer le pricing dynamique",ce_que_vous_faites:"Activez PriceLabs ou le pricing natif Airbnb. Ajoutez une promotion -10% pour déclencher le badge prix barré.",pourquoi:"75% des top annonces Lyon affichent un prix barré. Signal CTR + signal algorithmique C1 simultanés.",impact_chiffre:"+18% ranking",delai:"48h"}],wording:{titre_actuel:"Bel appartement lyonnais typique - Coeur de ville",description_reecrite:"Traversant est-ouest, lumineux à toute heure, avec ses 3m20 de hauteur sous plafond et son parquet du XIXe — cet appartement est rare dans le quartier Saxe/Gambetta. À 1 minute du métro, 15 minutes à pied de Bellecour.\n\nDécouvrez deux grandes chambres, un salon ouvert sur une cuisine équipée, machine à café Nespresso, WiFi haut débit. La lumière naturelle traverse l'appartement d'est en ouest toute la journée.\n\nArrivée autonome 24h/24. Départ 11h. Check-in dès 15h.",equipements_a_cocher:["Espace de travail dédié","Machine à café","Lave-linge","Chauffage","Climatisation ou ventilateur"]},ab_titres:[{rang:1,titre:"Appartement haussmannien · Hauts plafonds · Saxe-Gambetta",angle:"Différenciant",logique:"Met en avant l'actif architectural unique — hauts plafonds + quartier précis captent les recherches NLP 2026",ctr_estime:"+31% vs titre actuel"},{rang:2,titre:"60m² lumineux traversant · 1 min Métro · Lyon centre",angle:"Bénéfice",logique:"Traverse + lumineux = mots-clés recherchés. Distance métro en chiffre = ancrage concret",ctr_estime:"+24% vs titre actuel"},{rang:3,titre:"Parquet XIXe · Calme · Quartier Saxe-Gambetta Lyon",angle:"NLP",logique:"Parquet XIXe + calme = combo keywords que l'algo NLP valorise sur la recherche 'appartement authentique Lyon'",ctr_estime:"+19% vs titre actuel"},{rang:4,titre:"Grand appartement lyonnais typique · Lumineux · Central",angle:"Localisation",logique:"Garde l'identité lyonnaise mais ajoute des qualificatifs actionnables (lumineux, central)",ctr_estime:"+12% vs titre actuel"},{rang:5,titre:"Séjour au coeur de Lyon · 2 chambres · Parquet · Calme",angle:"Émotionnel",logique:"Séjour + coeur de Lyon = appel émotionnel. 2 chambres visible dès le titre = filtre positif pour familles",ctr_estime:"+15% vs titre actuel"}],concurrents:[{rang:1,profil:"Studio design nordique avec déco curative · Lyon 6e · Coup de Cœur",avantages:["Badge Coup de Cœur = +30% visibilité algorithmique","Photos professionnelles lumineuses","Instant Book activé"],score_estime:78,comment_les_contrer:"Activez l'Instant Book et investissez dans une séance photo professionnelle (150-200€). ROI en 1 réservation supplémentaire."},{rang:2,profil:"Appartement moderne rénové 2023 · Lyon Part-Dieu · Superhote",avantages:["Rénovation récente = photos parfaites","Pricing dynamique actif","Description orientée professionnel"],score_estime:74,comment_les_contrer:"Votre parquet XIXe est un actif que ce concurrent ne peut pas copier. Photographiez-le en gros plan et mettez-le en couverture."},{rang:3,profil:"T2 atypique avec terrasse · Vieux-Lyon · 260 avis",avantages:["Terrasse = différenciant fort","Volume d'avis = algorithme confiant","Prix 15% plus bas que vous"],score_estime:71,comment_les_contrer:"Votre avantage : 2 chambres vs leur studio. Ciblez explicitement les familles et les groupes de 3-4 dans votre description."},{rang:4,profil:"Loft industriel · Confluence · Couple 25-35 ans",avantages:["Identité visuelle forte et mémorable","Storytelling description excellent","Photos ambiance soir valorisées"],score_estime:68,comment_les_contrer:"Ajoutez 2-3 photos ambiance soirée pour combler ce gap. Une lampe et un verre de vin suffisent à créer l'atmosphère."},{rang:5,profil:"Studio cosy Croix-Rousse · Netflix & Chill · 340 avis",avantages:["Titre émotionnel mémorable","Concept clair et cohérent","Prix compétitif avec promo active"],score_estime:66,comment_les_contrer:"Leur concept est simple mais efficace. Votre réponse : ancrez votre identité sur l'authenticité haussmannienne — une niche qu'ils ne peuvent pas occuper."}]}};
+
+function openForm(){if(DEMO){renderReport(DEMO_DATA);return;}document.getElementById('formOverlay').classList.add('active');document.body.style.overflow='hidden';}
+function closeForm(){document.getElementById('formOverlay').classList.remove('active');document.body.style.overflow='';}
+function resetToLanding(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';selectedFiles=[];document.getElementById('filesList').innerHTML='';goToStep(1);window.scrollTo(0,0);}
+function goToStep(n){document.querySelectorAll('.form-step').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.form-step-tab').forEach(t=>{t.classList.remove('active','done');});document.getElementById('step'+n).classList.add('active');document.getElementById('tab'+n).classList.add('active');for(let i=1;i<n;i++)document.getElementById('tab'+i).classList.add('done');}
+function handleFiles(f){selectedFiles=selectedFiles.concat(Array.from(f)).slice(0,5);renderFilesList();}
+function handleDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
+function handleDragLeave(e){e.currentTarget.classList.remove('dragover');}
+function handleDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');handleFiles(e.dataTransfer.files);}
+function removeFile(i){selectedFiles.splice(i,1);renderFilesList();}
+function renderFilesList(){document.getElementById('filesList').innerHTML=selectedFiles.map((f,i)=>`<div class="u-tag">${f.name}<button onclick="removeFile(${i})">×</button></div>`).join('');}
+
+async function startAnalysis(){
+  if(selectedFiles.length===0){alert('Déposez au moins un screenshot.');return;}
+  goToStep(2);
+  ['load1','load2','load3'].forEach(s=>{const el=document.getElementById(s);el.className='';el.querySelector('.l-dot').className='l-dot';});
+  document.getElementById('load1').classList.add('active');
+  setTimeout(()=>{document.getElementById('load1').classList.remove('active');document.getElementById('load1').classList.add('done');document.getElementById('load2').classList.add('active');},9000);
+  setTimeout(()=>{document.getElementById('load2').classList.remove('active');document.getElementById('load2').classList.add('done');document.getElementById('load3').classList.add('active');},20000);
+  const fd=new FormData();
+  selectedFiles.forEach((f,i)=>fd.append('image_'+i,f));
+  try{
+    const res=await fetch('/analyze',{method:'POST',body:fd});
+    const data=await res.json();
+    if(data.success){document.getElementById('load3').classList.remove('active');document.getElementById('load3').classList.add('done');setTimeout(()=>renderReport(data),600);}
+    else{alert('Erreur : '+data.error);goToStep(1);}
+  }catch(e){alert('Erreur de connexion.');goToStep(1);}
+}
+
+function getVerdict(s){if(s<=40)return'Votre annonce passe inaperçue';if(s<=60)return'Votre annonce sous-performe';if(s<=80)return'Votre annonce a du potentiel inexploité';return'Votre annonce est bien positionnée';}
+
+function renderReport(data){
+  closeForm();
+  document.getElementById('landing-page').style.display='none';
+  document.getElementById('report-page').style.display='block';
+  if(DEMO)document.getElementById('demo-banner').style.display='block';
+  window.scrollTo(0,0);
+  const s=data.scoring,r=data.recommendations;
+  document.getElementById('r-score').textContent=s.score_global;
+  document.getElementById('r-verdict').textContent=getVerdict(s.score_global);
+  document.getElementById('r-profil').textContent=s.profil_annonce||'';
+  setTimeout(()=>{document.getElementById('r-bar').style.width=s.score_global+'%';},100);
+  const dims=[{key:'visibilite',label:'Visibilité'},{key:'premier_regard',label:'Premier regard'},{key:'pouvoir_conviction',label:'Pouvoir de conviction'},{key:'satisfaction_voyageur',label:'Satisfaction voyageur'}];
+  document.getElementById('dims-grid').innerHTML=dims.map(d=>{const dim=s[d.key];if(!dim)return'';return`<div class="dim-card"><div class="dim-top"><div class="dim-name">${d.label}</div><div class="dim-score">${dim.score}</div></div><div class="dim-bar"><div class="dim-bar-fill" style="width:${dim.score}%"></div></div><div class="dim-verdict">${dim.verdict_court||''}</div><div class="dim-locked"><span class="dim-locked-c">${dim.nb_optimisations_cachees||'?'} optimisations identifiées</span><span class="dim-locked-i">${dim.impact_potentiel||''}</span></div></div>`;}).join('');
+  if(r?.actions){document.getElementById('actions-list').innerHTML=r.actions.map(a=>{return`<div class="action-card"><div class="a-meta"><div class="a-rang">${a.rang}</div><div class="a-dim">${a.dimension}</div><div class="a-delai">${a.delai}</div></div><div class="a-titre">${a.titre_court}</div><div class="a-faire">${a.ce_que_vous_faites}</div><div class="a-pourquoi">${a.pourquoi}</div><div class="a-footer"><div class="a-impact">${a.impact_chiffre}</div><button class="copy-btn" onclick="copyText(this,\`${(a.ce_que_vous_faites||'').replace(/\`/g,"'")}\`)">Copier</button></div></div>`;}).join('');}
+  renderWording(r?.wording);
+  renderAB(r?.ab_titres, r?.wording?.titre_actuel);
+  renderConcurrents(r?.concurrents);
+}
+
+function renderWording(w) {
+  if (!w) return;
+  let html = '<div style="margin-top:32px">';
+  html += '<div class="s-label-r">Réécriture de votre annonce</div>';
+  // Description
+  html += '<div class="action-card" style="margin-bottom:14px">';
+  html += '<div class="a-titre">Description réécrite</div>';
+  html += '<div class="a-faire" style="white-space:pre-line">' + (w.description_reecrite||'') + '</div>';
+  html += '<div class="a-footer"><button class="copy-btn" onclick="copyText(this,`' + (w.description_reecrite||'').replace(/`/g,"'") + '`)">Copier</button></div>';
+  html += '</div>';
+  // Equipements
+  if (w.equipements_a_cocher && w.equipements_a_cocher.length) {
+    html += '<div class="action-card" style="margin-bottom:14px">';
+    html += '<div class="a-titre">Équipements à cocher dans Airbnb</div>';
+    html += '<ul style="margin:10px 0 0 18px;display:flex;flex-direction:column;gap:6px">';
+    w.equipements_a_cocher.forEach(e => { html += '<li style="font-size:14px;color:var(--ink-2)">' + e + '</li>'; });
+    html += '</ul></div>';
+  }
+  html += '</div>';
+  document.getElementById('wording-section').innerHTML = html;
+}
+
+function renderAB(titres, titreActuel) {
+  if (!titres || !titres.length) return;
+  let html = '<div style="margin-top:32px">';
+  html += '<div class="s-label-r">Testez votre titre — 5 variantes A/B</div>';
+  if (titreActuel) {
+    html += '<div style="background:var(--bg-3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-3)">Titre actuel : <strong style="color:var(--ink)">' + titreActuel + '</strong></div>';
+  }
+  titres.forEach(t => {
+    html += '<div class="action-card" style="margin-bottom:12px">';
+    html += '<div class="a-meta"><div class="a-rang">' + t.rang + '</div>';
+    html += '<div class="a-dim">' + (t.angle||'') + '</div>';
+    html += '<div class="a-delai" style="margin-left:auto;background:var(--blue-light);color:var(--blue);border-color:var(--blue-mid)">' + (t.ctr_estime||'') + '</div></div>';
+    html += '<div class="a-titre">' + (t.titre||'') + '</div>';
+    html += '<div class="a-pourquoi">' + (t.logique||'') + '</div>';
+    html += '<div class="a-footer"><button class="copy-btn" onclick="copyText(this,`' + (t.titre||'').replace(/`/g,"'") + '`)">Copier ce titre</button></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('ab-section').innerHTML = html;
+}
+
+function renderConcurrents(concurrents) {
+  if (!concurrents || !concurrents.length) return;
+  let html = '<div style="margin-top:32px">';
+  html += '<div class="s-label-r">Les 5 profils qui vous devancent</div>';
+  concurrents.forEach(c => {
+    html += '<div class="action-card" style="margin-bottom:12px">';
+    html += '<div class="a-meta"><div class="a-rang">' + c.rang + '</div>';
+    html += '<div style="flex:1;font-size:13px;font-weight:600;color:var(--ink)">' + (c.profil||'') + '</div>';
+    html += '<div class="a-delai">Score ~' + (c.score_estime||'?') + '</div></div>';
+    if (c.avantages && c.avantages.length) {
+      html += '<ul style="margin:0 0 12px 18px;display:flex;flex-direction:column;gap:4px">';
+      c.avantages.forEach(a => { html += '<li style="font-size:13px;color:var(--ink-3)">' + a + '</li>'; });
+      html += '</ul>';
+    }
+    html += '<div class="a-pourquoi"><strong style="color:var(--ink-2)">Comment les contrer :</strong> ' + (c.comment_les_contrer||'') + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('concurrents-section').innerHTML = html;
+}
+
+function copyText(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copié ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied');},2000);});}
+
+if(DEMO){document.getElementById('landing-page').style.display='none';renderReport(DEMO_DATA);}
+</script>
+</body>
+</html>
