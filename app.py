@@ -92,7 +92,9 @@ TON STYLE ABSOLU :
 - Vouvoiement chaleureux et bienveillant — jamais condescendant
 - Ultra spécifique : cite des éléments précis vus dans les screenshots
 - Quelques chiffres clés pertinents, pas à chaque phrase
-- Formule en opportunités, jamais en jugements
+- Formule TOUJOURS en opportunité positive : jamais "c'est sombre" mais "cette photo gagnerait à être plus lumineuse", jamais "le titre est mauvais" mais "ce titre a tout pour performer en ajoutant X"
+- Rappelle-toi que beaucoup d'annonces sont des résidences principales ou des logements personnels — sois respectueux de cet espace de vie
+- Ne jamais formuler de critique directe sur la décoration, le mobilier ou les choix personnels de l'hôte
 - Format : JSON strict uniquement, aucun texte en dehors du JSON"""
 
 
@@ -218,7 +220,7 @@ Retourne UNIQUEMENT ce JSON :
       "score_section": number,
       "priorite": "Prioritaire|Important|À planifier",
       "gain_potentiel": "+XX% CTR",
-      "best_practices": ["Les annonces avec photos professionnelles génèrent en moyenne 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle (table dressée, café fumant, livre ouvert) augmentent le CTR"],
+      "best_practices": ["Les annonces avec photos professionnelles génèrent en moyenne 40% de réservations supplémentaires", "La photo de couverture représente 70% de la décision de clic sur mobile", "Les photos lifestyle sont particulièrement puissantes : une table dressée avec deux verres de vin, un livre ouvert près d'une fenêtre lumineuse, un café fumant sur le plan de travail — ces images vendent une expérience, pas juste un logement", "Astuce lifestyle : photographier le matin avec la lumière naturelle, en ajoutant 2-3 accessoires du quotidien. Ce sont souvent les photos les plus performantes même dans une résidence principale"],
       "analyse_photos": [{{"numero": 1, "probleme": "problème précis et spécifique", "pourquoi": "impact sur les réservations", "recommandation": "instruction très précise : angle exact, lumière, composition, accessoires suggérés"}}],
       "photos_manquantes": [{{"photo": "description précise", "pourquoi": "impact sur les réservations", "conseil_technique": "angle, lumière, heure idéale, accessoires"}}],
       "ordre_recommande": ["description photo 1 — couverture", "description photo 2", "description photo 3", "description photo 4", "description photo 5"]
