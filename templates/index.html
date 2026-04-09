@@ -870,7 +870,7 @@ function renderReport(data){
     +'</div></div>'
     +'<div class="teaser-cta-wrap">'
     +'<button class="btn-teaser" onclick="scrollToEmailGate()">Accéder gratuitement en bêta →</button>'
-    +'<div class="teaser-price">Paiement sécurisé · Accès immédiat</div>'
+    +'<div class="teaser-price">Gratuit pendant la bêta · Accès immédiat</div>'
     +'</div></div>';
 
   // Email gate + locked sections
@@ -1051,9 +1051,21 @@ function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,
 function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function scrollToEmailGate(){
   var gate = document.getElementById('email-gate-wall');
-  if(gate){gate.scrollIntoView({behavior:'smooth',block:'center'});}
+  var wrap = document.getElementById('locked-sections-wrap');
+  var target = gate || wrap;
+  if(target){
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    // fallback: scroll to bottom of page
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }
   var input = document.getElementById('gate-email-input');
-  if(input){setTimeout(function(){input.focus();},600);}
+  if(input){
+    setTimeout(function(){
+      input.scrollIntoView({behavior:'smooth',block:'center'});
+      input.focus();
+    },800);
+  }
 }
 
 async function submitGateEmail(){
