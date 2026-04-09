@@ -249,6 +249,19 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .concurrent-contrer{font-size:12px;color:var(--i2);background:var(--gl);border-radius:7px;padding:8px 12px;line-height:1.5;margin-top:8px}
 /* BP */
 .bp-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--i2);line-height:1.5;background:var(--bl);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+/* Email gate */
+.email-gate{background:#fff;border-radius:16px;padding:36px;text-align:center;border:1.5px solid var(--border);max-width:520px;margin:32px auto}
+.email-gate-icon{font-size:40px;margin-bottom:16px}
+.email-gate-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.5px}
+.email-gate-sub{font-size:14px;color:var(--i3);line-height:1.7;margin-bottom:24px;max-width:380px;margin-left:auto;margin-right:auto}
+.email-gate-beta{display:inline-block;font-size:11px;font-weight:700;background:var(--gl);color:var(--green);padding:3px 10px;border-radius:100px;margin-bottom:16px;letter-spacing:.5px}
+.email-input-wrap{display:flex;gap:10px;max-width:380px;margin:0 auto}
+.email-input-wrap input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.email-input-wrap input:focus{border-color:var(--blue)}
+.btn-email-submit{background:var(--blue);color:#fff;border:none;padding:12px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .2s}.btn-email-submit:hover{background:var(--bd)}
+.email-gate-note{font-size:11px;color:var(--i4);margin-top:10px}
+.email-gate-perks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
+.email-gate-perk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--i2);background:var(--bg2);border:1px solid var(--border);padding:5px 10px;border-radius:100px}
 /* Freemium */
 .locked-overlay{position:relative;overflow:hidden;border-radius:10px}
 .locked-overlay .lock-blur{filter:blur(4px);pointer-events:none;user-select:none;opacity:.7}
@@ -748,8 +761,9 @@ function renderReport(data){
     return gb-ga;
   });
 
-  // FREEMIUM : 2 sections libres, reste verrouillé
+  // FREEMIUM : 2 sections libres, reste derrière email gate
   var FREE_LIMIT = 2;
+  var emailUnlocked = false;
 
   document.getElementById('section-tabs').innerHTML=sorted.map(function(sc,idx){
     var sec=secs[sc.key];
@@ -758,7 +772,7 @@ function renderReport(data){
     var prioTab=pc==='h'?' ph':pc==='m'?' pm':'';
     var locked=idx>=FREE_LIMIT?' style="opacity:.45;cursor:default"':'';
     var lockIcon=idx>=FREE_LIMIT?' 🔒':'';
-    return '<div class="sec-tab'+active+prioTab+'"'+locked+' onclick="'+(idx<FREE_LIMIT ? 'showSection(\''+sc.key+'\')' : 'showUnlockModal()')+' " id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+lockIcon+'<span class="tab-gain">'+(idx<FREE_LIMIT ? sec.gain_potentiel||'' : '?')+'</span></div>';
+    return '<div class="sec-tab'+active+prioTab+'"'+locked+' onclick="'+(idx<FREE_LIMIT ? 'showSection(\''+sc.key+'\')' : 'scrollToEmailGate()')+' " id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+lockIcon+'<span class="tab-gain">'+(idx<FREE_LIMIT ? sec.gain_potentiel||'' : '?')+'</span></div>';
   }).join('');
 
   // Build 2 free sections + teaser banner + locked sections blurred
@@ -777,30 +791,40 @@ function renderReport(data){
     +sorted.slice(FREE_LIMIT).map(function(sc){return '<span class="teaser-item">'+sc.icon+' '+sc.label+'</span>';}).join('')
     +'</div></div>'
     +'<div class="teaser-cta-wrap">'
-    +'<button class="btn-teaser" onclick="showUnlockModal()">Débloquer pour 9€ →</button>'
+    +'<button class="btn-teaser" onclick="scrollToEmailGate()">Accéder gratuitement en bêta →</button>'
     +'<div class="teaser-price">Paiement sécurisé · Accès immédiat</div>'
     +'</div></div>';
 
-  // Locked sections blurred
-  var lockedHtml = '<div class="locked-overlay">'
-    +'<div class="lock-blur">'
+  // Email gate + locked sections
+  var lockedHtml = '<div class="locked-overlay" id="locked-sections-wrap">'
+    +'<div class="lock-blur" id="locked-sections-blur">'
     +sorted.slice(FREE_LIMIT).map(function(sc){
       var sec=secs[sc.key];
       var pc=getPrioClass(sec.priorite||'');
       return '<div class="section-block visible" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
     }).join('')
     +'</div>'
-    +'<div class="lock-wall">'
-    +'<div class="lock-icon">🔒</div>'
-    +'<div class="lock-title">'+(sorted.length - FREE_LIMIT)+' sections verrouillées</div>'
-    +'<div class="lock-sub">Débloquez le rapport complet pour accéder à toutes les recommandations et optimisations prêtes à copier-coller.</div>'
-    +'<button class="btn-unlock-full" onclick="showUnlockModal()">Débloquer le rapport complet — 9€</button>'
-    +'<div class="unlock-note-sm">Paiement sécurisé · Accès immédiat</div>'
+    +'<div class="lock-wall" id="email-gate-wall">'
+    +'<div class="email-gate">'
+    +'<div class="email-gate-icon">🎁</div>'
+    +'<div class="email-gate-beta">VERSION BÊTA GRATUITE</div>'
+    +'<div class="email-gate-title">Accédez à votre rapport complet</div>'
+    +'<div class="email-gate-sub">Entrez votre email pour débloquer les '+(sorted.length - FREE_LIMIT)+' sections restantes — gratuitement pendant la bêta.</div>'
+    +'<div class="email-gate-perks">'
+    +sorted.slice(FREE_LIMIT).map(function(sc){return '<div class="email-gate-perk">'+sc.icon+' '+sc.label+'</div>';}).join('')
+    +'</div>'
+    +'<div class="email-input-wrap">'
+    +'<input type="email" id="gate-email-input" placeholder="votre@email.fr">'
+    +'<button class="btn-email-submit" onclick="submitGateEmail()">Accéder →</button>'
+    +'</div>'
+    +'<div class="email-gate-note">Pas de spam · Désabonnement en 1 clic · Conforme RGPD</div>'
+    +'</div>'
     +'</div></div>';
 
   document.getElementById('sections-content').innerHTML = freeHtml + teaserHtml + lockedHtml;
 
   window._sortedSections = sorted;
+  window._sortedSectionsData = secs;
   document.getElementById('guide-banner').style.display='flex';
 }
 
@@ -947,6 +971,89 @@ function renderSection(sc,sec,pc){
 
 function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function scrollToEmailGate(){
+  var gate = document.getElementById('email-gate-wall');
+  if(gate){gate.scrollIntoView({behavior:'smooth',block:'center'});}
+  var input = document.getElementById('gate-email-input');
+  if(input){setTimeout(function(){input.focus();},600);}
+}
+
+async function submitGateEmail(){
+  var input = document.getElementById('gate-email-input');
+  var email = input ? input.value.trim() : '';
+  if(!email || !email.includes('@')){
+    input.style.borderColor='var(--red)';
+    setTimeout(function(){input.style.borderColor='var(--border)';},2000);
+    return;
+  }
+  var btn = document.querySelector('.btn-email-submit');
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try{
+    await fetch('/save-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email})
+    });
+  }catch(e){}
+
+  // Unlock report regardless of API result
+  unlockFullReport(email);
+}
+
+function unlockFullReport(email){
+  emailUnlocked = true;
+  // Remove blur and wall
+  var blur = document.getElementById('locked-sections-blur');
+  var wall = document.getElementById('email-gate-wall');
+  var wrap = document.getElementById('locked-sections-wrap');
+  if(blur){blur.style.filter='none';blur.style.pointerEvents='auto';blur.style.opacity='1';}
+  if(wall){wall.style.display='none';}
+  if(wrap){wrap.style.overflow='visible';}
+
+  // Show all section blocks inside
+  var blocks = document.querySelectorAll('#locked-sections-blur .section-block');
+  blocks.forEach(function(b){b.classList.add('visible');});
+
+  // Unlock tabs
+  var tabs = document.querySelectorAll('.sec-tab[style*="opacity:.45"]');
+  tabs.forEach(function(t){
+    t.style.opacity='1';
+    t.style.cursor='pointer';
+  });
+
+  // Show success message briefly
+  var gate = document.getElementById('email-gate-wall');
+  if(gate){
+    gate.innerHTML = '<div style="background:var(--gl);border-radius:12px;padding:20px 28px;text-align:center;border:1px solid var(--green)"><div style="font-size:24px;margin-bottom:8px">&#10003;</div><div style="font-size:16px;font-weight:700;color:var(--green)">Rapport complet débloqué !</div><div style="font-size:13px;color:var(--i3);margin-top:4px">Bienvenue dans la beta Leon</div></div>';
+    gate.style.display='flex';
+    gate.style.position='relative';
+    gate.style.background='none';
+    setTimeout(function(){if(gate)gate.style.display='none';},3000);
+  }
+
+  // Scroll to first locked section
+  var sorted2 = window._sortedSections || [];
+  if(sorted2.length > 2){
+    var firstLocked = document.getElementById('section-'+sorted2[2].key);
+    if(firstLocked){setTimeout(function(){firstLocked.scrollIntoView({behavior:'smooth',block:'start'});},500);}
+  }
+
+  // Update tabs onclick to use showSection
+  var sorted3 = window._sortedSections || [];
+  sorted3.slice(2).forEach(function(sc){
+    var tab = document.getElementById('tab-'+sc.key);
+    if(tab){
+      tab.onclick = function(){showSection(sc.key);};
+      tab.style.opacity='1';
+      tab.style.cursor='pointer';
+      // Remove lock icon from label
+      tab.innerHTML = sc.icon+' '+sc.label+'<span class="tab-gain">'+(window._sortedSectionsData && window._sortedSectionsData[sc.key] ? window._sortedSectionsData[sc.key].gain_potentiel||'' : '')+'</span>';
+    }
+  });
+}
+
 function showUnlockModal(){
   // Populate locked sections list
   var sorted2 = window._sortedSections || [];
