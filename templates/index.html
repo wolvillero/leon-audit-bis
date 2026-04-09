@@ -48,9 +48,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .section-pricing{background:var(--bg2);padding:96px 60px}
 .pricing-inner{max-width:1100px;margin:0 auto}
 .pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:48px}
-.p-col{padding:36px;background:var(--bg)}
-.p-col.mid{background:var(--bd);border-left:1px solid rgba(255,255,255,.15);border-right:1px solid rgba(255,255,255,.15)}
-.p-col.top{background:#0f172a}
+.p-col{padding:36px;background:var(--bg);display:flex;flex-direction:column}
+.p-col.mid{background:var(--bd);border-left:1px solid rgba(255,255,255,.15);border-right:1px solid rgba(255,255,255,.15);display:flex;flex-direction:column}
+.p-col.top{background:#0f172a;display:flex;flex-direction:column}
 .p-tier{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;color:var(--ink)}
 .p-col.mid .p-tier,.p-col.top .p-tier{color:#fff}
 .p-col.top .p-tier{color:#FFD700}
@@ -60,7 +60,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .p-col.mid .p-price{color:#fff}.p-col.top .p-price{color:#FFD700}
 .p-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
 .p-col.mid .p-divider,.p-col.top .p-divider{border-color:rgba(255,255,255,.15)}
-.p-items{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.p-items{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;flex:1}
 .p-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--i2);line-height:1.5}
 .p-col.mid .p-item,.p-col.top .p-item{color:rgba(255,255,255,.85)}
 .p-check{width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center}
@@ -355,7 +355,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
           <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Titres et descriptions réécrites (5+ options)</li>
           <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations gifting personnalisées</li>
         </ul>
-        <button class="p-cta fc" onclick="openForm()">Commencer gratuitement →</button>
+        <button class="p-cta fc" onclick="openForm()" style="margin-top:auto">Commencer gratuitement →</button>
       </div>
       <div class="p-col mid">
         <div class="p-tier j">Premium</div>
@@ -368,7 +368,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
           <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Comparaison des scores avant/après</li>
           <li class="p-item"><div class="p-check w"><svg viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Support prioritaire</li>
         </ul>
-        <button class="p-cta pc" onclick="alert('Bientôt disponible')">Bientôt disponible →</button>
+        <button class="p-cta pc" style="opacity:.5;cursor:not-allowed;margin-top:auto" disabled>Bientôt disponible</button>
       </div>
       <div class="p-col top">
         <div class="p-tier j">Premium+</div>
@@ -383,7 +383,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
           <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Numéros utiles et urgences</li>
           <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Infos pratiques maison intégrées</li>
         </ul>
-        <button class="p-cta gc" onclick="openForm()">Essayer maintenant →</button>
+        <button class="p-cta gc" style="opacity:.5;cursor:not-allowed;margin-top:auto" disabled>Bientôt disponible</button>
       </div>
     </div>
   </div>
@@ -538,8 +538,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
         <p>Générez un guide complet au format Word — restaurants, expériences locales, numéros utiles, infos pratiques maison — adapté à votre destination.</p>
       </div>
       <div style="flex-shrink:0">
-        <button class="btn-guide" onclick="openGuide()">Générer mon guide Word →</button>
-        <div class="btn-guide-sub">Premium+ · 19€ — actuellement gratuit en beta</div>
+        <button class="btn-guide" style="opacity:.5;cursor:not-allowed;background:#888" disabled>Guide d'accueil — Bientôt disponible</button>
+        <div class="btn-guide-sub">Disponible dans la version Premium+ · 19€</div>
       </div>
     </div>
   </div>
