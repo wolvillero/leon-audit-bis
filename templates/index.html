@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -248,6 +249,25 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .concurrent-contrer{font-size:12px;color:var(--i2);background:var(--gl);border-radius:7px;padding:8px 12px;line-height:1.5;margin-top:8px}
 /* BP */
 .bp-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--i2);line-height:1.5;background:var(--bl);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+/* Freemium */
+.locked-overlay{position:relative;overflow:hidden;border-radius:10px}
+.locked-overlay .lock-blur{filter:blur(4px);pointer-events:none;user-select:none;opacity:.7}
+.lock-wall{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(249,250,251,0) 0%,rgba(249,250,251,.97) 40%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:24px;border-radius:10px;border:1.5px dashed var(--border)}
+.lock-icon{font-size:22px;margin-bottom:8px}
+.lock-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;text-align:center}
+.lock-sub{font-size:13px;color:var(--i3);text-align:center;margin-bottom:16px;line-height:1.5}
+.btn-unlock-full{background:var(--blue);color:#fff;border:none;padding:12px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;transition:background .2s;width:100%;max-width:280px}.btn-unlock-full:hover{background:var(--bd)}
+.unlock-note-sm{font-size:11px;color:var(--i4);margin-top:6px;text-align:center}
+.teaser-banner{background:linear-gradient(135deg,var(--bd) 0%,#1e4db7 100%);border-radius:16px;padding:28px 32px;margin:24px 0;display:flex;align-items:center;gap:24px}
+.teaser-banner-left{flex:1}
+.teaser-banner-left h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.teaser-banner-left p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6}
+.teaser-banner-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.teaser-item{font-size:11px;font-weight:600;background:rgba(255,255,255,.15);color:#fff;padding:3px 10px;border-radius:100px}
+.teaser-cta-wrap{flex-shrink:0;text-align:center}
+.btn-teaser{background:#FFD700;color:#0f172a;border:none;padding:13px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;white-space:nowrap;transition:all .2s}.btn-teaser:hover{background:#FFC400}
+.teaser-price{font-size:11px;color:rgba(255,255,255,.5);margin-top:6px;text-align:center}
+.free-badge{display:inline-block;font-size:10px;font-weight:700;background:var(--gl);color:var(--green);padding:2px 8px;border-radius:100px;margin-left:6px;letter-spacing:.5px}
 /* Guide banner */
 .guide-banner{background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);border-radius:16px;padding:32px;margin-top:32px;display:flex;align-items:center;gap:28px}
 .guide-banner-text h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:6px}
@@ -728,20 +748,59 @@ function renderReport(data){
     return gb-ga;
   });
 
+  // FREEMIUM : 2 sections libres, reste verrouillé
+  var FREE_LIMIT = 2;
+
   document.getElementById('section-tabs').innerHTML=sorted.map(function(sc,idx){
     var sec=secs[sc.key];
     var pc=getPrioClass(sec.priorite||'');
     var active=idx===0?' active':'';
     var prioTab=pc==='h'?' ph':pc==='m'?' pm':'';
-    return '<div class="sec-tab'+active+prioTab+'" onclick="showSection(\''+sc.key+'\')" id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+'<span class="tab-gain">'+(sec.gain_potentiel||'')+'</span></div>';
+    var locked=idx>=FREE_LIMIT?' style="opacity:.45;cursor:default"':'';
+    var lockIcon=idx>=FREE_LIMIT?' 🔒':'';
+    return '<div class="sec-tab'+active+prioTab+'"'+locked+' onclick="'+(idx<FREE_LIMIT ? 'showSection(\''+sc.key+'\')' : 'showUnlockModal()')+' " id="tab-'+sc.key+'">'+sc.icon+' '+sc.label+lockIcon+'<span class="tab-gain">'+(idx<FREE_LIMIT ? sec.gain_potentiel||'' : '?')+'</span></div>';
   }).join('');
 
-  document.getElementById('sections-content').innerHTML=sorted.map(function(sc,idx){
+  // Build 2 free sections + teaser banner + locked sections blurred
+  var freeHtml = sorted.slice(0,FREE_LIMIT).map(function(sc,idx){
     var sec=secs[sc.key];
     var pc=getPrioClass(sec.priorite||'');
     return '<div class="section-block'+(idx===0?' visible':'')+'" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
   }).join('');
 
+  // Teaser banner between free and locked
+  var teaserHtml = '<div class="teaser-banner" id="teaser-banner">'
+    +'<div class="teaser-banner-left">'
+    +'<h3>🔓 Débloquez votre rapport complet</h3>'
+    +'<p>'+(sorted.length - FREE_LIMIT)+' sections supplémentaires analysées — photos, équipements, gifting, paramètres de réservation, règles, expérience voyageur et positionnement concurrentiel.</p>'
+    +'<div class="teaser-banner-items">'
+    +sorted.slice(FREE_LIMIT).map(function(sc){return '<span class="teaser-item">'+sc.icon+' '+sc.label+'</span>';}).join('')
+    +'</div></div>'
+    +'<div class="teaser-cta-wrap">'
+    +'<button class="btn-teaser" onclick="showUnlockModal()">Débloquer pour 9€ →</button>'
+    +'<div class="teaser-price">Paiement sécurisé · Accès immédiat</div>'
+    +'</div></div>';
+
+  // Locked sections blurred
+  var lockedHtml = '<div class="locked-overlay">'
+    +'<div class="lock-blur">'
+    +sorted.slice(FREE_LIMIT).map(function(sc){
+      var sec=secs[sc.key];
+      var pc=getPrioClass(sec.priorite||'');
+      return '<div class="section-block visible" id="section-'+sc.key+'">'+renderSection(sc,sec,pc)+'</div>';
+    }).join('')
+    +'</div>'
+    +'<div class="lock-wall">'
+    +'<div class="lock-icon">🔒</div>'
+    +'<div class="lock-title">'+(sorted.length - FREE_LIMIT)+' sections verrouillées</div>'
+    +'<div class="lock-sub">Débloquez le rapport complet pour accéder à toutes les recommandations et optimisations prêtes à copier-coller.</div>'
+    +'<button class="btn-unlock-full" onclick="showUnlockModal()">Débloquer le rapport complet — 9€</button>'
+    +'<div class="unlock-note-sm">Paiement sécurisé · Accès immédiat</div>'
+    +'</div></div>';
+
+  document.getElementById('sections-content').innerHTML = freeHtml + teaserHtml + lockedHtml;
+
+  window._sortedSections = sorted;
   document.getElementById('guide-banner').style.display='flex';
 }
 
@@ -888,6 +947,32 @@ function renderSection(sc,sec,pc){
 
 function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function escAttr(str){return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function showUnlockModal(){
+  // Populate locked sections list
+  var sorted2 = window._sortedSections || [];
+  var FREE_LIMIT = 2;
+  var list = document.getElementById('unlock-sections-list');
+  if(list && sorted2.length){
+    list.innerHTML = sorted2.slice(FREE_LIMIT).map(function(sc){
+      return '<span class="teaser-item" style="background:var(--bl);color:var(--blue)">'+sc.icon+' '+sc.label+'</span>';
+    }).join('');
+  }
+  document.getElementById('unlockOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeUnlockModal(){
+  document.getElementById('unlockOverlay').classList.remove('active');
+  document.body.style.overflow='';
+}
+function submitUnlockEmail(){
+  var email = document.getElementById('unlock-email').value;
+  if(!email || !email.includes('@')){alert('Veuillez entrer une adresse email valide.');return;}
+  var btn = document.querySelector('#unlockOverlay .btn-unlock-full');
+  btn.textContent = '✓ Vous serez notifié au lancement !';
+  btn.style.background = 'var(--green)';
+  btn.disabled = true;
+  setTimeout(function(){closeUnlockModal();},2000);
+}
 function copyData(btn){
   var text=btn.getAttribute('data-copy')||'';
   navigator.clipboard.writeText(text).then(function(){
@@ -896,5 +981,29 @@ function copyData(btn){
   });
 }
 </script>
+
+<!-- UNLOCK MODAL -->
+<div class="confirm-overlay" id="unlockOverlay">
+  <div class="confirm-modal" style="max-width:460px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:12px">🔓</div>
+      <div class="confirm-title j" style="font-size:22px">Rapport complet — 9€</div>
+      <div style="font-size:13px;color:var(--i3);margin-top:6px;line-height:1.6">Accédez à toutes les recommandations prêtes à copier-coller directement dans Airbnb.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--i4);margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif">Ce que vous débloquez</div>
+      <div id="unlock-sections-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+    <div style="background:var(--bl);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--bd);line-height:1.6">
+      💡 Ce rapport sera disponible à l'achat sur <strong>Nanocorp</strong> très prochainement. Laissez votre email pour être notifié en priorité.
+    </div>
+    <div style="margin-bottom:16px">
+      <input type="email" id="unlock-email" placeholder="votre@email.fr" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <button class="btn-unlock-full" style="width:100%;max-width:100%;padding:13px" onclick="submitUnlockEmail()">Me notifier au lancement →</button>
+    <button class="btn-cancel" style="width:100%;margin-top:10px;text-align:center" onclick="closeUnlockModal()">Fermer</button>
+  </div>
+</div>
+
 </body>
 </html>
