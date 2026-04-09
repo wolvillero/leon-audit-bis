@@ -646,6 +646,49 @@ def analyze():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/save-email", methods=["POST"])
+def save_email():
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip()
+        if not email or '@' not in email:
+            return jsonify({"success": False, "error": "Email invalide"}), 400
+
+        api_key = os.environ.get("BREVO_API_KEY")
+        if not api_key:
+            return jsonify({"success": False, "error": "API key manquante"}), 500
+
+        import urllib.request
+        payload = {
+            "email": email,
+            "listIds": [2],
+            "updateEnabled": True,
+            "attributes": {"SOURCE": "Leon Beta"}
+        }
+        req = urllib.request.Request(
+            "https://api.brevo.com/v3/contacts",
+            data=json.dumps(payload).encode('utf-8'),
+            headers={
+                "Content-Type": "application/json",
+                "api-key": api_key
+            },
+            method="POST"
+        )
+        try:
+            with urllib.request.urlopen(req) as resp:
+                pass
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()
+            if e.code == 400 and "duplicate" in body.lower():
+                pass  # Email déjà existant — on laisse passer
+            else:
+                return jsonify({"success": False, "error": f"Brevo error {e.code}"}), 500
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route("/generate-guide", methods=["POST"])
 def generate_guide():
     try:
