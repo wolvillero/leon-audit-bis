@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -255,10 +254,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 .email-gate-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.5px}
 .email-gate-sub{font-size:14px;color:var(--i3);line-height:1.7;margin-bottom:24px;max-width:380px;margin-left:auto;margin-right:auto}
 .email-gate-beta{display:inline-block;font-size:11px;font-weight:700;background:var(--gl);color:var(--green);padding:3px 10px;border-radius:100px;margin-bottom:16px;letter-spacing:.5px}
-.email-input-wrap{display:flex;gap:10px;max-width:380px;margin:0 auto}
-.email-input-wrap input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.email-input-wrap{display:flex;gap:10px;max-width:380px;margin:0 auto;flex-wrap:wrap}
+.email-input-wrap input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
 .email-input-wrap input:focus{border-color:var(--blue)}
-.btn-email-submit{background:var(--blue);color:#fff;border:none;padding:12px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .2s}.btn-email-submit:hover{background:var(--bd)}
+.btn-email-submit{background:var(--blue);color:#fff;border:none;padding:14px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .2s;min-height:48px;width:100%}.btn-email-submit:hover{background:var(--bd)}
 .email-gate-note{font-size:11px;color:var(--i4);margin-top:10px}
 .email-gate-perks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
 .email-gate-perk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--i2);background:var(--bg2);border:1px solid var(--border);padding:5px 10px;border-radius:100px}
@@ -335,9 +334,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 <div id="landing-page">
 <section class="hero">
   <div>
-    <div class="hero-badge">✦ Audit Airbnb — Propulsé par IA</div>
+    <div class="hero-badge">✦ Version Bêta gratuite — Propulsé par IA</div>
     <h1 class="j">Libérez tout le potentiel<br>de <span>votre annonce</span> locative.</h1>
-    <p class="hero-sub">Léon analyse votre annonce et vous donne toutes les optimisations à faire pour obtenir plus de réservations, plus rapidement — sur 10 dimensions clés.</p>
+    <p class="hero-sub">Léon analyse votre annonce et vous donne toutes les optimisations à faire pour obtenir plus de réservations, plus rapidement — sur 10 dimensions clés.<br><br><strong style="color:var(--green)">🎁 Version Bêta gratuite</strong> — Accédez au rapport complet en laissant simplement votre email.</p>
     <button class="hero-cta" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
   </div>
   <div class="hero-card">
@@ -376,8 +375,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <h2 class="s-title j">Du diagnostic à l'expérience voyageur complète.</h2>
     <div class="pricing-grid">
       <div class="p-col">
-        <div class="p-tier j">Gratuit</div>
-        <div class="p-desc">Pour découvrir votre score et vos opportunités</div>
+        <div class="p-tier j">◆ Version Bêta</div>
+        <div class="p-desc">Accès complet gratuit pendant la période de test</div>
         <div class="p-price j">0€</div>
         <hr class="p-divider">
         <ul class="p-items">
@@ -388,7 +387,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
           <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Titres et descriptions réécrites (5+ options)</li>
           <li class="p-item"><div class="p-check g"><svg viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations gifting personnalisées</li>
         </ul>
-        <button class="p-cta fc" onclick="openForm()" style="margin-top:auto">Commencer gratuitement →</button>
+        <button class="p-cta fc" onclick="openForm()" style="margin-top:auto">Tester la version Bêta gratuitement →</button>
       </div>
       <div class="p-col mid">
         <div class="p-tier j">Premium</div>
@@ -476,7 +475,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
       </div>
       <div class="form-step" id="step2">
         <div class="step-title j">Léon analyse votre annonce…</div>
-        <p class="step-sub">Environ 45 secondes pour une analyse complète sur 10 dimensions.</p>
+        <p class="step-sub">Analyse complète sur 10 dimensions — environ 45 secondes.</p>
+        <div style="margin:24px 0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span id="progress-label" style="font-size:13px;font-weight:500;color:var(--ink)">Lecture et analyse visuelle IA…</span>
+            <span id="progress-pct" style="font-size:13px;font-weight:700;color:var(--blue)">0%</span>
+          </div>
+          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
+            <div id="progress-bar-fill" style="height:100%;width:0%;background:var(--blue);border-radius:4px;transition:width .4s ease"></div>
+          </div>
+        </div>
         <div class="loading-wrap">
           <div class="loading-step-item active" id="load1">
             <div class="l-dot"></div><div class="l-spinner"></div>
@@ -505,8 +513,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
     <div class="confirm-text">Votre rapport sera perdu. Voulez-vous d'abord le télécharger en PDF ?</div>
     <div class="confirm-actions">
       <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
-      <button class="btn-pdf" onclick="downloadPDF()">Télécharger le PDF</button>
-      <button class="btn-confirm-exit" onclick="confirmExit()">Quitter sans sauvegarder</button>
+      <button class="btn-pdf" onclick="downloadPDF()">⬇ Télécharger le PDF</button>
+      <button class="btn-confirm-exit" onclick="confirmExit()">Quitter</button>
     </div>
   </div>
 </div>
@@ -548,6 +556,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
   <div class="report-nav">
     <button class="rn-logo j" onclick="askConfirmExit()">Léon<span>.</span></button>
     <div class="report-actions">
+      <button class="btn-new-audit" onclick="downloadReportPDF()" style="background:var(--blue);color:#fff;border-color:var(--blue)">⬇ Télécharger PDF</button>
       <button class="btn-new-audit" onclick="askConfirmExit()">← Nouvel audit</button>
     </div>
   </div>
@@ -609,12 +618,48 @@ function goHome2(){document.getElementById('report-page').style.display='none';d
 
 function downloadPDF(){
   closeConfirm();
-  var el=document.getElementById('report-page');
+  downloadReportPDF();
+}
+
+function downloadReportPDF(){
+  // Show all locked sections before printing
+  var blur=document.getElementById('locked-sections-blur');
+  var wall=document.getElementById('email-gate-wall');
+  var wrap=document.getElementById('locked-sections-wrap');
+  if(blur){blur.style.filter='none';blur.style.opacity='1';}
+  if(wall){wall.style.display='none';}
+  if(wrap){wrap.style.overflow='visible';}
+  document.querySelectorAll('.section-block').forEach(function(b){b.classList.add('visible');});
+
+  // Add print styles
   var style=document.createElement('style');
-  style.textContent='.report-nav,.section-tabs-wrap,.guide-banner,.report-actions{display:none!important}.report-wrap{padding:20px!important}';
+  style.id='print-style-temp';
+  style.textContent=`
+    @media print {
+      body > *:not(#report-page){display:none!important}
+      #report-page{display:block!important}
+      .report-nav,.section-tabs-wrap,.guide-banner,.report-actions,
+      .teaser-banner,.locked-overlay .lock-wall,#teaser-banner,
+      .btn-new-audit,.confirm-overlay,.guide-overlay,.form-overlay{display:none!important}
+      .report-wrap{padding:16px!important;max-width:100%!important}
+      .section-block{display:block!important;page-break-inside:avoid}
+      .locked-overlay{overflow:visible!important}
+      .lock-blur{filter:none!important;opacity:1!important;pointer-events:auto!important}
+      .prob-rec-row,.option-row{grid-template-columns:1fr 1fr}
+      .dims-grid{grid-template-columns:1fr 1fr}
+      .r-score-card{background:#003DB3!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      @page{margin:1.5cm;size:A4}
+    }
+  `;
   document.head.appendChild(style);
+
   window.print();
-  document.head.removeChild(style);
+
+  // Remove print style after
+  setTimeout(function(){
+    var s=document.getElementById('print-style-temp');
+    if(s)s.remove();
+  },1000);
 }
 
 function goToStep(n){
@@ -663,11 +708,44 @@ function setLoadStep(n){
     if(idx+1<n)el.classList.add('done');
     else if(idx+1===n)el.classList.add('active');
   });
+  var labels=['Lecture et analyse visuelle IA…','Scoring sur 4 dimensions…','Génération du rapport complet…','Rapport prêt !'];
+  var pcts=[0,35,65,100];
+  var fill=document.getElementById('progress-bar-fill');
+  var label=document.getElementById('progress-label');
+  var pct=document.getElementById('progress-pct');
+  if(fill)fill.style.width=pcts[n-1]+'%';
+  if(label)label.textContent=labels[n-1]||'';
+  if(pct)pct.textContent=pcts[n-1]+'%';
+}
+
+var _progressInterval=null;
+function startProgressAnimation(){
+  var fill=document.getElementById('progress-bar-fill');
+  var pct=document.getElementById('progress-pct');
+  if(!fill)return;
+  var current=parseInt(fill.style.width)||0;
+  _progressInterval=setInterval(function(){
+    var target=parseInt(fill.style.width)||0;
+    if(target<95){
+      var inc=target<35?0.8:target<65?0.5:0.2;
+      var next=Math.min(target+inc,95);
+      fill.style.width=next+'%';
+      if(pct)pct.textContent=Math.round(next)+'%';
+    }
+  },400);
+}
+function stopProgressAnimation(){
+  if(_progressInterval)clearInterval(_progressInterval);
+  var fill=document.getElementById('progress-bar-fill');
+  var pct=document.getElementById('progress-pct');
+  if(fill)fill.style.width='100%';
+  if(pct)pct.textContent='100%';
 }
 
 async function startAnalysis(){
   if(selectedFiles.length===0){alert('Déposez au moins un screenshot.');return;}
   goToStep(2);setLoadStep(1);
+  startProgressAnimation();
   setTimeout(function(){setLoadStep(2);},10000);
   setTimeout(function(){setLoadStep(3);},25000);
   var fd=new FormData();
@@ -675,7 +753,7 @@ async function startAnalysis(){
   try{
     var res=await fetch('/analyze',{method:'POST',body:fd});
     var data=await res.json();
-    if(data.success){setLoadStep(4);setTimeout(function(){renderReport(data);},600);}
+    if(data.success){stopProgressAnimation();setLoadStep(4);setTimeout(function(){renderReport(data);},600);}
     else{alert('Erreur : '+data.error);goToStep(1);}
   }catch(e){alert('Erreur de connexion.');goToStep(1);}
 }
@@ -980,26 +1058,28 @@ function scrollToEmailGate(){
 
 async function submitGateEmail(){
   var input = document.getElementById('gate-email-input');
-  var email = input ? input.value.trim() : '';
+  if(!input){return;}
+  var email = input.value.trim();
   if(!email || !email.includes('@')){
     input.style.borderColor='var(--red)';
-    setTimeout(function(){input.style.borderColor='var(--border)';},2000);
+    input.placeholder='Email invalide';
+    setTimeout(function(){input.style.borderColor='';input.placeholder='votre@email.fr';},2000);
     return;
   }
   var btn = document.querySelector('.btn-email-submit');
-  btn.textContent = '...';
-  btn.disabled = true;
+  if(btn){btn.textContent='...';btn.disabled=true;}
 
+  // Unlock immediately — don't wait for API
+  unlockFullReport(email);
+
+  // Save email in background
   try{
-    await fetch('/save-email',{
+    fetch('/save-email',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email:email})
-    });
+    }).catch(function(){});
   }catch(e){}
-
-  // Unlock report regardless of API result
-  unlockFullReport(email);
 }
 
 function unlockFullReport(email){
