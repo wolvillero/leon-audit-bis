@@ -614,7 +614,7 @@ function askConfirmExit(){
 }
 function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('active');}
 function confirmExit(){closeConfirm();goHome2();}
-function goHome2(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';window.scrollTo(0,0);}
+function goHome2(){document.getElementById('report-page').style.display='none';document.getElementById('landing-page').style.display='block';document.querySelector('nav').style.display='';window.scrollTo(0,0);}
 
 function downloadPDF(){
   closeConfirm();
@@ -809,6 +809,7 @@ function renderReport(data){
   currentReportData=data;
   document.getElementById('landing-page').style.display='none';
   document.getElementById('report-page').style.display='block';
+  document.querySelector('nav').style.display='none';
   window.scrollTo(0,0);
   var s=data.scoring,r=data.recommendations;
   document.getElementById('r-score').textContent=s.score_global;
@@ -1040,7 +1041,9 @@ function renderSection(sc,sec,pc){
       var pourquoi=item.pourquoi||'';
       var impact=item.impact||'';
       var rec=item.recommandation||item.implementation||item.exemple_message||'';
-      html+=renderProbRec(titre,pourquoi,impact,rec,'Recommandation');
+      // Only show copy button if rec is substantial (>20 chars = real copyable content)
+      var showCopy = rec && rec.length > 20;
+      html+=renderProbRec(titre,pourquoi,impact,showCopy?rec:null,'Recommandation');
     });
     if(sec.analyse)html='<div style="font-size:13px;color:var(--i2);background:var(--bl);border-radius:8px;padding:12px 14px;margin-bottom:14px;line-height:1.6">'+escHtml(sec.analyse)+'</div>'+html;
   }
