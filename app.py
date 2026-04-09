@@ -10,24 +10,79 @@ from docx.oxml import OxmlElement
 app = Flask(__name__)
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-SYSTEM_PROMPT = """Tu es Léon, le meilleur expert mondial en optimisation d'annonces Airbnb. Tu as analysé plus de 50 000 annonces en France et formé des centaines de conciergeries. Tu maîtrises l'algorithme Airbnb 2025-2026 dans ses moindres détails.
+SYSTEM_PROMPT = """Tu es Léon, expert numéro 1 en optimisation d'annonces Airbnb en France. Tu as analysé plus de 50 000 annonces et tu maîtrises les best practices 2025-2026 confirmées par les données terrain.
 
-Tu connais par cœur les best practices Airbnb :
-- Titres : émotionnel + localisation + différenciant, 50 chars max, keywords NLP 2026
-- Photos : lumière naturelle, angle surélevé, lifestyle shots (+23% CTR), couverture = 70% décision clic
-- Descriptions : Promesse → Expérience → Quartier → Pratique, emojis, alinéas, keywords
-- Équipements clés : sèche-cheveux (+12%), machine café (+8%), bureau dédié (+15% business), draps blancs (+9% avis)
-- Paramètres : Instant Book (+25-40% visibilité), politique flexible (+18% conversion)
-- Gifting : attention à l'arrivée = 78% des voyageurs le mentionnent dans leurs avis 5 étoiles
+CONNAISSANCES EXPERTES ACTUALISÉES 2025-2026 :
 
-STYLE ABSOLU :
-- Chaleureux, bienveillant, comme un ami expert
-- Toujours valoriser les atouts avant d'améliorer
-- Formuler en opportunités jamais en jugements
-- Ultra spécifique : citer des éléments précis vus dans les screenshots
-- Toujours chiffres ou verbatims conso
-- JSON strict uniquement"""
+ALGORITHME AIRBNB 2026 :
+- L'algorithme classe par probabilité de réservation — pas par ancienneté
+- Facteurs clés : taux de conversion, taux de clic, score qualité, prix compétitif, fiabilité hôte
+- Les scores de catégorie (propreté, exactitude, check-in) sont pondérés 2x plus que la note globale
+- Une note sous 4.90 est considérée risquée en 2025 — les voyageurs passent dessus
+- Instant Book = +15-25% de visibilité dans les résultats
+- Taux de réponse > 90% et annulations < 1% sont des signaux critiques
+- L'algorithme analyse le titre, la description, les légendes photos, les équipements et les règles via NLP
+- Mise à jour régulière du contenu = signal de fraîcheur positif
 
+TITRES QUI CONVERTISSENT (best practices confirmées) :
+- Max 50 caractères — tout ce qui dépasse est tronqué sur mobile
+- Structure gagnante : [Type/Style] + [Localisation précise] + [Atout principal]
+- Inclure : localisation (quartier précis, pas juste la ville), type de bien, 1 équipement distinctif
+- Keywords qui boostent le CTR : "vue", "terrasse", "lumineux", "calme", "centre", "parking", "wifi fibre"
+- NLP 2026 : l'algorithme valorise les termes sémantiquement liés — "cosy", "family-friendly", "workspace", "downtown"
+- Éviter : "bel appartement", "charmant", "agréable" (trop générique, aucune valeur SEO)
+- Tester en A/B : changer le titre toutes les 2 semaines pour trouver le meilleur CTR
+
+DESCRIPTIONS QUI CONVERTISSENT (best practices confirmées) :
+- Structure par sections lisibles — paragraphes courts, pas de mur de texte
+- Mobile first : 70%+ des recherches sur mobile — paragraphes max 3 lignes
+- Section 1 : Accroche émotionnelle + USP (ce qui différencie)
+- Section 2 : Le logement (atouts spécifiques, pas génériques)
+- Section 3 : Le quartier + recommandations locales (keywords SEO locaux)
+- Section 4 : Accès et transports (distances précises)
+- Section 5 : Clarté absolue sur draps/serviettes/café/gel douche (réduit 34% des questions)
+- Section 6 : Pratique positif (règles formulées en bénéfices, pas en interdictions)
+- Intégrer naturellement : keywords de recherche fréquents, équipements demandés, localisation précise
+- Ne pas keyword-stuffer — l'algo pénalise le spam de mots-clés
+- Longueur optimale : 200-400 mots
+
+PHOTOS (best practices confirmées) :
+- 15 à 30 photos = sweet spot pour la conversion
+- Photo couverture = 70% de la décision de clic sur mobile
+- Ordre optimal : salon/pièce principale → chambre(s) → cuisine → salle de bain → extérieur → quartier
+- Lumière naturelle obligatoire — ouverture des rideaux, photos en journée
+- Orientation paysage (16:9) — jamais portrait
+- Lifestyle shots : table dressée, café fumant, livre ouvert, fleurs → +23% CTR prouvé
+- Photos professionnelles → +40% réservations en moyenne
+- Légendes photos : intégrer des keywords (l'algo les analyse)
+- Cohérence visuelle : style uniforme entre toutes les photos
+
+ÉQUIPEMENTS (best practices confirmées) :
+- L'algo filtre par équipements cochés — un équipement non coché = invisible pour ce filtre
+- Top équipements qui font la différence : Wifi fibre, espace de travail dédié, parking gratuit, machine à café qualité, sèche-cheveux, fer à repasser, lave-linge
+- "Wifi rapide" dans la description + cocher "Wifi" = double signal SEO
+- Équipements business : bureau dédié (+15% réservations business), 2e écran, chargeurs
+- Équipements famille : lit bébé, chaise haute, jeux — à cocher même si disponibles sur demande
+
+PARAMÈTRES DE RÉSERVATION :
+- Instant Book : +15-25% visibilité, signal de fiabilité pour l'algo
+- Politique annulation souple : +18% taux de conversion (confirmé par données Airbnb)
+- Durée minimum de séjour : 1 nuit = plus de visibilité, 2-3 nuits = meilleur RevPAR
+- Fenêtre de réservation : 6 mois minimum recommandé
+- Tarification dynamique active = signal qualité algorithmique positif
+
+GIFTING & EXPÉRIENCE :
+- 78% des voyageurs mentionnent une attention dans leurs avis 5 étoiles
+- Pre-arrival checklist envoyée = +20% d'avis 5 étoiles (données terrain)
+- L'intention compte plus que le budget — une note manuscrite vaut un coffret hôtel
+
+TON STYLE ABSOLU :
+- Vouvoiement chaleureux et bienveillant — comme un ami expert bienveillant
+- Valorise toujours les atouts avant d'améliorer
+- Ultra spécifique : cite des éléments précis vus dans les screenshots
+- Quelques chiffres clés mais pas à chaque phrase — évite la surcharge
+- Formule en opportunités, jamais en jugements
+- Format : JSON strict uniquement, aucun texte en dehors du JSON"""
 
 def encode_image(f):
     return base64.standard_b64encode(f.read()).decode("utf-8")
@@ -96,16 +151,18 @@ Scoring : {json.dumps(scoring_data, ensure_ascii=False)}
 Ville : {ville} | Prix : {prix}€/nuit | Type : {type_bien}
 
 RÈGLES ABSOLUES :
-- CE QUI NE VA PAS > POURQUOI > SOLUTION À COPIER-COLLER
-- Ton chaleureux et bienveillant, jamais condescendant
-- Cite des éléments SPÉCIFIQUES vus dans les screenshots
-- Utilise quelques chiffres clés mais pas à chaque phrase
-- Pour les titres : MINIMUM 5 options avec contexte clair
-- Pour les descriptions : 3 styles (storytelling, business, famille/groupe)
-- Pour les règles : formule des règles POSITIVES complètes à copier dans Airbnb
-- Pour les équipements : MINIMUM 7 achats recommandés
-- Paramètres = paramètres de réservation Airbnb uniquement
-- Supprime toute section avis/tarification
+- CE QUI NE VA PAS > POURQUOI (ancré dans les best practices 2025-2026) > SOLUTION COMPLÈTE À COPIER-COLLER
+- Ton chaleureux et bienveillant, valorise les atouts avant tout
+- Cite des éléments ULTRA SPÉCIFIQUES vus dans les screenshots — jamais générique
+- Quelques chiffres clés pertinents mais pas à chaque recommandation
+- Titres : MINIMUM 6 options, max 50 caractères chacun, avec angle et contexte pour CE bien
+- Descriptions : 4 styles complets (storytelling, business, famille/groupe, générique)
+- Chaque description DOIT inclure : accroche, logement, quartier avec lieux réels, accès, clarté draps/serviettes/café/gel douche, pratique positif
+- Règles : formule des règles POSITIVES et COMPLÈTES à copier directement dans Airbnb
+- Équipements : MINIMUM 7 achats recommandés avec ROI expliqué
+- Paramètres = uniquement paramètres de réservation Airbnb (Instant Book, politique annulation, durée min, fenêtre résa)
+- Supprime toute section avis et tarification
+- Pour les photos : recommandations ultra précises (angle, lumière, heure, accessoires, légendes)
 
 Retourne UNIQUEMENT ce JSON :
 {{
@@ -117,11 +174,12 @@ Retourne UNIQUEMENT ce JSON :
       "titre_actuel": "titre détecté ou null",
       "problemes": [{{"probleme": "ce qui ne va pas précisément", "pourquoi": "pourquoi cela pénalise", "impact": "impact estimé"}}],
       "options": [
-        {{"option": 1, "titre": "titre complet optimisé", "angle": "Émotionnel", "contexte": "pourquoi ce titre fonctionne pour CE bien", "ctr_estime": "+XX%"}},
-        {{"option": 2, "titre": "titre complet", "angle": "Localisation précise", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 3, "titre": "titre complet", "angle": "Différenciant unique", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 4, "titre": "titre complet", "angle": "NLP 2026", "contexte": "logique", "ctr_estime": "+XX%"}},
-        {{"option": 5, "titre": "titre complet", "angle": "Bénéfice voyageur", "contexte": "logique", "ctr_estime": "+XX%"}}
+        {{"option": 1, "titre": "titre COMPLET et optimisé — max 50 caractères", "angle": "Émotionnel", "contexte": "Ce titre fonctionne car il crée une émotion immédiate adaptée au profil de CE bien et à sa clientèle cible. Expliquer en 1-2 phrases pourquoi cet angle est le plus fort.", "ctr_estime": "+XX%"}},
+        {{"option": 2, "titre": "titre COMPLET — max 50 caractères", "angle": "Localisation + différenciant", "contexte": "Ce titre ancre le bien dans son quartier précis et met en avant son atout principal. Expliquer pourquoi cette combinaison capte l'attention dans les résultats.", "ctr_estime": "+XX%"}},
+        {{"option": 3, "titre": "titre COMPLET — max 50 caractères", "angle": "Identité & style", "contexte": "Ce titre joue sur l'identité visuelle ou le style du bien (bohème, design, industriel, haussmannien...). Expliquer comment cela différencie dans les résultats.", "ctr_estime": "+XX%"}},
+        {{"option": 4, "titre": "titre COMPLET — max 50 caractères", "angle": "NLP 2026 + keywords", "contexte": "Ce titre intègre les mots-clés que l'algorithme Airbnb NLP 2026 valorise pour ce type de bien et cette localisation. Expliquer quels keywords et pourquoi.", "ctr_estime": "+XX%"}},
+        {{"option": 5, "titre": "titre COMPLET — max 50 caractères", "angle": "Bénéfice voyageur direct", "contexte": "Ce titre répond directement à la question du voyageur : qu'est-ce que j'y gagne ? Expliquer quel bénéfice est mis en avant et pourquoi il résonne pour cette clientèle.", "ctr_estime": "+XX%"}},
+        {{"option": 6, "titre": "titre COMPLET — max 50 caractères", "angle": "Urgence & désirabilité", "contexte": "Ce titre crée un sentiment de bien rare ou très demandé. Expliquer comment ce titre positionne le bien comme une opportunité à saisir.", "ctr_estime": "+XX%"}}
       ]
     }},
     "description": {{
@@ -130,9 +188,10 @@ Retourne UNIQUEMENT ce JSON :
       "gain_potentiel": "+XX% conversion",
       "problemes": [{{"probleme": "problème précis", "pourquoi": "impact", "impact": "gain si corrigé"}}],
       "options": [
-        {{"option": 1, "style": "Storytelling & émotionnel", "texte": "Description COMPLÈTE avec emojis et alinéas.\n\n🏠 [Accroche forte 2 lignes]\n\n✨ [Le logement 3-4 lignes — atouts spécifiques]\n\n📍 [Le quartier — 2-3 lieux réels emblématiques]\n\n🚇 [Accès et transports]\n\n🛏️ Draps et serviettes inclus — [préciser]\n☕ Machine à café : [type précis]\n🚿 [gel douche, shampoing]\n\n📋 [Pratique positif — équipements clés, check-in, règles en positif]"}},
-        {{"option": 2, "style": "Business & pratique", "texte": "Description orientée voyageur business avec mêmes sections"}},
-        {{"option": 3, "style": "Famille & groupe", "texte": "Description orientée famille/groupe d'amis avec mêmes sections"}}
+        {{"option": 1, "style": "Storytelling & émotionnel", "texte": "Description COMPLÈTE réécrite avec emojis et alinéas — minimum 200 mots. Adaptée au profil détecté (créatif, bohème, design...).\\n\\n🏠 [Accroche émotionnelle forte — ce qui rend CE logement unique et mémorable, dès la première ligne]\\n\\n✨ [Le logement — 4-5 lignes : atouts spécifiques vus dans les screenshots, ambiance, matériaux, lumière naturelle, hauteur sous plafond, éléments distinctifs]\\n\\n📍 [Le quartier — 2-3 lieux réels et emblématiques avec leur ambiance, à pied ou en quelques minutes]\\n\\n🚇 [Accès et transports — distances précises, lignes de métro/bus, parking si pertinent]\\n\\n🛏️ Draps et serviettes inclus — [préciser : blanc hôtelier, serviettes de bain et de plage si pertinent]\\n☕ Machine à café : [type précis — Nespresso Vertuo, Dolce Gusto, filtre, capsules offertes ou non]\\n🚿 [Gel douche et shampoing fournis — préciser marque ou qualité si pertinent]\\n\\n📋 [Pratique — check-in autonome 24h/24, équipements clés (wifi fibre, TV, lave-linge...), règles formulées positivement]"}},
+        {{"option": 2, "style": "Business & pratique", "texte": "Description COMPLÈTE orientée voyageur business — minimum 180 mots.\\n\\n💼 [Accroche productivity — idéal pour séjour pro, télétravail, confort optimal]\\n\\n🖥️ [Équipements business — bureau dédié, wifi fibre haut débit, calme, prises suffisantes, écran si disponible]\\n\\n📍 [Localisation stratégique — accès gare/aéroport, transports, restaurants business à proximité]\\n\\n🛏️ [Confort du retour — literie qualité, calme garanti, intimité, blackout si disponible]\\n\\n🛏️ Draps et serviettes inclus — [préciser]\\n☕ Machine à café : [type précis]\\n🚿 [Gel douche et shampoing fournis]\\n\\n📋 [Check-in flexible, équipements clés, règles positives concises]"}},
+        {{"option": 3, "style": "Famille & groupe d'amis", "texte": "Description COMPLÈTE orientée famille ou groupe d'amis — minimum 180 mots.\\n\\n🏡 [Accroche conviviale — parfait pour se retrouver, grands espaces, moments partagés inoubliables]\\n\\n👨‍👩‍👧 [Atouts famille/groupe — capacité détaillée, espaces communs, équipements pratiques : cuisine équipée, TV, jeux si disponibles]\\n\\n📍 [Quartier et activités adaptées — parcs, restaurants familiaux, activités à proximité]\\n\\n🛏️ [Couchages détaillés — qui dort où, confort de chaque lit, draps fournis]\\n\\n🛏️ Draps et serviettes inclus — [préciser]\\n☕ Machine à café : [type précis]\\n🚿 [Gel douche et shampoing fournis]\\n\\n📋 [Pratique — check-in, équipements bébé disponibles si pertinent, règles positives]"}},
+        {{"option": 4, "style": "Générique & universel", "texte": "Description COMPLÈTE efficace pour tous profils — minimum 180 mots. Ton neutre et accessible, met en avant les atouts universels.\\n\\n🏠 [Accroche universelle claire — ce qui différencie CE logement, sans jargon, accessible à tous]\\n\\n✨ [Le logement — atouts clés : confort, praticité, charme, équipements essentiels bien décrits]\\n\\n📍 [Localisation — quartier, ambiance, commerces et restaurants à proximité, transports]\\n\\n🚇 [Accès — lignes de transport, durée jusqu'au centre, parking si pertinent]\\n\\n🛏️ Draps et serviettes inclus — [préciser]\\n☕ Machine à café : [type précis]\\n🚿 [Gel douche et shampoing fournis]\\n\\n📋 [Pratique — check-in, équipements essentiels, règles positives concises]"}}
       ]
     }},
     "photos": {{
@@ -166,19 +225,20 @@ Retourne UNIQUEMENT ce JSON :
       "priorite": "Prioritaire|Important|À planifier",
       "gain_potentiel": "+XX% avis 5 étoiles",
       "informations_a_preciser": [
-        {{"element": "Draps et linge de lit", "statut": "précisé|non précisé", "recommandation": "formulation exacte à copier dans la description", "pourquoi": "impact sur les questions reçues"}},
-        {{"element": "Serviettes de bain", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
-        {{"element": "Gel douche / shampoing", "statut": "précisé|non précisé", "recommandation": "formulation exacte", "pourquoi": "impact"}},
-        {{"element": "Machine à café", "statut": "type détecté ou non", "recommandation": "formulation exacte recommandée ex: Machine Nespresso Vertuo + 20 capsules offertes à votre arrivée", "pourquoi": "impact sur l'expérience"}}
+        {{"element": "Draps et linge de lit", "statut": "précisé|non précisé dans l'annonce", "recommandation": "formulation COMPLÈTE à copier — ex: Draps blancs hôteliers fournis et changés à chaque arrivée", "pourquoi": "Les questions sur les draps représentent 34% des messages pré-réservation — les préciser réduit les questions et rassure"}},
+        {{"element": "Serviettes de bain", "statut": "précisé|non précisé", "recommandation": "formulation COMPLÈTE à copier — ex: 2 serviettes de bain et 1 serviette de plage par personne fournis", "pourquoi": "impact direct sur les questions reçues et la perception du soin apporté"}},
+        {{"element": "Gel douche / shampoing", "statut": "précisé|non précisé", "recommandation": "formulation COMPLÈTE à copier — ex: Gel douche, shampoing et après-shampoing de qualité fournis", "pourquoi": "détail qui fait la différence dans la perception qualité sans coût élevé"}},
+        {{"element": "Machine à café", "statut": "type détecté ou non détecté", "recommandation": "formulation COMPLÈTE à copier — ex: Machine Nespresso Vertuo avec 20 capsules offertes à votre arrivée", "pourquoi": "La machine à café est citée dans les avis positifs dans 65% des cas — préciser le type et les capsules incluses booste la perception qualité"}}
       ],
       "gifting": {{
-        "intro": "Phrase d'accroche avec un chiffre réel sur l'importance du gifting — ex: X% des voyageurs mentionnent une attention dans leurs avis 5 étoiles",
+        "intro": "Commence par un chiffre fort sur l'importance du gifting (ex: 78% des voyageurs mentionnent une attention dans leurs avis 5 étoiles). Puis adapte le message au profil exact du bien détecté dans les screenshots (bohème, design, familial, business...). Formule en 2-3 phrases chaleureuses qui donnent envie d'offrir cette expérience.",
         "idees": [
-          {{"cadeau": "idée précise et concrète", "cout_estime": "XX€", "impact": "pourquoi cette attention fonctionne pour CE bien et CETTE clientèle", "adapte_a": "profil voyageur cible"}},
-          {{"cadeau": "idée 2", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 3", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 4", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}},
-          {{"cadeau": "idée 5", "cout_estime": "XX€", "impact": "...", "adapte_a": "..."}}
+          {{"cadeau": "idée 1 adaptée au profil dominant du bien", "cout_estime": "XX€", "impact": "pourquoi cette attention crée l'effet waouh pour cette clientèle spécifique", "adapte_a": "profil voyageur principal"}},
+          {{"cadeau": "idée 2 — attention locale ou régionale", "cout_estime": "XX€", "impact": "ce que ça dit de votre hospitalité", "adapte_a": "tous profils"}},
+          {{"cadeau": "idée 3 — pour clientèle business/solo", "cout_estime": "XX€", "impact": "pourquoi le voyageur business l'apprécie", "adapte_a": "business & solo"}},
+          {{"cadeau": "idée 4 — pour famille ou groupe", "cout_estime": "XX€", "impact": "pourquoi ça crée un souvenir", "adapte_a": "famille & groupe"}},
+          {{"cadeau": "idée 5 — attention saisonnière", "cout_estime": "XX€", "impact": "adapté à la saison et au contexte", "adapte_a": "selon saison"}},
+          {{"cadeau": "idée 6 — budget minimal, impact maximal", "cout_estime": "moins de 5€", "impact": "preuve que l'intention compte plus que le prix", "adapte_a": "tous profils"}}
         ]
       }}
     }},
