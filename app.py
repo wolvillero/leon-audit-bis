@@ -380,7 +380,23 @@ Retourne UNIQUEMENT ce JSON :
     if "```" in text:
         text = text.split("```")[1]
         if text.startswith("json"): text = text[4:]
-    return json.loads(text.strip())
+    text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Salvage partial JSON - truncate at last valid closing brace
+        last_brace = text.rfind('}')
+        if last_brace > 0:
+            try:
+                return json.loads(text[:last_brace+1])
+            except:
+                pass
+        return {"titre_logement": "Votre logement", "ville": ville,
+                "message_bienvenue": "Bienvenue dans votre logement. Nous espérons que votre séjour sera agréable.",
+                "infos_pratiques": {"wifi_nom": form_data.get("wifi_nom",""), "wifi_mdp": form_data.get("wifi_mdp",""), "parking": form_data.get("parking",""), "code_acces": form_data.get("code_acces",""), "checkin": form_data.get("checkin",""), "checkout": form_data.get("checkout","")},
+                "restaurants": [], "experiences_locales": [], "infos_contexte_geo": [],
+                "urgences": {"samu":"15","pompiers":"18","police":"17","urgences_euro":"112","hopital_proche":"","pharmacie_proche":"","medecin_proche":"","dentiste_proche":""},
+                "transports": [], "commerces": [], "conseils_hote": ""}
 
 
 def add_colored_heading(doc, text, level=1, color_hex="2B4C8C"):
