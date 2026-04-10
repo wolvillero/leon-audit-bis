@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -328,7 +329,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 <body>
 <nav>
   <button class="logo j" onclick="goHome()">Léon<span>.</span></button>
-  <button class="nav-cta" onclick="openForm()">Analyser mon annonce</button>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="tel:0676794197" style="font-size:13px;color:var(--i3);text-decoration:none;display:flex;align-items:center;gap:5px" title="Nous appeler">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14h0z"/></svg>
+      06 76 79 41 97
+    </a>
+    <button class="nav-cta" onclick="openForm()">Analyser mon annonce</button>
+  </div>
 </nav>
 
 <div id="landing-page">
@@ -336,7 +343,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
   <div>
     <div class="hero-badge">✦ Version Bêta gratuite — Propulsé par IA</div>
     <h1 class="j">Libérez tout le potentiel<br>de <span>votre annonce</span> locative.</h1>
-    <p class="hero-sub">Léon analyse votre annonce et vous donne toutes les optimisations à faire pour obtenir plus de réservations, plus rapidement — sur 10 dimensions clés.<br><br><strong style="color:var(--green)">🎁 Version Bêta gratuite</strong> — Accédez au rapport complet en laissant simplement votre email.</p>
+    <p class="hero-sub">Léon analyse votre annonce et vous donne toutes les optimisations à faire pour obtenir plus de réservations, plus rapidement.<br><br><strong style="color:var(--green)">🎁 Version Bêta gratuite</strong> — Accédez au rapport complet en laissant simplement votre email.</p>
     <button class="hero-cta" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
   </div>
   <div class="hero-card">
@@ -352,9 +359,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
 </section>
 
 <div class="stats-band">
-  <div class="stat-item"><div class="stat-num">91%</div><div class="stat-label">des annonces françaises ont un contenu sous-optimisé</div></div>
-  <div class="stat-item"><div class="stat-num">800+</div><div class="stat-label">signaux analysés par l'algorithme Airbnb</div></div>
-  <div class="stat-item"><div class="stat-num">+40%</div><div class="stat-label">de revenus pour les annonces bien positionnées</div></div>
+  <div class="stat-item"><div class="stat-num">91%</div><div class="stat-label">des annonces françaises perdent des réservations à cause d'un contenu sous-optimisé</div></div>
+  <div class="stat-item"><div class="stat-num">Top 10%</div><div class="stat-label">des hôtes captent 70% des réservations — Léon vous aide à en faire partie</div></div>
+  <div class="stat-item"><div class="stat-num">+40%</div><div class="stat-label">de revenus en moyenne pour les annonces correctement optimisées</div></div>
 </div>
 
 <section class="section-how">
@@ -404,16 +411,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
       </div>
       <div class="p-col top">
         <div class="p-tier j">Premium+</div>
-        <div class="p-desc">Pour créer une expérience voyageur complète</div>
+        <div class="p-desc">Rapport complet + Guide d'accueil pour vos voyageurs</div>
         <div class="p-price j" style="color:#FFD700">19€</div>
         <hr class="p-divider">
-        <div class="p-highlight">✨ Guide d'accueil personnalisé — téléchargeable au format Word</div>
+        <div class="p-highlight">✨ Tout ce qui est dans la Version Bêta, plus le Guide d'accueil Word personnalisé</div>
         <ul class="p-items">
-          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Tout le contenu Premium inclus</li>
-          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Guide adapté : ski, mer, ville, campagne…</li>
-          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Restaurants et expériences locales</li>
-          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Numéros utiles et urgences</li>
-          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Infos pratiques maison intégrées</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Score + 4 dimensions + rapport 10 sections</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Titres, descriptions et règles réécrites</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Recommandations gifting personnalisées</li>
+          <li class="p-item" style="border-top:1px solid rgba(255,215,0,.2);padding-top:10px;margin-top:4px"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div><strong style="color:#FFD700">Guide d'accueil Word</strong> adapté à votre destination (ski, mer, ville, campagne…)</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Restaurants et expériences locales recommandés</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Numéros utiles, urgences, commerces</li>
+          <li class="p-item"><div class="p-check gold"><svg viewBox="0 0 10 10" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 5l2.5 2.5L8 3"/></svg></div>Wifi, parking, check-in intégrés dans le guide</li>
         </ul>
         <button class="p-cta gc" style="opacity:.5;cursor:not-allowed;margin-top:auto" disabled>Bientôt disponible</button>
       </div>
@@ -431,11 +440,65 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 60px
   </div>
 </section>
 
+<!-- BEFORE/AFTER SECTION -->
+<section style="padding:80px 60px;background:var(--bg2);border-top:1px solid var(--border)">
+  <div style="max-width:1000px;margin:0 auto">
+    <div class="s-label">Avant / Après</div>
+    <h2 class="s-title j" style="margin-bottom:40px">Ce que Léon change concrètement.</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+
+      <!-- Example 1 -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;overflow:hidden">
+        <div style="background:var(--rl);padding:12px 20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red)">Avant — Score 42/100</div>
+        <div style="padding:20px">
+          <div style="font-size:11px;font-weight:700;color:var(--i4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Titre</div>
+          <div style="font-size:14px;color:var(--i3);font-style:italic;margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:8px">"Bel appartement Paris centre"</div>
+          <div style="font-size:11px;font-weight:700;color:var(--i4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Description</div>
+          <div style="font-size:13px;color:var(--i3);line-height:1.6;padding:10px 14px;background:var(--bg3);border-radius:8px">"Bel appartement bien situé. Proche de tout. Idéal pour visiter Paris. N'hésitez pas à réserver !"</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border:2px solid var(--green);border-radius:16px;overflow:hidden">
+        <div style="background:var(--gl);padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green)">Après Léon — Score 78/100</span>
+          <span style="font-size:13px;font-weight:700;color:var(--green)">+36 pts</span>
+        </div>
+        <div style="padding:20px">
+          <div style="font-size:11px;font-weight:700;color:var(--i4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Titre optimisé</div>
+          <div style="font-size:14px;color:var(--ink);font-weight:600;margin-bottom:16px;padding:10px 14px;background:var(--bl);border-radius:8px">"Loft lumineux · Marais · Parquet & Charme"</div>
+          <div style="font-size:11px;font-weight:700;color:var(--i4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Description optimisée</div>
+          <div style="font-size:13px;color:var(--ink);line-height:1.6;padding:10px 14px;background:var(--bl);border-radius:8px">"Laissez-vous envelopper par la lumière de ce loft atypique au cœur du Marais. Parquet ancien, hauteur sous plafond, quartier vivant à 2 min à pied des meilleures tables du 3e.<br><br>🛏️ Draps blancs hôteliers inclus · ☕ Nespresso + capsules offertes · 🚿 Gel douche Occitane"</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section class="section-cta">
   <h2 class="j">Libérez le potentiel de votre annonce.</h2>
   <p>Diagnostic complet gratuit — résultat immédiat, sans inscription.</p>
   <button class="cta-w" onclick="openForm()">Analyser mon annonce gratuitement et voir mon score →</button>
 </section>
+
+<!-- FOOTER -->
+<footer style="background:var(--ink);padding:40px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+  <div>
+    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px">Léon<span style="color:#0057FF">.</span></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.4)">Optimisation d'annonces Airbnb · Version Bêta</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
+    <a href="tel:0676794197" style="font-size:14px;color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:flex-end">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14h0z"/></svg>
+      06 76 79 41 97
+    </a>
+    <a href="mailto:rwolville@gmail.com" style="font-size:14px;color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:8px;justify-content:flex-end">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      rwolville@gmail.com
+    </a>
+    <button onclick="openForm()" style="background:#0057FF;color:#fff;border:none;padding:10px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;margin-top:4px">Analyser mon annonce →</button>
+  </div>
+</footer>
 </div>
 
 <!-- FORM OVERLAY -->
